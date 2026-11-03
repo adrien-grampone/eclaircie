@@ -1,0 +1,260 @@
+
+==== 1. REJECTED — planete — The Guardian — Wildlife
+TITRE    : Un domaine grand comme Athènes / va renaître.
+RÉSUMÉ   : Les Wildlife Trusts ont réuni les 30 millions de livres nécessaires pour acheter le domaine de Rothbury, dans le Northumberland. Ce territoire de plus de 3 800 hectares accueillera un grand projet de restauration de la nature, soutenu par 25 000 particuliers. (259 car.)
+CLAIM    : Les Wildlife Trusts ont réuni 30 millions de livres pour acheter le domaine de Rothbury, dans le Northumberland.
+ EVIDENCE : « One of the most ambitious nature recovery projects ever undertaken in England can go ahead after campaigners announced they had raised £30m to buy an estate in Northumberland. »
+CLAIM    : Le domaine fait plus de 3 800 hectares.
+ EVIDENCE : « At more than 3,800 hectares (nearly 15 sq miles), the Rothbury estate is the largest piece of land in single ownership to have come up for sale in England for more than 30 years. »
+CLAIM    : Le projet de restauration de la nature peut aller de l'avant.
+ EVIDENCE : « One of the most ambitious nature recovery projects ever undertaken in England can go ahead after campaigners announced they had raised £30m to buy an estate in Northumberland. »
+CLAIM    : 25 000 particuliers ont fait des dons.
+ EVIDENCE : « As well as gifts from 25,000 members of the public, the National Lottery Heritage Fund gave a gamechanging £5m. »
+VERDICT  : rejected — revise_parse_error: summary: Too big: expected string to have <=350 characters
+PASSE 1 → revise : [overstatement] « soutenu par 25 000 particuliers » → Préciser que les 25 000 particuliers ont contribué à une partie seulement des 30 millions : « avec le soutien de 25 000 particuliers, du National Lottery Heritage Fund (5 millions de livres), de fondations, de philanthropes et du gouvernement ». Le résumé laisse entendre que ces particuliers sont le seul soutien du projet. ; [missing_caveat] « Ce territoire de plus de 3 800 hectares accueillera un grand projet de restauration de la nature, soutenu par 25 000 particuliers. » → Ajouter que le projet ne fait pas l'unanimité : certains agriculteurs le jugent insensé (« folly ») et s'inquiètent pour la production alimentaire et la rentabilité de leurs exploitations. Exemple : « Certains agriculteurs s'y opposent, mais le trust affirme travailler avec eux. » ; [overstatement] « Un domaine grand comme Athènes va renaître. » → Le titre dit « va renaître », alors que le résumé parle seulement d'un projet de restauration qui « peut aller de l'avant ». Écrire par exemple : « Un domaine grand comme Athènes peut renaître. » Le titre doit aussi rester cohérent avec le résumé : la comparaison avec Athènes (« an area the size of Athens ») figure dans l'article, mais pas dans le résumé, donc ajouter cette précision au résumé ou retirer Athènes du titre.
+SOURCE   : https://www.theguardian.com/environment/2026/oct/30/wildlife-trusts-northumberland-nature-recovery-rothbury-estate
+
+==== 2. VERIFIED — animaux — The Guardian — Wildlife
+TITRE    : Un coléoptère rare / refait surface au pays de Galles.
+RÉSUMÉ   : Un coléoptère rare, qui sécrète une substance huileuse par les articulations de ses pattes quand il est alarmé, a été retrouvé au pays de Galles après près de 60 ans. Après deux relevés (2022, 2025) n'ayant trouvé que des adultes morts, celui de 2026 a révélé des larves dont la répartition suggère que l'espèce s'y reproduit à nouveau. (336 car.)
+CLAIM    : Un coléoptère rare a été redécouvert au pays de Galles après près de 60 ans.
+ EVIDENCE : « A rare beetle has been rediscovered in Wales after nearly 60 years, conservationists have said. »
+CLAIM    : Il sécrète une substance huileuse par les articulations de ses pattes quand il est alarmé.
+ EVIDENCE : « The species’ name comes from the adult beetles’ stubby shape and ability to secrete an oily yellow-orange substance from their knee joints when alarmed. »
+CLAIM    : Les relevés de 2022 et 2025 n'avaient trouvé que des adultes morts.
+ EVIDENCE : « The nature conservation charity Buglife reported the beetle was found at the Pembrokeshire site in 2020, but surveys carried out in 2022 and 2025 only found dead adults, raising concerns about the species’ viability in the area. »
+CLAIM    : Le relevé de 2026 a révélé des larves dont la répartition suggère que l'espèce se reproduit à nouveau.
+ EVIDENCE : « However, the 2026 survey discovered larvae distributed in such a way to suggest hatchlings from a larger batch of immature beetles had thrived. »
+CLAIM    : Une responsable du projet y voit la preuve d'une reproduction retrouvée de l'espèce.
+ EVIDENCE : « Anna Hobbs, the project delivery officer for the Bumblebee Conservation Trust, said finding evidence the species was breeding again was very exciting. »
+VERDICT  : verified
+PASSE 1 → revise : [overstatement] « Les relevés de 2026 ont révélé des larves, signe que l'espèce s'y reproduit à nouveau. » → Les relevés de 2026 ont révélé des larves dont la répartition suggère que l'espèce s'y reproduit à nouveau. Le résumé donne comme acquis ce que l'article présente comme une indication (« to suggest »), et il met « relevés » au pluriel alors que l'article ne mentionne qu'un seul relevé en 2026. ; [missing_caveat] « Les relevés de 2026 ont révélé des larves, signe que l'espèce s'y reproduit à nouveau. » → Ajouter que les relevés de 2022 et 2025 n'avaient trouvé que des adultes morts, ce qui avait fait craindre pour la survie de l'espèce sur le site. Par exemple : « Après deux relevés (2022, 2025) n'ayant trouvé que des adultes morts, celui de 2026 a révélé des larves, ce qui suggère que l'espèce s'y reproduit à nouveau. »
+PASSE 2 → verified : aucun problème
+SOURCE   : https://www.theguardian.com/environment/2026/nov/01/rare-short-necked-oil-beetle-rediscovered-wales
+
+==== 3. VERIFIED — planete — The Guardian — Wildlife
+TITRE    : Cette ferme expérimentale / voit ses oiseaux prospérer.
+RÉSUMÉ   : À Allerton, ferme-laboratoire du Royaume-Uni, l'abondance des oiseaux des champs a augmenté de 145 % depuis 1992, alors qu'elle a reculé de 23 % à l'échelle nationale. Graines d'hiver, bandes herbeuses pour les insectes : les oiseaux y sont plus nombreux que jamais depuis le début des relevés. (294 car.)
+CLAIM    : À Allerton, l'abondance des oiseaux des champs a augmenté de 145 % depuis 1992.
+ EVIDENCE : « Farm bird abundance at Allerton has risen 145% since 1992 when monitoring began, compared with a 23% decline nationally over the same period. »
+CLAIM    : Au niveau national, l'abondance a reculé de 23 % sur la même période.
+ EVIDENCE : « Farm bird abundance at Allerton has risen 145% since 1992 when monitoring began, compared with a 23% decline nationally over the same period. »
+CLAIM    : Les effectifs d'oiseaux à Allerton sont à leur plus haut niveau depuis le début des relevés.
+ EVIDENCE : « But at Allerton, farm bird numbers are at their highest level since records began, with song thrush, blackbirds and linnets in particular on the rise. »
+CLAIM    : La ferme cultive des graines pour nourrir les oiseaux en hiver.
+ EVIDENCE : « In these unkempt strips found all over the farm, kale, teasel, sorghum and millet are grown to supply seeds to birds through winter. »
+CLAIM    : Une bande herbeuse non cultivée abrite des coléoptères qui servent de nourriture d'insectes aux oiseaux.
+ EVIDENCE : « “But also they provide insect food for birds.” »
+VERDICT  : verified
+PASSE 1 → revise : [overstatement] « Cette ferme expérimentale fait revenir les oiseaux. » → Le titre affirme que la ferme « fait revenir » les oiseaux, un retour que le résumé ne mentionne pas : il parle d'une hausse de l'abondance, pas d'un retour. Reformuler, par exemple : « Cette ferme expérimentale voit ses oiseaux prospérer ».
+PASSE 2 → verified : aucun problème
+SOURCE   : https://www.theguardian.com/environment/2026/oct/31/this-is-a-robust-recipe-the-experimental-farm-bucking-the-decline-in-uk-birds
+
+==== 4. VERIFIED — sante — Reporterre
+TITRE    : À Lille, une maison apaisante / pour prendre soin de soi.
+RÉSUMÉ   : À Lille, l'association Ikambere accueille des femmes précaires obèses, diabétiques ou hypertendues. Elle y propose gratuitement sport adapté, ateliers de diététique et de cuisine, et un déjeuner partagé en semaine. Environ 125 femmes y viennent régulièrement. (259 car.)
+CLAIM    : Ikambere a créé à Lille une structure pour des patientes précaires obèses, diabétiques ou hypertendues.
+ EVIDENCE : « À Lille, l’association Ikambere a créé une structure destinée aux patientes précaires obèses, diabétiques ou hypertendues. »
+CLAIM    : Les ateliers sont gratuits et comprennent activité physique adaptée, diététique et cuisine, avec des déjeuners partagés en semaine.
+ EVIDENCE : « Elle propose des ateliers gratuits d’activité physique adaptée, de diététique, de cuisine et des partages de déjeuners tous les jours en semaine. »
+CLAIM    : Environ 125 femmes fréquentent régulièrement le lieu.
+ EVIDENCE : « Environ la moitié des 125 femmes qui se rendent régulièrement à la maison apaisante lilloise dorment à la rue ou dans des centres d’hébergement d’urgence. »
+VERDICT  : verified
+PASSE 1 → verified : aucun problème
+SOURCE   : https://reporterre.net/Ca-fonctionne-bien-cette-association-aide-les-femmes-precaires-a-prendre-leur-sante-a-bras-le-corps
+
+==== 5. VERIFIED — solidarite — Reporterre
+TITRE    : Une épicerie sur roues / qui recrée du lien.
+RÉSUMÉ   : Dans l'Hérault, le camion-épicerie Roul'Contact passe deux fois par mois dans six communes, avec des produits à deux tarifs, dont un solidaire, et des ateliers. Réservé à douze bénéficiaires par étape, orientés par une assistante sociale, il leur permet, témoignent-ils, de mieux manger et de retrouver du lien. (311 car.)
+CLAIM    : Le camion-épicerie Roul'Contact circule dans l'Hérault.
+ EVIDENCE : « Le camion-épicerie Roul’Contact sillonne l’Hérault et fournit des aliments de qualité, à un prix accessible. »
+CLAIM    : Il passe deux fois par mois dans six communes.
+ EVIDENCE : « Deux fois par mois, le camion sillonne la campagne héraultaise, s’arrêtant dans six communes différentes. »
+CLAIM    : Chaque denrée a deux tarifs, dont un solidaire.
+ EVIDENCE : « Pour chaque denrée, deux tarifs, dont un solidaire. »
+CLAIM    : L'association propose des animations comme des cours de cuisine et un atelier bien-être.
+ EVIDENCE : « À chaque étape, l’association Terre-Contact propose donc des animations : cours de cuisine, espace pitchoun pour les enfants, atelier bien-être avec une esthéticienne. »
+CLAIM    : L'épicerie accueille au maximum douze personnes par étape, des bénéficiaires de l'aide alimentaire orientés par une assistante sociale.
+ EVIDENCE : « De ce fait, l’épicerie mobile ne peut accueillir plus de douze personnes par étape — des bénéficiaires de l’aide alimentaire orientés par une assistante sociale. »
+CLAIM    : Une bénéficiaire dit se sentir mieux qu'aux Restos du cœur grâce aux bons produits.
+ EVIDENCE : « « Ici, on nous donne les moyens de manger de bons produits, je me sens mieux qu’aux Restos du cœur », glisse-t-elle. »
+CLAIM    : Une retraitée y a rencontré des gens et tissé des liens.
+ EVIDENCE : « Ici, j’ai rencontré des gens, tissé des liens. »
+VERDICT  : verified
+PASSE 1 → revise : [missing_caveat] « Il propose des produits de qualité à deux tarifs, dont un solidaire, ainsi que des ateliers cuisine ou bien-être. Les habitants y trouvent de quoi mieux manger et retrouver du lien. » → Préciser que l'accès est limité : l'épicerie accueille au maximum douze personnes par étape, orientées par une assistante sociale, ce que l'article juge « insuffisant par rapport aux besoins ». Par exemple : « Réservée à douze bénéficiaires par étape, orientés par une assistante sociale, elle permet à ceux qui y accèdent de mieux manger et de retrouver du lien. » ; [overstatement] « Les habitants y trouvent de quoi mieux manger et retrouver du lien. » → Remplacer « Les habitants » par « Des bénéficiaires » : l'article parle de personnes de l'aide alimentaire orientées par une assistante sociale, et non de tous les habitants. Ex. : « Des bénéficiaires témoignent y trouver de quoi mieux manger et retrouver du lien. »
+PASSE 2 → verified : aucun problème
+SOURCE   : https://reporterre.net/En-tournee-avec-ce-camion-epicerie-solidaire-qui-permet-de-mieux-se-nourrir-en-brisant-l-isolement
+
+==== 6. VERIFIED — animaux — Reporterre
+TITRE    : Des éoliennes à l'arrêt la nuit, / des chauves-souris épargnées.
+RÉSUMÉ   : Selon une étude du Muséum national d'histoire naturelle, publiée le 19 octobre, arrêter les éoliennes certaines nuits, quand le vent est faible et le temps doux, divise par cinq la mortalité des chauves-souris. Cette baisse concerne aussi bien les pipistrelles que la noctule commune. (284 car.)
+CLAIM    : L'étude est menée par le Cesco, qui appartient au Muséum national d'histoire naturelle, et publiée le 19 octobre.
+ EVIDENCE : « Une étude menée par des scientifiques du Cesco (Centre d’écologie et des sciences de la conservation, qui appartient au Muséum national d’histoire naturelle) et financée par l’Ademe (Agence de l’environnement et de la maîtrise de l’énergie) montre qu’arrêter temporairement les éoliennes la nuit permet de réduire la mortalité des chauves-souris de plus de 80 %. »
+CLAIM    : L'étude a été publiée le 19 octobre.
+ EVIDENCE : « Publiée le 19 octobre dans la revue Journal of Applied Ecology, cette étude est la plus grande jamais réalisée dans le monde sur l’efficacité de cette mesure, et la première menée à l’échelle européenne. »
+CLAIM    : L'arrêt des éoliennes se fait pendant certaines périodes de la nuit, quand le vent est faible et les températures suffisamment douces.
+ EVIDENCE : « Les chercheurs ont testé l’efficacité du « bridage » — l’arrêt des éoliennes pendant certaines périodes de la nuit, lorsque le vent est faible et les températures suffisamment douces –- en exploitant les données du protocole national de suivi de la mortalité des chauves-souris et des oiseaux sur les parcs éoliens, mis en place en France en 2015 et actualisé en 2018. »
+CLAIM    : Sur les parcs où les éoliennes sont arrêtées, la mortalité des chauves-souris est divisée par cinq.
+ EVIDENCE : « Sur les parcs où les éoliennes sont arrêtées, la mortalité des chauves-souris est divisée par cinq, et cette baisse concerne aussi bien des espèces fréquentant les lisières forestières (comme les pipistrelles), que des espèces volant davantage dans les prairies dégagées (comme la noctule commune). »
+CLAIM    : La baisse concerne aussi bien les pipistrelles que la noctule commune.
+ EVIDENCE : « Sur les parcs où les éoliennes sont arrêtées, la mortalité des chauves-souris est divisée par cinq, et cette baisse concerne aussi bien des espèces fréquentant les lisières forestières (comme les pipistrelles), que des espèces volant davantage dans les prairies dégagées (comme la noctule commune). »
+VERDICT  : verified
+PASSE 1 → verified : aucun problème
+SOURCE   : https://reporterre.net/Stopper-les-eoliennes-la-nuit-cinq-fois-moins-de-collisions-pour-les-chauves-souris
+
+==== 7. VERIFIED — planete — Reporterre
+TITRE    : Une grotte d'Ariège / protège ses chauves-souris.
+RÉSUMÉ   : À Tourtouse, en Ariège, une association a acheté un hectare de terres à l'entrée d'une grotte qui abrite l'une des plus importantes colonies de chauves-souris de France. Plus de 5 000 individus peuvent y vivre, et leurs effectifs y sont plutôt stables. (252 car.)
+CLAIM    : Le Conservatoire d'espaces naturels d'Ariège a acheté un hectare de terres à l'entrée de la grotte de Tourtouse.
+ EVIDENCE : « En plus de cette protection, le Conservatoire d’espaces naturels d’Ariège a acheté, le 9 juillet, un hectare de terres à l’entrée de la grotte de Tourtouse. »
+CLAIM    : La grotte abrite l'une des colonies de chauves-souris les plus importantes de France.
+ EVIDENCE : « « C’était un endroit très important pour nous, et c’est l’une des colonies de chauves-souris les plus importantes de France », détaille le naturaliste. »
+CLAIM    : Plus de 5 000 individus peuvent cohabiter dans cette colonie.
+ EVIDENCE : « Dans cette colonie, plus de 5 000 individus et jusqu’à douze espèces peuvent cohabiter, dont certaines menacées, comme le minioptère de Schreibers. »
+CLAIM    : Les effectifs de chauves-souris à la grotte de Tourtouse sont plutôt stables.
+ EVIDENCE : « « À la grotte de Tourtouse, les effectifs de chauves-souris sont plutôt stables, dit Thomas Cuypers. »
+VERDICT  : verified
+PASSE 1 → verified : aucun problème
+SOURCE   : https://reporterre.net/Une-association-achete-les-abords-d-une-grotte-pour-proteger-ses-5-000-chauve-souris
+
+==== 8. VERIFIED — planete — Mongabay
+TITRE    : Du bambou et des coquilles / contre les inondations.
+RÉSUMÉ   : À Pamarawan, village de pêcheurs des Philippines, un projet pilote encore en cours mise sur du bambou, des coquilles d'huîtres et des fibres de noix de coco contre les vagues. D'après des élus locaux, le village n'a pas été inondé depuis près de deux ans, alors que des zones voisines ont été submergées cette année. (316 car.)
+CLAIM    : Pamarawan est un village de pêcheurs des Philippines.
+ EVIDENCE : « Residents of Pamarawan, a low-lying fishing village at North Manila Bay, no longer experience flooding after the construction of a nature-based coastal defense and flood control project. »
+CLAIM    : Le projet utilise du bambou, des coquilles d'huîtres et des fibres de noix de coco pour protéger le village des vagues.
+ EVIDENCE : « The situation changed after the construction of a nature-based coastal defense and flood control project. It used locally available materials, such as bamboo poles, oyster shells and coconut husks, to protect Pamarawan from tidal waves and storm surges. »
+CLAIM    : Le projet est une initiative pilote encore en cours, dont l'achèvement est prévu plus tard cette année.
+ EVIDENCE : « The pilot initiative, the Philippines’ first nature-based coastal protection project, kicked off in 2024 and is slated for completion later this year. »
+CLAIM    : Un responsable du village affirme qu'il n'a pas été inondé depuis près de deux ans et l'attribue au projet.
+ EVIDENCE : « “It has been almost two years now that we have not been flooded,” Dayao said, crediting it to the nature-based solutions project. »
+CLAIM    : Cette année, des zones voisines plus élevées ont été submergées alors que Pamarawan a été épargné.
+ EVIDENCE : « “Nearby areas with higher elevation than ours were submerged, with some houses flooded halfway and others almost up to the roof.” »
+VERDICT  : verified
+PASSE 1 → revise : [missing_caveat] « des structures en bambou, des coquilles d'huîtres et des fibres de noix de coco protègent des vagues. » → Préciser que le projet est un pilote encore en cours (achèvement prévu cette année) et que l'effet protecteur repose sur les témoignages d'élus locaux. Par exemple : « …des structures en bambou, des coquilles d'huîtres et des fibres de noix de coco, dans un projet pilote encore en cours, protègent des vagues. »
+PASSE 2 → verified : aucun problème
+SOURCE   : https://news.mongabay.com/2026/10/philippine-village-uses-nature-to-defend-against-floods-with-bamboo-shells-and-husks/
+
+==== 9. VERIFIED — science — Mongabay
+TITRE    : Plus une forêt est variée, / mieux elle encaisse.
+RÉSUMÉ   : Une étude publiée dans Nature Communications a analysé 88 116 parcelles forestières aux États-Unis. Les forêts abritant davantage d'espèces d'arbres résistent mieux aux extrêmes climatiques combinés, comme la chaleur avec la sécheresse, et récupèrent plus efficacement ensuite, même si la diversité n'est qu'un facteur parmi d'autres. (334 car.)
+CLAIM    : L'étude a été publiée dans Nature Communications.
+ EVIDENCE : « The study, published in July in Nature Communications, examined thousands of acres of U.S. woodlands. »
+CLAIM    : L'étude a porté sur 88 116 parcelles forestières aux États-Unis.
+ EVIDENCE : « From this dataset, the researchers involved in the most recent study selected 88,116 forest plots across the continental U.S. that had no record of human disturbance or events like fire. »
+CLAIM    : Les forêts plus diverses en espèces d'arbres résistent mieux aux extrêmes climatiques combinés et récupèrent plus efficacement.
+ EVIDENCE : « The study found that diversity did have a protective effect: More diverse forests were more resilient during compound climate events, and recovered more effectively afterwards. »
+CLAIM    : Les extrêmes combinés incluent la chaleur associée à la sécheresse.
+ EVIDENCE : « A new study used data from U.S. forests to analyze whether diversity in tree species helped forests weather compound climate extremes, such as drought and high temperatures occurring at the same time. »
+CLAIM    : La diversité n'est pas le seul facteur : le sol, l'altitude et l'âge des arbres comptent aussi, et la température moyenne annuelle pourrait peser davantage.
+ EVIDENCE : « The authors noted that species diversity isn’t the only factor playing a role here: They also saw that the soil properties, elevation and age of the trees played a role in how forests did, and that the average temperature throughout the year may have a larger impact on a forest’s durability than the diversity in its ranks. »
+VERDICT  : verified
+PASSE 1 → revise : [missing_caveat] « Résultat : les forêts abritant davantage d'espèces d'arbres résistent mieux aux extrêmes climatiques combinés, comme la chaleur avec la sécheresse, et récupèrent plus efficacement ensuite. » → Ajouter la nuance de l'article : la diversité n'est pas le facteur principal. La température moyenne annuelle peut avoir un impact plus grand, et le sol, l'altitude et l'âge des arbres jouent aussi. Par exemple : « …et récupèrent plus efficacement ensuite, même si la diversité n'est qu'un facteur parmi d'autres (la température moyenne annuelle pourrait peser davantage). »
+PASSE 2 → verified : aucun problème
+SOURCE   : https://news.mongabay.com/2026/11/diverse-forests-can-better-withstand-extreme-weather-events-study-finds-heres-why/
+
+==== 10. VERIFIED — solidarite — Mongabay
+TITRE    : Les peuples autochtones / ont voix au chapitre.
+RÉSUMÉ   : À la COP17 en Arménie, l'organe subsidiaire dédié aux peuples autochtones et aux communautés locales a été pleinement mis en service au sein de la Convention sur la diversité biologique. Il leur permet de conseiller les parties et de rédiger des textes de décision. (265 car.)
+CLAIM    : La COP17 s'est tenue en Arménie, dans le cadre de la Convention sur la diversité biologique.
+ EVIDENCE : « At the 2026 U.N. Biodiversity Conference in Armenia (COP17), Indigenous peoples and local communities strengthened their role in the decision-making of the Convention on Biological Diversity (CBD), with the full operationalization of a subsidiary body within the treaty. »
+CLAIM    : L'organe subsidiaire permet aux peuples autochtones et communautés locales de conseiller les parties et de rédiger des textes de décision.
+ EVIDENCE : « It allows Indigenous peoples and local communities (IP&LCs) to advise parties, draft decision texts and handle tasks assigned to them, such as developing guidelines for the implementation of global conservation goals with the full participation of IP&LCs. »
+VERDICT  : verified
+PASSE 1 → verified : aucun problème
+SOURCE   : https://news.mongabay.com/short-article/2026/11/indigenous-peoples-and-local-communities-solidify-decision-making-powers-at-cop17/
+
+==== 11. VERIFIED — planete — Mongabay
+TITRE    : Une forêt d'Angola / enfin protégée.
+RÉSUMÉ   : Après des années d'appels de scientifiques, l'Angola a créé en avril l'aire de conservation de Serra do Pingano, en province d'Uíge, même si elle est plus petite que la zone proposée et que la forêt centrale a perdu 43 % de son couvert en vingt ans. Elle abrite l'une des dernières forêts tropicales d'Angola au sud du fleuve Congo. (332 car.)
+CLAIM    : Le gouvernement angolais a créé l'aire de conservation de Serra do Pingano en avril, après des années d'appels.
+ EVIDENCE : « After years of appeals, the Angolan government established the Serra do Pingano Conservation Area in April. »
+CLAIM    : La zone se situe dans la province d'Uíge.
+ EVIDENCE : « Located in Uíge province, the SPFE encompasses several densely forested mountain ranges of high biological value. »
+CLAIM    : La forêt centrale de Serra do Pingano a perdu 43 % de son couvert forestier en vingt ans.
+ EVIDENCE : « Over the past two decades, central Serra do Pingano lost 43% of its original forest cover, while the wider Serra do Pingano Forest Ecosystem (SPFE) lost 21%, equivalent to 536 square kilometers (207 square miles) of forest. »
+CLAIM    : La zone protégée est plus petite que celle que les chercheurs avaient proposée.
+ EVIDENCE : « She also noted that the area researchers originally proposed for protection was considerably larger than Serra do Pingano itself. »
+CLAIM    : Elle abrite l'une des dernières forêts tropicales d'Angola au sud du fleuve Congo.
+ EVIDENCE : « It also shelters some of Angola’s last remaining tropical forest south of the Congo River. »
+VERDICT  : verified
+PASSE 1 → revise : [missing_caveat] « Après des années d'appels de scientifiques, l'Angola a créé en avril l'aire de conservation de Serra do Pingano, dans la province d'Uíge. Cette zone de forêt de montagne abrite l'une des dernières forêts tropicales d'Angola au sud du fleuve Congo. » → Ajouter la contrepartie majeure : la protection arrive tardivement et le périmètre est réduit. Par exemple : « Après des années d'appels de scientifiques, l'Angola a créé en avril l'aire de conservation de Serra do Pingano, dans la province d'Uíge, même si la forêt centrale a perdu 43 % de son couvert en vingt ans et que la zone protégée est bien plus petite que celle proposée par les chercheurs. »
+PASSE 2 → verified : aucun problème
+SOURCE   : https://news.mongabay.com/2026/10/angola-designates-serra-do-pingano-as-a-protected-area-amid-rapid-forest-loss/
+
+==== 12. REJECTED — animaux — Mongabay
+TITRE    : Le loris de Bangka, / toujours là.
+RÉSUMÉ   : Ce petit primate venimeux, que l'on croyait peut-être disparu, vit toujours sur l'île indonésienne de Bangka. Une étude a analysé plus de 90 individus recueillis par une ONG locale, et 86 d'entre eux, soignés depuis 2015, ont été relâchés dans des fragments de forêt protégée. (276 car.)
+CLAIM    : Le loris de Bangka, petit primate venimeux, était considéré comme peut-être éteint et survit toujours sur l'île de Bangka, en Indonésie.
+ EVIDENCE : « A small, venomous primate that scientists thought had gone extinct still survives on Indonesia’s Bangka Island, and to the communities there was never really “lost,” according to a recent study. »
+CLAIM    : L'étude a analysé plus de 90 loris de Bangka recueillis par une ONG locale.
+ EVIDENCE : « In the latest study, researchers analyzed more than 90 Bangka slow lorises that the Alobi Wildlife Rescue Center, a local NGO, had rescued from backyards, roadsides, and plantations after being contacted by residents. »
+CLAIM    : 86 loris recueillis depuis 2015 et rétablis ont été relâchés dans des fragments de forêt protégée.
+ EVIDENCE : « However, 86 lorises rescued since 2015 that subsequently recovered were released into remaining protected forest fragments. »
+VERDICT  : rejected — fact_error: et 86 d'entre eux, soignés depuis 2015, ont été relâchés dans des fragments de forêt protégée
+PASSE 1 → rejected : [fact_error] « et 86 d'entre eux, soignés depuis 2015, ont été relâchés dans des fragments de forêt protégée » → L'article ne dit pas que les 86 lorises relâchés font partie des plus de 90 analysés dans l'étude. Reformuler : « Par ailleurs, 86 loris recueillis depuis 2015 et rétablis ont été relâchés dans les fragments de forêt protégée restants. » ; [missing_caveat] « Ce petit primate venimeux, que l'on croyait peut-être disparu, vit toujours sur l'île indonésienne de Bangka. » → Ajouter la menace majeure signalée par l'article : l'habitat forestier a reculé de 62 % entre 2000 et 2012 (mines d'étain illégales, plantations de palmiers à huile), et des loris ont été blessés ou tués (lignes électriques, routes, chiens). Par exemple : « …mais son habitat forestier a reculé de 62 % entre 2000 et 2012. »
+SOURCE   : https://news.mongabay.com/short-article/2026/11/venomous-indonesian-primate-feared-extinct-still-clings-on-but-threats-persist/
+
+==== 13. VERIFIED — science — Phys.org — Biology
+TITRE    : Du sang de dinosaure / après 115 millions d'années.
+RÉSUMÉ   : Des chercheurs menés par l'université Curtin ont trouvé des globules rouges fossilisés dans les os d'un dinosaure théropode vieux de 115 millions d'années, au Brésil. Ils y ont détecté de l'hème, un composant de l'hémoglobine. Une première preuve chimique, qui ouvre une fenêtre sur la vie des animaux disparus. (311 car.)
+CLAIM    : Une équipe internationale menée par l'université Curtin a découvert des globules rouges fossilisés.
+ EVIDENCE : « An international research team led by Curtin University has for the first time uncovered unequivocal evidence of fossilized red blood cells and amino acids of collagen, reshaping our understanding of fossil preservation and molecular longevity in deep time. »
+CLAIM    : Les globules rouges minéralisés ont été trouvés dans les os des membres d'un dinosaure théropode vieux de 115 millions d'années, découvert au Brésil.
+ EVIDENCE : « In a study published in Proceedings of the National Academy of Sciences, researchers discovered mineralized red blood cells and intact heme biomolecules in limb bones of a 115-million-year-old theropod dinosaur known as Aratasaurus museunacionali, recovered in northwestern Brazil. »
+CLAIM    : Les échantillons contenaient de l'hème, composant de l'hémoglobine qui transporte l'oxygène.
+ EVIDENCE : « The samples contained preserved heme—the oxygen-carrying component of hemoglobin—which essentially confirmed fossilized blood remains. »
+CLAIM    : C'est la première fois qu'une preuve chimique établit la présence de molécules dérivées de l'hémoglobine dans de tels globules.
+ EVIDENCE : « While previous studies have reported possible red blood cell structures in fossils, this study is the first to chemically prove the presence of hemoglobin-derived molecules inside the cells. »
+CLAIM    : La découverte offre une fenêtre moléculaire directe sur la physiologie d'animaux disparus depuis longtemps.
+ EVIDENCE : « It not only extends the known fossil record of blood, but also offers a direct molecular window into the physiology of long-extinct animals so we may better understand them and the world they lived in. »
+VERDICT  : verified
+PASSE 1 → verified : aucun problème
+SOURCE   : https://phys.org/news/2026-10-dinosaur-blood-oldest-discovery-rewrites.html
+
+==== 14. VERIFIED — science — Phys.org — Biology
+TITRE    : Des bandicoots oubliés / sortent des tiroirs.
+RÉSUMÉ   : Après dix ans d'enquête sur des spécimens de musée, des chercheurs ont reconnu deux espèces de bandicoots jusque-là passées inaperçues, dont l'une, du sud de l'Australie, serait éteinte depuis environ un siècle. Ils ont aussi montré que le quenda, qu'on croyait propre à l'Australie-Occidentale, vivait autrefois jusque vers Adélaïde. (334 car.)
+CLAIM    : Une enquête de dix ans sur des spécimens de musée a mis au jour deux espèces de bandicoots jusque-là non reconnues.
+ EVIDENCE : « A 10-year scientific investigation of museum specimens has uncovered two previously unrecognized bandicoot species, expanded the known range of the iconic quenda (or southeastern brown bandicoot) and reshaped understanding of one of Australia's native mammal groups. »
+CLAIM    : L'une des deux espèces, venue d'Australie-Méridionale, serait éteinte depuis environ un siècle selon les chercheurs.
+ EVIDENCE : « Among the most significant findings was the recognition of the little brown bandicoot (Isoodon microtis), a newly described species from South Australia. We believe it became extinct around a century ago. »
+CLAIM    : Le quenda était considéré comme propre à l'Australie-Occidentale.
+ EVIDENCE : « The quenda has long been regarded as a Western Australian species. »
+CLAIM    : Le quenda a autrefois vécu autour d'Adélaïde.
+ EVIDENCE : « However, we found it once lived around Adelaide, Kangaroo Island and the Nuyts Archipelago. »
+VERDICT  : verified
+PASSE 1 → revise : [missing_caveat] « des chercheurs ont reconnu deux espèces de bandicoots jusque-là passées inaperçues. » → Préciser qu'une des deux espèces, le petit bandicoot brun (Isoodon microtis), est probablement éteinte depuis environ un siècle. Par exemple : « …deux espèces de bandicoots jusque-là passées inaperçues, dont l'une, du sud de l'Australie, serait éteinte depuis environ un siècle. »
+PASSE 2 → verified : aucun problème
+SOURCE   : https://phys.org/news/2026-11-bandicoot-species-trawling-museum-drawers.html
+
+==== 15. VERIFIED — science — Phys.org — Biology
+TITRE    : Les bactéries du corail / lui prêtent main-forte.
+RÉSUMÉ   : Des chercheurs de NYU Abu Dhabi ont découvert que des bactéries associées aux coraux produisent des hormones stéroïdes quand l'eau chauffe. Ces hormones aident le corail à renforcer sa réponse immunitaire et augmentent la survie de ses cellules. Les auteurs y voient une piste potentielle pour la conservation des coraux. (321 car.)
+CLAIM    : Des chercheurs de NYU Abu Dhabi ont mené une étude sur le rôle des bactéries associées aux coraux face à la chaleur.
+ EVIDENCE : « A new study from NYU Abu Dhabi has revealed how coral-associated bacteria help corals withstand extreme heat by producing steroid hormones that strengthen their immune response. »
+CLAIM    : Les bactéries produisent des hormones stéroïdes quand les températures montent.
+ EVIDENCE : « Endozoicomonas, a group of bacteria commonly associated with corals worldwide, produces steroid hormones including testosterone and progesterone when temperatures rise. »
+CLAIM    : Ces hormones aident le corail à renforcer sa réponse immunitaire face au stress thermique et augmentent la survie de ses cellules.
+ EVIDENCE : « These hormones help corals mount a stronger immune response to heat stress, increasing the survival of coral cells. »
+CLAIM    : Les résultats indiquent une piste potentielle nouvelle pour la conservation des coraux.
+ EVIDENCE : « The findings also point to a potential new direction for coral conservation. »
+VERDICT  : verified
+PASSE 1 → revise : [overstatement] « Une piste nouvelle pour mieux protéger les coraux. » → Une piste potentielle pour la conservation des coraux : l'article parle de « potential new direction » et dit que l'étude « suggère » que les micro-organismes bénéfiques pourraient jouer un rôle, sans démontrer de protection. Par exemple : « Les auteurs y voient une piste potentielle pour la conservation des coraux. »
+PASSE 2 → verified : aucun problème
+SOURCE   : https://phys.org/news/2026-11-reveals-coral-bacteria-corals-survive.html
+
+==== 16. VERIFIED — science — Phys.org — Biology
+TITRE    : Les lysosomes, petits recycleurs, / dirigent aussi le rythme du cœur.
+RÉSUMÉ   : Des chercheurs de Liverpool et d'Oxford ont découvert que les lysosomes, connus comme les centres de recyclage de la cellule, aident aussi le stimulateur naturel du cœur à accélérer le rythme. Cette piste pourrait nourrir de futures études sur la fibrillation atriale, un trouble courant du rythme cardiaque. (308 car.)
+CLAIM    : Des chercheurs de l'université de Liverpool et de l'université d'Oxford sont à l'origine de la découverte.
+ EVIDENCE : « Researchers at the University of Liverpool and University of Oxford, working with national and international collaborators, found that lysosomes act as signaling centers in heart cells, helping the heart's natural pacemaker respond when the heart needs to beat faster. »
+CLAIM    : Les lysosomes sont traditionnellement vus comme les centres de recyclage de la cellule.
+ EVIDENCE : « Scientists have discovered that lysosomes, structures traditionally viewed as the cell's recycling centers, also play a role in regulating the heart's natural rhythm. »
+CLAIM    : Les lysosomes aident le stimulateur naturel du cœur à répondre quand il doit battre plus vite.
+ EVIDENCE : « Researchers at the University of Liverpool and University of Oxford, working with national and international collaborators, found that lysosomes act as signaling centers in heart cells, helping the heart's natural pacemaker respond when the heart needs to beat faster. »
+CLAIM    : Ces résultats pourraient aider de futures études sur la fibrillation atriale, trouble courant du rythme cardiaque.
+ EVIDENCE : « The findings, published in Cardiovascular Research, provide fresh insight into the biological processes involved in regulating heart rhythm and could help inform future studies into conditions such as atrial fibrillation, a common heart rhythm disorder. »
+VERDICT  : verified
+PASSE 1 → verified : aucun problème
+SOURCE   : https://phys.org/news/2026-11-lysosomes-cell-recycling-centers-heart.html

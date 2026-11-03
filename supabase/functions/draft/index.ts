@@ -23,7 +23,7 @@ interface ArticleRow {
 interface ItemResult {
   id: string;
   title: string;
-  outcome: "drafted" | "failed";
+  outcome: "drafted" | "not_good_news" | "failed";
   reason: string | null;
   story_id: string | null;
 }
@@ -69,6 +69,12 @@ Deno.serve(async () => {
         }
         const parsed = parseDraft(reply.text, config);
         if (!parsed.ok) return fail(article, `draft_parse_error: ${parsed.error.slice(0, 200)}`);
+        if (parsed.value.verdict === "not_good_news") {
+          // Le rédacteur juge la contrepartie trop forte : pas de story, article rejeté.
+          const reason = `draft_not_good_news: ${parsed.value.reason.slice(0, 300)}`;
+          await db.from("raw_articles").update({ status: "rejected", reject_reason: reason }).eq("id", article.id);
+          return { id: article.id, title: article.title, outcome: "not_good_news", reason, story_id: null };
+        }
 
         const { data: story, error: insertError } = await db
           .from("stories")
@@ -101,9 +107,10 @@ Deno.serve(async () => {
     });
 
     const failed = results.filter((r) => r.outcome === "failed").length;
+    const notGood = results.filter((r) => r.outcome === "not_good_news").length;
     const apiErrors = results.filter((r) => r.reason?.startsWith("api_error")).length;
-    await recordRun(db, { step: STEP, startedAt, processed: results.length - apiErrors, succeeded: results.length - failed, failed, error: apiErrors > 0 ? `${apiErrors} erreur(s) d'API` : null });
-    return json({ step: STEP, budget: { used_before: used, max: config.max_draft_per_day }, processed: results.length, drafted: results.length - failed, failed, results });
+    await recordRun(db, { step: STEP, startedAt, processed: results.length - apiErrors, succeeded: results.length - failed - notGood, failed, error: apiErrors > 0 ? `${apiErrors} erreur(s) d'API` : null });
+    return json({ step: STEP, budget: { used_before: used, max: config.max_draft_per_day }, processed: results.length, drafted: results.length - failed - notGood, not_good_news: notGood, failed, results });
   } catch (cause) {
     const message = errorMessage(cause);
     await recordRun(db, { step: STEP, startedAt, processed: 0, succeeded: 0, failed: 0, error: message });

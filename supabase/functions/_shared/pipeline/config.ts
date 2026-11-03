@@ -28,6 +28,8 @@ export const PipelineConfigSchema = z.object({
   dedup_similarity: z.number().min(0).max(1),
   /** §4.6 — fenêtre de comparaison en jours. */
   dedup_window_days: z.number().int().positive(),
+  /** §4.6 — modèle d'embeddings (1024 dimensions, cf. stories.embedding). */
+  embedding_model: z.string().min(1),
   /** §4.8 — auto-validation : score minimal… */
   auto_approve_min_score: z.number().min(0).max(1),
   /** §4.8 — …et trust_level minimal de la source. */

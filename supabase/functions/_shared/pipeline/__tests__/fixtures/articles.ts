@@ -1,4 +1,6 @@
+import { parseDraft, type Draft } from "../../draft.ts";
 import type { Article } from "../../types.ts";
+import { CONFIG } from "./config.ts";
 
 /**
  * Articles de fixture, écrits pour les tests (ce ne sont pas des articles réels),
@@ -46,6 +48,7 @@ export const PAYWALLED: Article = {
 
 /** Un brouillon valide pour OZONE, tel qu'un modèle pourrait le renvoyer. */
 export const OZONE_DRAFT_JSON = JSON.stringify({
+  verdict: "ok",
   title_main: "La couche d'ozone",
   title_accent: "se répare.",
   summary:
@@ -75,3 +78,12 @@ export const OZONE_VERIFY_JSON = JSON.stringify({
   problems: [],
   verdict: "approve",
 });
+
+/** Le brouillon OZONE parsé et validé, prêt pour les tests de verify/evidence. */
+export function loadOzoneDraft(): Draft {
+  const result = parseDraft(OZONE_DRAFT_JSON, CONFIG);
+  if (!result.ok) throw new Error(result.error);
+  if (result.value.verdict !== "ok") throw new Error("fixture inattendue : not_good_news");
+  const { verdict: _verdict, ...draft } = result.value;
+  return draft;
+}

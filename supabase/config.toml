@@ -439,3 +439,7 @@ import_map = "./functions/deno.json"
 [functions.revise]
 verify_jwt = false
 import_map = "./functions/deno.json"
+
+[functions.dedup]
+verify_jwt = false
+import_map = "./functions/deno.json"

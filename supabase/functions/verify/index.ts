@@ -52,10 +52,12 @@ Deno.serve(async () => {
         return settle("rejected", `evidence_missing: ${evidence.missing.length}/${draft.claims.length} introuvable(s) : ${missing}`, null);
       }
 
+      const previousProblems = story.verify_log[story.verify_log.length - 1]?.verify.problems ?? [];
       try {
         const prompt = buildVerifyPrompt(
           { title: article.title, sourceName: story.source_name, url: story.source_url, publishedAt: article.published_at, fullText: article.full_text },
           draft,
+          { pass, previousProblems },
         );
         const reply = await askModel(MODELS.verify, prompt, { maxTokens: 8192, effort: "medium", thinking: true });
         if (reply.stopReason === "refusal" || reply.stopReason === "max_tokens") {
@@ -63,7 +65,7 @@ Deno.serve(async () => {
         }
         const parsed = parseVerify(reply.text);
         if (!parsed.ok) return settle("rejected", `verify_parse_error: ${parsed.error.slice(0, 200)}`, null);
-        const { decision, reason } = decideVerify(parsed.value, draft, pass, config);
+        const { decision, reason } = decideVerify(parsed.value, draft, pass, config, previousProblems);
         return settle(decision, reason, { pass, model: MODELS.verify, decision, reason, verify: parsed.value, at: new Date().toISOString() });
       } catch (cause) {
         const message = errorMessage(cause);

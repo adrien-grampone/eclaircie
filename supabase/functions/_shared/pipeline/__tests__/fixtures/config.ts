@@ -10,6 +10,7 @@ export const CONFIG_ROWS: ConfigRow[] = [
   { key: "summary_max_chars", value: 350 },
   { key: "dedup_similarity", value: 0.88 },
   { key: "dedup_window_days", value: 90 },
+  { key: "embedding_model", value: "voyage-3.5" },
   { key: "auto_approve_min_score", value: 0.8 },
   { key: "auto_approve_min_trust", value: 3 },
   { key: "schedule_horizon_days", value: 14 },

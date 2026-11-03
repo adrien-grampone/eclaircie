@@ -26,11 +26,24 @@ export function draftSchema(config: Pick<PipelineConfig, "summary_max_chars">) {
 
 export type Draft = z.infer<ReturnType<typeof draftSchema>>;
 
+/**
+ * Sortie complète du rédacteur : soit un brouillon, soit le constat que la
+ * contrepartie est trop forte pour en faire une bonne nouvelle.
+ */
+export function draftOutputSchema(config: Pick<PipelineConfig, "summary_max_chars">) {
+  return z.discriminatedUnion("verdict", [
+    z.object({ verdict: z.literal("not_good_news"), reason: z.string().trim().min(1) }),
+    draftSchema(config).extend({ verdict: z.literal("ok") }),
+  ]);
+}
+
+export type DraftOutput = z.infer<ReturnType<typeof draftOutputSchema>>;
+
 export function parseDraft(
   json: string,
   config: Pick<PipelineConfig, "summary_max_chars">,
-): ParseResult<Draft> {
-  return parseJsonWith(draftSchema(config), json);
+): ParseResult<DraftOutput> {
+  return parseJsonWith(draftOutputSchema(config), json);
 }
 
 /** Règles communes au brouillon et à sa révision : fidélité absolue à la source. */
@@ -41,18 +54,25 @@ export function draftRules(config: Pick<PipelineConfig, "summary_max_chars">): s
     "- Tu ne recopies JAMAIS le texte de l'article dans le résumé : tu reformules avec tes mots (droit d'auteur).",
     "- JAMAIS un terme plus fort ou plus certain que la source : un « could » reste « pourrait », un « plan » ou un « objectif » n'est pas un résultat, une « adoption » n'est pas une mise en œuvre, un espoir reste un espoir.",
     "- JAMAIS un terme plus précis que la source : « beetles » ne devient pas « carabes », « a study » ne devient pas « un essai clinique ». La traduction fidèle est autorisée et attendue ; l'ajout de précision ne l'est pas.",
-    "- Si l'article mentionne une limite, une opposition ou une contrepartie importante (déclin qui continue, zone réduite, projet inachevé, critiques), le résumé la mentionne honnêtement, en une demi-phrase.",
     "- Chaque chiffre, date et nom propre du résumé doit figurer dans l'article, avec la même portée (une période reste une période, une espèce reste une espèce).",
+    "- Noms d'espèces et de lieux : le nom français courant s'il existe (« méloé », « loris lent »), sinon une description (« un coléoptère rare »). JAMAIS un nom anglais brut dans le texte.",
+    "",
+    "TON : C'EST UNE BONNE NOUVELLE",
+    "- Une nuance (limite, opposition, contrepartie) n'est mentionnée QUE si elle change le sens de CETTE nouvelle. Pas de contexte général négatif ajouté (« les effectifs déclinent ailleurs », « les menaces persistent »).",
+    "- Quand elle s'impose : une demi-phrase maximum, jamais la dernière phrase, jamais dans le titre. Le résumé FINIT sur la bonne nouvelle.",
+    "- Si la contrepartie est si forte qu'elle devrait figurer dans le titre, ce n'est pas une bonne nouvelle : réponds alors { \"verdict\": \"not_good_news\", \"reason\": \"…\" } et rien d'autre.",
     "",
     "FORMAT",
+    "- verdict : \"ok\" quand tu livres un brouillon.",
     "- title_main + title_accent forment le titre en deux parties du design (title_accent est la chute, en italique). Exemple : « La couche d'ozone » / « se répare. »",
-    "- title_accent peut être évocateur, mais n'apporte AUCUN fait absent du résumé et ne dit rien de plus fort que lui.",
+    "- Le titre est évocateur, c'est voulu ; il n'apporte aucun fait absent du résumé et ne le contredit pas.",
     `- summary : 2 à 3 phrases, ${config.summary_max_chars} caractères MAXIMUM, en français, tutoiement, ton chaleureux et précis.`,
     "- claims : chaque affirmation factuelle du résumé, avec en `evidence` la phrase EXACTE de l'article qui la soutient, recopiée mot pour mot (c'est la seule chose que tu recopies ; elle sera vérifiée par recherche dans le texte).",
     "- scene : description visuelle de la scène à illustrer, en anglais, sans texte ni visage en gros plan.",
     "",
     "Réponds UNIQUEMENT avec un objet JSON strict de la forme :",
     "{",
+    '  "verdict": "ok",',
     '  "title_main": "La couche d\'ozone",',
     '  "title_accent": "se répare.",',
     '  "summary": "…",',
@@ -99,7 +119,7 @@ export function buildRevisePrompt(
   config: Pick<PipelineConfig, "summary_max_chars">,
 ): Prompt {
   const system = [
-    "Tu révises la bonne nouvelle du jour d'une application française. Un relecteur a relevé des problèmes précis dans un brouillon. Corrige-les TOUS, en appliquant la correction proposée ou une formulation plus prudente encore, sans introduire aucun fait nouveau. Tout ce que le relecteur n'a pas signalé peut rester tel quel.",
+    "Tu révises la bonne nouvelle du jour d'une application française. Un relecteur a relevé des problèmes précis dans un brouillon. Corrige-les TOUS, en appliquant la correction proposée ou une formulation plus prudente, sans introduire aucun fait nouveau. Tout ce que le relecteur n'a pas signalé reste tel quel. Le texte corrigé doit toujours se lire comme une bonne nouvelle et finir sur elle.",
     "",
     draftRules(config),
   ].join("\n");

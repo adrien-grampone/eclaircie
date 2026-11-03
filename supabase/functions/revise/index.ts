@@ -51,6 +51,7 @@ Deno.serve(async () => {
         if (reply.stopReason === "refusal" || reply.stopReason === "max_tokens") return reject(`revise_incomplete: ${reply.stopReason}`);
         const parsed = parseDraft(reply.text, config);
         if (!parsed.ok) return reject(`revise_parse_error: ${parsed.error.slice(0, 200)}`);
+        if (parsed.value.verdict === "not_good_news") return reject(`revise_not_good_news: ${parsed.value.reason.slice(0, 300)}`);
         const d = parsed.value;
         await db.from("stories")
           .update({ title_main: d.title_main, title_accent: d.title_accent || null, summary: d.summary, claims: d.claims, scene: d.scene, status: "drafted", reject_reason: null })

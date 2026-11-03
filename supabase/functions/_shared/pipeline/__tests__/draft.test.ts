@@ -1,6 +1,6 @@
 import { buildDraftPrompt, buildRevisePrompt, parseDraft } from "../draft.ts";
 import { CONFIG } from "./fixtures/config.ts";
-import { OZONE, OZONE_DRAFT_JSON } from "./fixtures/articles.ts";
+import { OZONE, OZONE_DRAFT_JSON, loadOzoneDraft } from "./fixtures/articles.ts";
 
 function withField(field: string, value: unknown): string {
   const draft = JSON.parse(OZONE_DRAFT_JSON) as Record<string, unknown>;
@@ -12,10 +12,23 @@ describe("parseDraft", () => {
   it("valide un brouillon complet", () => {
     const result = parseDraft(OZONE_DRAFT_JSON, CONFIG);
     expect(result.ok).toBe(true);
-    if (!result.ok) return;
+    if (!result.ok || result.value.verdict !== "ok") throw new Error("brouillon attendu");
     expect(result.value.title_main).toBe("La couche d'ozone");
     expect(result.value.title_accent).toBe("se répare.");
     expect(result.value.claims).toHaveLength(2);
+  });
+
+  it("accepte le verdict not_good_news avec sa raison, sans les autres champs", () => {
+    const result = parseDraft('{"verdict":"not_good_news","reason":"La moitié de la forêt est déjà détruite."}', CONFIG);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.value.verdict).toBe("not_good_news");
+    expect(parseDraft('{"verdict":"not_good_news"}', CONFIG).ok).toBe(false);
+  });
+
+  it("exige le verdict ok sur un brouillon", () => {
+    const draft = JSON.parse(OZONE_DRAFT_JSON) as Record<string, unknown>;
+    delete draft["verdict"];
+    expect(parseDraft(JSON.stringify(draft), CONFIG).ok).toBe(false);
   });
 
   it("refuse un résumé au-delà de summary_max_chars (350 dans la config)", () => {
@@ -84,9 +97,17 @@ describe("buildDraftPrompt", () => {
     expect(prompt.system).toMatch(/ne recopies JAMAIS/);
     expect(prompt.system).toMatch(/« could » reste « pourrait »/);
     expect(prompt.system).toMatch(/« beetles » ne devient pas « carabes »/);
-    expect(prompt.system).toMatch(/limite, une opposition ou une contrepartie/);
-    expect(prompt.system).toMatch(/title_accent peut être évocateur, mais n'apporte AUCUN fait/);
     expect(prompt.system).not.toContain("why_good");
+  });
+
+  it("impose les règles de ton : nuance utile seulement, jamais en fin ni dans le titre, not_good_news sinon", () => {
+    expect(prompt.system).toMatch(/QUE si elle change le sens de CETTE nouvelle/);
+    expect(prompt.system).toMatch(/Pas de contexte général négatif/);
+    expect(prompt.system).toMatch(/jamais la dernière phrase, jamais dans le titre/);
+    expect(prompt.system).toMatch(/FINIT sur la bonne nouvelle/);
+    expect(prompt.system).toMatch(/"verdict": "not_good_news"/);
+    expect(prompt.system).toMatch(/nom français courant/);
+    expect(prompt.system).toMatch(/JAMAIS un nom anglais brut/);
   });
 
   it("annonce la longueur maximale lue dans la config", () => {
@@ -95,7 +116,7 @@ describe("buildDraftPrompt", () => {
   });
 
   it("décrit les six champs attendus", () => {
-    for (const field of ["title_main", "title_accent", "summary", "claims", "scene"]) {
+    for (const field of ["verdict", "title_main", "title_accent", "summary", "claims", "scene"]) {
       expect(prompt.system).toContain(`"${field}"`);
     }
   });
@@ -108,9 +129,7 @@ describe("buildDraftPrompt", () => {
 
 describe("buildRevisePrompt", () => {
   it("fournit l'article, le brouillon et les problèmes numérotés avec leur correction", () => {
-    const draft = parseDraft(OZONE_DRAFT_JSON, CONFIG);
-    if (!draft.ok) throw new Error(draft.error);
-    const prompt = buildRevisePrompt(OZONE, draft.value, [
+    const prompt = buildRevisePrompt(OZONE, loadOzoneDraft(), [
       { type: "overstatement", passage: "se répare.", correction: "est en voie de guérison." },
       { type: "missing_caveat", passage: "Le Protocole de Montréal a éliminé", correction: "mentionner le ralentissement dû au CFC-11" },
     ], CONFIG);
@@ -122,5 +141,6 @@ describe("buildRevisePrompt", () => {
     expect(prompt.system).toMatch(/Corrige-les TOUS/);
     expect(prompt.system).toMatch(/sans introduire aucun fait nouveau/);
     expect(prompt.system).toMatch(/« could » reste « pourrait »/); // mêmes règles que le draft
+    expect(prompt.system).toMatch(/finir sur elle/);
   });
 });

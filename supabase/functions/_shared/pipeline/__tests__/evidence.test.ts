@@ -1,15 +1,10 @@
 import { checkEvidence } from "../evidence.ts";
-import { parseDraft } from "../draft.ts";
-import { CONFIG } from "./fixtures/config.ts";
-import { MANGROVES, OZONE, OZONE_DRAFT_JSON } from "./fixtures/articles.ts";
+import { MANGROVES, OZONE, loadOzoneDraft } from "./fixtures/articles.ts";
 
 describe("checkEvidence", () => {
   it("retrouve les evidences d'un brouillon réaliste malgré la typographie de l'article", () => {
-    const draft = parseDraft(OZONE_DRAFT_JSON, CONFIG);
-    expect(draft.ok).toBe(true);
-    if (!draft.ok) return;
     // Le brouillon écrit « d'ozone » et « 99 % » ; l'article a « d’ozone » et « 99 % » insécable.
-    const result = checkEvidence(draft.value.claims, OZONE.fullText);
+    const result = checkEvidence(loadOzoneDraft().claims, OZONE.fullText);
     expect(result).toEqual({ ok: true, missing: [] });
   });
 

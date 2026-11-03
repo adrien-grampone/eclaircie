@@ -19,12 +19,12 @@ export {
   triageScore,
 } from "./triage.ts";
 export type { Triage, TriageInput } from "./triage.ts";
-export { ClaimSchema, buildDraftPrompt, buildRevisePrompt, draftRules, draftSchema, parseDraft } from "./draft.ts";
-export type { Draft } from "./draft.ts";
+export { ClaimSchema, buildDraftPrompt, buildRevisePrompt, draftOutputSchema, draftRules, draftSchema, parseDraft } from "./draft.ts";
+export type { Draft, DraftOutput } from "./draft.ts";
 export { checkEvidence } from "./evidence.ts";
 export type { EvidenceCheck } from "./evidence.ts";
-export { PROBLEM_TYPES, VerifyProblemSchema, VerifySchema, buildVerifyPrompt, decideVerify, parseVerify } from "./verify.ts";
-export type { Decision, ProblemType, Verify, VerifyDecision, VerifyProblem } from "./verify.ts";
+export { FATAL_TYPES, PROBLEM_TYPES, VerifyProblemSchema, VerifySchema, buildVerifyPrompt, decideVerify, parseVerify } from "./verify.ts";
+export type { Decision, ProblemType, Verify, VerifyContext, VerifyDecision, VerifyProblem } from "./verify.ts";
 export { pickForSchedule, sourceWithinShare, storyAgeDays } from "./schedule.ts";
 export { applyEditorialRules, mainTheme } from "./editorial.ts";
 export type { EditorialOutcome } from "./editorial.ts";
@@ -38,3 +38,5 @@ export { classifyExtraction, extractMainText } from "./extract.ts";
 export type { ExtractOutcome, Extracted } from "./extract.ts";
 export { triageRejectReason } from "./triage.ts";
 export type { TriageRejectReason } from "./triage.ts";
+export { embeddingInput, isDuplicate, resolveDuplicates } from "./dedup.ts";
+export type { DedupDecision, DedupStory, Neighbour } from "./dedup.ts";
