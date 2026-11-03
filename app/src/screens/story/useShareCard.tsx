@@ -1,7 +1,7 @@
 import { useRef, useState, type ComponentRef } from "react";
 import { StyleSheet, View } from "react-native";
-import { captureCard, shareFile } from "@/lib/share.ts";
-import { shareFileName } from "@/lib/shareCard.ts";
+import { exportCard, shareCardFile } from "@/lib/share.ts";
+import { shareFileName, shareMessage } from "@/lib/shareCard.ts";
 import type { DailyView } from "@/lib/stories.ts";
 import { ShareCard } from "@/ui/ShareCard.tsx";
 
@@ -10,7 +10,8 @@ type Story = NonNullable<DailyView["pick"]["story"]>;
 /**
  * Partage (spec §8, écran 5) : la carte est montée SOUS l'écran (cachée par l'illustration et la
  * feuille, donc rendue par iOS), capturée en PNG dès que son image est affichée, puis proposée dans
- * la feuille de partage. `EXPO_PUBLIC_DEMO_SHARE=capture` journalise le fichier au lieu de partager.
+ * la feuille de partage iOS avec un texte d'accompagnement. `EXPO_PUBLIC_DEMO_SHARE=capture` journalise
+ * le fichier au lieu de partager.
  */
 export function useShareCard(view: DailyView, story: Story | null) {
   const ref = useRef<ComponentRef<typeof View>>(null);
@@ -26,13 +27,13 @@ export function useShareCard(view: DailyView, story: Story | null) {
     setPhase("capturing");
     // Un instant pour que le dernier rendu soit à l'écran avant la capture.
     setTimeout(() => {
-      captureCard(ref)
+      exportCard(ref, shareFileName(story))
         .then(async (uri) => {
           if (demo) {
-            console.log(`partage : fichier ${uri} (${shareFileName(story)})`);
+            console.log(`partage : fichier ${uri}`);
             return;
           }
-          await shareFile(uri, shareFileName(story));
+          await shareCardFile(uri, shareMessage());
         })
         .catch((cause: unknown) => console.warn(`partage : ${cause instanceof Error ? cause.message : String(cause)}`))
         .finally(() => setPhase("idle"));

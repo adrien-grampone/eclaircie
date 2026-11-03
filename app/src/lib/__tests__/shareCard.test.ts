@@ -1,4 +1,4 @@
-import { SHARE_CARD, shareCardContent, shareFileName, shareTitleSize } from "../shareCard.ts";
+import { SHARE_CARD, SHARE_MESSAGE, shareCardContent, shareFileName, shareMessage, shareTitleSize } from "../shareCard.ts";
 
 const STORY = { title_main: "La couche d'ozone", title_accent: "se répare.", source_name: "ONU / OMM", source_date: "2023-01-09", publish_date: "2026-11-03" };
 
@@ -22,8 +22,15 @@ describe("shareTitleSize", () => {
 });
 
 describe("format", () => {
-  it("fixe le format story et nomme le fichier par date", () => {
+  it("fixe le format story et nomme le fichier par jour et mois lisibles, sans accent", () => {
     expect(SHARE_CARD).toEqual({ width: 390, height: 693, scale: 3 });
-    expect(shareFileName(STORY)).toBe("eclaircie-2026-11-03.png");
+    expect(shareFileName(STORY)).toBe("eclaircie-3-novembre.png");
+    expect(shareFileName({ publish_date: "2026-12-25" })).toBe("eclaircie-25-decembre.png");
+    expect(shareFileName({ publish_date: "2026-08-01" })).toBe("eclaircie-1-aout.png");
+  });
+
+  it("accompagne le partage d'un texte, avec le lien App Store quand il existe", () => {
+    expect(shareMessage()).toBe(SHARE_MESSAGE);
+    expect(shareMessage("https://apps.apple.com/app/id1")).toBe(`${SHARE_MESSAGE} https://apps.apple.com/app/id1`);
   });
 });

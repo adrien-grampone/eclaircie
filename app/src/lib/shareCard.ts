@@ -8,6 +8,15 @@ export const SHARE_CARD = { width: 390, height: 693, scale: 3 } as const;
 
 export const SHARE_COPY = { appName: "éclaircie", kicker: "BONNE NOUVELLE DU JOUR", tagline: "Une bonne nouvelle par jour" } as const;
 
+/** Texte d'accompagnement du partage (Messages, WhatsApp, Mail…). */
+export const SHARE_MESSAGE = "Ma bonne nouvelle du jour, via Éclaircie.";
+/** Lien App Store à renseigner à la publication : ajouté au texte d'accompagnement quand il existe. */
+export const APP_STORE_URL = "";
+
+export function shareMessage(storeUrl: string = APP_STORE_URL): string {
+  return storeUrl ? `${SHARE_MESSAGE} ${storeUrl}` : SHARE_MESSAGE;
+}
+
 /** Paliers du titre sur la carte : plus grand que dans la feuille, 3 lignes max. */
 const SHARE_TITLE_TIERS = [
   { maxChars: 24, fontSize: 46 },
@@ -54,7 +63,10 @@ export function shareCardContent(story: ShareStory, themeLabel: string): ShareCa
   };
 }
 
-/** Nom du fichier exporté : « eclaircie-2026-11-03.png ». */
-export function shareFileName(story: Pick<ShareStory, "publish_date">): string {
-  return `eclaircie-${story.publish_date}.png`;
+/** Nom lisible du fichier exporté : « eclaircie-3-novembre.png ». */
+export function shareFileName(story: Pick<ShareStory, "publish_date">, locale = "fr-FR"): string {
+  const [y, m, d] = story.publish_date.split("-").map(Number) as [number, number, number];
+  const label = new Intl.DateTimeFormat(locale, { day: "numeric", month: "long", timeZone: "UTC" }).format(new Date(Date.UTC(y, m - 1, d, 12)));
+  const slug = label.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  return `eclaircie-${slug}.png`;
 }
