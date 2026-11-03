@@ -7,17 +7,25 @@ export async function loadThemes(): Promise<Theme[]> {
   return data as Theme[];
 }
 
-/**
- * Profil de l'utilisateur. Tant que l'onboarding n'existe pas : un PROFIL DE DEV avec tous les
- * thèmes actifs est créé au premier lancement (à retirer quand l'écran Choix des thèmes arrivera).
- */
-export async function loadOrCreateDevProfile(userId: string, themes: readonly Theme[]): Promise<Profile> {
+/** Profil de l'utilisateur, ou null s'il n'a pas encore fait l'onboarding. */
+export async function loadProfile(userId: string): Promise<Profile | null> {
   const { data, error } = await supabase.from("profiles").select("*").eq("user_id", userId).maybeSingle();
   if (error) throw new Error(`profil : ${error.message}`);
-  if (data) return data as Profile;
-  const all = themes.filter((t) => t.active && !t.coming_soon).map((t) => t.id);
-  const { data: created, error: insertError } = await supabase.from("profiles")
-    .insert({ user_id: userId, themes: all }).select("*").single();
-  if (insertError) throw new Error(`profil de dev : ${insertError.message}`);
-  return created as Profile;
+  return (data as Profile | null) ?? null;
+}
+
+/** Écrit (ou réécrit) le profil à la fin de l'onboarding. */
+export async function saveProfile(userId: string, row: { themes: string[]; notify_time: string; timezone: string }): Promise<Profile> {
+  const { data, error } = await supabase.from("profiles").upsert({ user_id: userId, ...row }).select("*").single();
+  if (error) throw new Error(`profil : ${error.message}`);
+  return data as Profile;
+}
+
+/** Fuseau de l'appareil (Intl de Hermes), sinon celui par défaut de la base. */
+export function deviceTimezone(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Paris";
+  } catch {
+    return "Europe/Paris";
+  }
 }

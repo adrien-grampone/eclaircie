@@ -3,10 +3,12 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { configureNotifications } from "@/lib/notifications.ts";
 import { useAppFonts } from "@/theme/fonts.ts";
 import { colors } from "@/theme/tokens.ts";
 
 void SplashScreen.preventAutoHideAsync();
+configureNotifications();
 
 export default function RootLayout() {
   const fontsLoaded = useAppFonts();

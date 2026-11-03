@@ -1,27 +1,51 @@
+import { Redirect } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { shouldShowArrival } from "@/lib/arrival.ts";
 import { readArrivalSeen } from "@/lib/arrivalStore.ts";
+import { bootstrap } from "@/lib/bootstrap.ts";
+import { opensArrival, useLastNotificationResponse } from "@/lib/notifications.ts";
 import { loadDailyView, type DailyView } from "@/lib/stories.ts";
 import { DailyFlow } from "@/screens/DailyFlow.tsx";
 import { colors, space, type } from "@/theme/tokens.ts";
 import { PaperTexture } from "@/ui/PaperTexture.tsx";
 
-type State = { status: "loading" } | { status: "ready"; view: DailyView; showArrival: boolean } | { status: "error"; message: string };
+type State =
+  | { status: "loading" }
+  | { status: "onboarding" }
+  | { status: "ready"; view: DailyView; showArrival: boolean }
+  | { status: "error"; message: string };
 
-/** Écran 3 puis 4 : Arrivée du jour à la première ouverture de la journée, puis la Nouvelle du jour. */
+/**
+ * Entrée : un nouvel utilisateur (sans profil) passe par l'onboarding ; sinon Arrivée du jour à la
+ * première ouverture de la journée (ou depuis la notification), puis la Nouvelle du jour.
+ * Démonstration : EXPO_PUBLIC_DEMO_ARRIVAL=show force l'arrivée, =auto lance aussi la transition ;
+ * EXPO_PUBLIC_DEMO_ONBOARDING=show|time rejoue l'onboarding (profil existant pré-rempli ; `time` ouvre l'écran 2).
+ */
 export default function Index() {
-  // Démonstration : EXPO_PUBLIC_DEMO_ARRIVAL=show force l'arrivée, =auto lance aussi la transition.
   const demo = process.env.EXPO_PUBLIC_DEMO_ARRIVAL;
+  const demoOnboarding = ["show", "time"].includes(process.env.EXPO_PUBLIC_DEMO_ONBOARDING ?? "");
   const [state, setState] = useState<State>({ status: "loading" });
+  const fromNotification = opensArrival(useLastNotificationResponse());
   useEffect(() => {
-    Promise.all([loadDailyView(), readArrivalSeen()])
-      .then(([view, seen]) => setState({ status: "ready", view, showArrival: shouldShowArrival(seen, view.today) }))
+    if (demoOnboarding) {
+      setState({ status: "onboarding" });
+      return;
+    }
+    bootstrap()
+      .then(async ({ themes, profile }) => {
+        if (!profile) return { status: "onboarding" } as const;
+        const [view, seen] = await Promise.all([loadDailyView(profile, themes), readArrivalSeen()]);
+        return { status: "ready", view, showArrival: shouldShowArrival(seen, view.today) } as const;
+      })
+      .then(setState)
       .catch((cause: unknown) => setState({ status: "error", message: cause instanceof Error ? cause.message : String(cause) }));
-  }, []);
+  }, [demoOnboarding]);
 
+  if (state.status === "onboarding") return <Redirect href="/onboarding" />;
   if (state.status === "ready") {
-    return <DailyFlow view={state.view} showArrival={state.showArrival || demo === "show" || demo === "auto"} autoDiscover={demo === "auto"} />;
+    const showArrival = state.showArrival || fromNotification || demo === "show" || demo === "auto";
+    return <DailyFlow view={state.view} showArrival={showArrival} autoDiscover={demo === "auto"} />;
   }
   return (
     <View style={styles.center}>

@@ -16,3 +16,8 @@ export function hapticLand(): void {
 export function hapticThreshold(): void {
   void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
 }
+
+/** Changement de valeur dans un sélecteur (molette). */
+export function hapticSelect(): void {
+  void Haptics.selectionAsync();
+}

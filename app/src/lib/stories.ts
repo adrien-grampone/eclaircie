@@ -2,10 +2,8 @@ import { toIsoDate } from "@pipeline/dates.ts";
 import { fallbackPrefix } from "@pipeline/illustration.ts";
 import { selectDailyStory, type DailyPick } from "./daily.ts";
 import { storyImageUrl } from "./illustration.ts";
-import { loadOrCreateDevProfile, loadThemes } from "./profile.ts";
-import { ensureSession } from "./session.ts";
 import { supabase } from "./supabase.ts";
-import { STORY_COLUMNS, type Story, type Theme } from "@/types.ts";
+import { STORY_COLUMNS, type Profile, type Story, type Theme } from "@/types.ts";
 
 export interface DailyView {
   pick: DailyPick;
@@ -16,11 +14,8 @@ export interface DailyView {
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? "";
 
-/** Nouvelle du jour de l'utilisateur courant : session, profil, stories visibles, choix pur, image. */
-export async function loadDailyView(): Promise<DailyView> {
-  const user = await ensureSession();
-  const themes = await loadThemes();
-  const profile = await loadOrCreateDevProfile(user.id, themes);
+/** Nouvelle du jour d'un profil : stories visibles, choix pur, image. */
+export async function loadDailyView(profile: Profile, themes: readonly Theme[]): Promise<DailyView> {
   const today = toIsoDate(new Date());
   const { data, error } = await supabase.from("stories").select(STORY_COLUMNS)
     .in("theme_id", profile.themes).lte("publish_date", today)
