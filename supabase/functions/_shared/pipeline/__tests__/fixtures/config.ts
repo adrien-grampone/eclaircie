@@ -8,6 +8,8 @@ export const CONFIG_ROWS: ConfigRow[] = [
   { key: "triage_min_score", value: 0.65 },
   { key: "extract_min_chars", value: 800 },
   { key: "summary_max_chars", value: 350 },
+  { key: "title_main_max_chars", value: 32 },
+  { key: "title_accent_max_chars", value: 28 },
   { key: "dedup_window_days", value: 30 },
   { key: "auto_approve_min_score", value: 0.8 },
   { key: "auto_approve_min_trust", value: 3 },

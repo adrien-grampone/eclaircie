@@ -24,6 +24,10 @@ export const PipelineConfigSchema = z.object({
   extract_min_chars: z.number().int().positive(),
   /** §4.4 — longueur maximale du résumé. */
   summary_max_chars: z.number().int().positive(),
+  /** §4.4 — longueur maximale du titre (title_main), pour tenir en 3 lignes dans l'app. */
+  title_main_max_chars: z.number().int().positive(),
+  /** §4.4 — longueur maximale de la chute (title_accent). */
+  title_accent_max_chars: z.number().int().positive(),
   /** §4.6 — fenêtre de comparaison des doublons, en jours. */
   dedup_window_days: z.number().int().positive(),
   /** §4.8 — auto-validation : score minimal… */

@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2022", "DOM"],
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "strict": true,
@@ -14,7 +17,25 @@
     "allowImportingTsExtensions": true,
     "noEmit": true,
     "skipLibCheck": true,
-    "types": ["vitest/globals"]
+    "types": [
+      "vitest/globals"
+    ],
+    "paths": {
+      "@pipeline/*": [
+        "./supabase/functions/_shared/pipeline/*"
+      ],
+      "@/*": [
+        "./app/src/*"
+      ]
+    }
   },
-  "include": ["supabase/functions/_shared/pipeline/**/*.ts", "vitest.config.ts"]
+  "include": [
+    "supabase/functions/_shared/pipeline/**/*.ts",
+    "app/src/lib/daily.ts",
+    "app/src/lib/illustration.ts",
+    "app/src/lib/__tests__/**/*.ts",
+    "app/src/types.ts",
+    "app/src/theme/tokens.ts",
+    "vitest.config.ts"
+  ]
 }

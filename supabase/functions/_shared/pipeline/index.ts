@@ -19,8 +19,8 @@ export {
   triageScore,
 } from "./triage.ts";
 export type { Triage, TriageInput } from "./triage.ts";
-export { ClaimSchema, buildDraftPrompt, buildRevisePrompt, decideRevise, draftOutputSchema, draftRules, draftSchema, parseDraft } from "./draft.ts";
-export type { Draft, DraftOutput, ReviseOptions, ReviseStep } from "./draft.ts";
+export { ClaimSchema, buildDraftPrompt, buildRevisePrompt, decideDraftOutput, decideRevise, draftOutputSchema, draftRules, draftSchema, lengthOverflows, parseDraft, shortenInstruction } from "./draft.ts";
+export type { Draft, DraftOptions, DraftOutput, LengthConfig, LengthOverflow, ReviseOptions, ReviseStep } from "./draft.ts";
 export { checkEvidence } from "./evidence.ts";
 export type { EvidenceCheck } from "./evidence.ts";
 export { FATAL_TYPES, PROBLEM_TYPES, VerifyProblemSchema, VerifySchema, buildVerifyPrompt, decideVerify, parseVerify } from "./verify.ts";

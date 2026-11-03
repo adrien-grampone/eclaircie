@@ -7,7 +7,7 @@ import { loadConfig, processedToday, recordRun, serviceClient } from "../_shared
 import { MODELS, askModel } from "../_shared/claude.ts";
 import { errorMessage, json, mapLimit } from "../_shared/http.ts";
 import { planBatch } from "../_shared/pipeline/budget.ts";
-import { buildDraftPrompt, parseDraft } from "../_shared/pipeline/draft.ts";
+import { buildDraftPrompt, decideDraftOutput, type Draft, type DraftOptions } from "../_shared/pipeline/draft.ts";
 import { mainTheme } from "../_shared/pipeline/editorial.ts";
 
 interface ArticleRow {
@@ -59,21 +59,26 @@ Deno.serve(async () => {
       const themeId = mainTheme({ themes: article.triage?.themes ?? [] });
       if (!themeId) return fail(article, "draft_no_theme");
       try {
-        const prompt = buildDraftPrompt(
-          { title: article.title, sourceName: article.sources?.name ?? "source inconnue", url: article.url, publishedAt: article.published_at, fullText: article.full_text },
-          config,
-        );
-        const reply = await askModel(MODELS.draft, prompt, { maxTokens: 4096, effort: "low", thinking: true });
-        if (reply.stopReason === "refusal" || reply.stopReason === "max_tokens") {
-          return fail(article, `draft_incomplete: ${reply.stopReason}`);
-        }
-        const parsed = parseDraft(reply.text, config);
-        if (!parsed.ok) return fail(article, `draft_parse_error: ${parsed.error.slice(0, 200)}`);
-        if (parsed.value.verdict === "not_good_news") {
-          // Le rédacteur juge la contrepartie trop forte : pas de story, article rejeté.
-          const reason = `draft_not_good_news: ${parsed.value.reason.slice(0, 300)}`;
-          await db.from("raw_articles").update({ status: "rejected", reject_reason: reason }).eq("id", article.id);
-          return { id: article.id, title: article.title, outcome: "not_good_news", reason, story_id: null };
+        const articleInput = { title: article.title, sourceName: article.sources?.name ?? "source inconnue", url: article.url, publishedAt: article.published_at, fullText: article.full_text };
+        let options: DraftOptions = {};
+        let draft: Draft | null = null;
+        // Tentative 1, puis une de plus par revise_length_retries si seules des longueurs dépassent.
+        for (let attempt = 1; draft === null; attempt++) {
+          const prompt = buildDraftPrompt(articleInput, config, options);
+          const reply = await askModel(MODELS.draft, prompt, { maxTokens: 4096, effort: "low", thinking: true });
+          if (reply.stopReason === "refusal" || reply.stopReason === "max_tokens") {
+            return fail(article, `draft_incomplete: ${reply.stopReason}`);
+          }
+          const step = decideDraftOutput(reply.text, attempt, config, "draft");
+          if (step.action === "retry_shorter") { options = { shorten: step.over }; continue; }
+          if (step.action === "reject") return fail(article, step.reason.slice(0, 220));
+          if (step.action === "not_good_news") {
+            // Le rédacteur juge la contrepartie trop forte : pas de story, article rejeté.
+            const reason = `draft_not_good_news: ${step.reason.slice(0, 300)}`;
+            await db.from("raw_articles").update({ status: "rejected", reject_reason: reason }).eq("id", article.id);
+            return { id: article.id, title: article.title, outcome: "not_good_news", reason, story_id: null };
+          }
+          draft = step.draft;
         }
 
         const { data: story, error: insertError } = await db
@@ -81,11 +86,11 @@ Deno.serve(async () => {
           .insert({
             raw_article_id: article.id,
             theme_id: themeId,
-            title_main: parsed.value.title_main,
-            title_accent: parsed.value.title_accent || null,
-            summary: parsed.value.summary,
-            claims: parsed.value.claims,
-            scene: parsed.value.scene,
+            title_main: draft.title_main,
+            title_accent: draft.title_accent || null,
+            summary: draft.summary,
+            claims: draft.claims,
+            scene: draft.scene,
             source_name: article.sources?.name ?? "source inconnue",
             source_url: article.url,
             source_date: article.published_at ? article.published_at.slice(0, 10) : null,

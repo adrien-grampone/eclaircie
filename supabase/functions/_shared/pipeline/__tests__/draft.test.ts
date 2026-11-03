@@ -1,4 +1,4 @@
-import { buildDraftPrompt, buildRevisePrompt, decideRevise, parseDraft } from "../draft.ts";
+import { buildDraftPrompt, buildRevisePrompt, decideDraftOutput, decideRevise, parseDraft } from "../draft.ts";
 import { CONFIG } from "./fixtures/config.ts";
 import { OZONE, OZONE_DRAFT_JSON, loadOzoneDraft } from "./fixtures/articles.ts";
 
@@ -41,7 +41,7 @@ describe("parseDraft", () => {
   });
 
   it("suit la limite de la config, pas une valeur codée", () => {
-    const short = parseDraft(withField("summary", "a".repeat(120)), { summary_max_chars: 100 });
+    const short = parseDraft(withField("summary", "a".repeat(120)), { ...CONFIG, summary_max_chars: 100 });
     expect(short.ok).toBe(false);
   });
 
@@ -126,7 +126,8 @@ describe("buildDraftPrompt", () => {
 
   it("annonce la longueur maximale lue dans la config", () => {
     expect(prompt.system).toContain("350 caractères MAXIMUM");
-    expect(buildDraftPrompt(OZONE, { summary_max_chars: 280 }).system).toContain("280 caractères MAXIMUM");
+    expect(buildDraftPrompt(OZONE, { ...CONFIG, summary_max_chars: 280 }).system).toContain("280 caractères MAXIMUM");
+    expect(prompt.system).toMatch(/title_main : 32 caractères MAXIMUM ; title_accent : 28 caractères MAXIMUM/);
   });
 
   it("décrit les six champs attendus", () => {
@@ -168,13 +169,13 @@ describe("decideRevise", () => {
 
   it("demande une seconde tentative plus courte quand seul le résumé dépasse", () => {
     const out = decideRevise(withField("summary", "a".repeat(380)), 1, CONFIG);
-    expect(out).toEqual({ action: "retry_shorter", chars: 380 });
+    expect(out).toEqual({ action: "retry_shorter", over: [{ field: "summary", label: "le résumé", chars: 380, max: 350 }] });
   });
 
   it("rejette si le résumé dépasse encore après les tentatives permises (revise_length_retries)", () => {
     const out = decideRevise(withField("summary", "a".repeat(380)), 2, CONFIG);
     expect(out.action).toBe("reject");
-    if (out.action === "reject") expect(out.reason).toMatch(/revise_too_long: 380 caractères après 2 tentative/);
+    if (out.action === "reject") expect(out.reason).toMatch(/revise_too_long: summary 380\/350 après 2 tentative/);
     expect(decideRevise(withField("summary", "a".repeat(380)), 2, { ...CONFIG, revise_length_retries: 2 }).action).toBe("retry_shorter");
     expect(decideRevise(withField("summary", "a".repeat(380)), 1, { ...CONFIG, revise_length_retries: 0 }).action).toBe("reject");
   });
@@ -186,14 +187,30 @@ describe("decideRevise", () => {
     expect(decideRevise("pas du json", 1, CONFIG).action).toBe("reject");
   });
 
+  it("traite un titre ou une chute trop longs comme le résumé : retry puis rejet, avec le préfixe de l'étape", () => {
+    const longTitle = withField("title_main", "Un titre beaucoup trop long pour tenir en trois lignes");
+    const retry = decideDraftOutput(longTitle, 1, CONFIG, "draft");
+    expect(retry).toEqual({ action: "retry_shorter", over: [{ field: "title_main", label: "le titre (title_main)", chars: 54, max: 32 }] });
+    const reject = decideDraftOutput(longTitle, 2, CONFIG, "draft");
+    expect(reject.action).toBe("reject");
+    if (reject.action === "reject") expect(reject.reason).toMatch(/^draft_too_long: title_main 54\/32/);
+    const accent = decideDraftOutput(withField("title_accent", "a".repeat(29)), 1, CONFIG);
+    expect(accent.action).toBe("retry_shorter");
+    expect(parseDraft(withField("title_accent", "a".repeat(28)), CONFIG).ok).toBe(true);
+    expect(parseDraft(withField("title_main", "a".repeat(33)), CONFIG).ok).toBe(false);
+  });
+
   it("remonte un verdict not_good_news de la révision", () => {
     expect(decideRevise('{"verdict":"not_good_news","reason":"trop de contreparties"}', 1, CONFIG)).toEqual({ action: "not_good_news", reason: "trop de contreparties" });
   });
 
   it("ajoute la consigne de raccourcir au prompt de révision quand on le demande", () => {
-    const prompt = buildRevisePrompt(OZONE, loadOzoneDraft(), [], CONFIG, { shortenFrom: 380 });
-    expect(prompt.user).toMatch(/CONSIGNE DE LONGUEUR : ta révision précédente faisait 380 caractères/);
-    expect(prompt.user).toMatch(/RACCOURCIS le résumé sous 350 caractères/);
+    const over = [{ field: "summary" as const, label: "le résumé", chars: 380, max: 350 }, { field: "title_main" as const, label: "le titre (title_main)", chars: 40, max: 32 }];
+    const prompt = buildRevisePrompt(OZONE, loadOzoneDraft(), [], CONFIG, { shorten: over });
+    expect(prompt.user).toMatch(/CONSIGNE DE LONGUEUR : .*le résumé faisait 380 caractères, maximum 350 ; le titre \(title_main\) faisait 40 caractères, maximum 32/);
     expect(buildRevisePrompt(OZONE, loadOzoneDraft(), [], CONFIG).user).not.toContain("CONSIGNE DE LONGUEUR");
+    // Même consigne au premier jet.
+    expect(buildDraftPrompt(OZONE, CONFIG, { shorten: over }).user).toContain("CONSIGNE DE LONGUEUR");
+    expect(buildDraftPrompt(OZONE, CONFIG).user).not.toContain("CONSIGNE DE LONGUEUR");
   });
 });

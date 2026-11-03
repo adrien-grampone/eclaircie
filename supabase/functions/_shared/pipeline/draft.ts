@@ -5,19 +5,27 @@ import type { Article, ParseResult, Prompt } from "./types.ts";
 import type { VerifyProblem } from "./verify.ts";
 
 /**
- * Étape `draft` (§4.4) — Claude Sonnet rédige à partir du texte complet UNIQUEMENT.
- * La longueur maximale du résumé vient de `config.summary_max_chars`.
+ * Étape `draft` (§4.4) — le rédacteur rédige à partir du texte complet UNIQUEMENT.
+ * Les longueurs maximales (résumé, titre, chute) viennent de la config. Un dépassement de longueur
+ * seul ne rejette pas : il déclenche une nouvelle tentative avec la consigne de raccourcir.
  */
+
+/** Seuils de longueur du brouillon, lus dans pipeline_config. */
+export type LengthConfig = Pick<PipelineConfig, "summary_max_chars" | "title_main_max_chars" | "title_accent_max_chars">;
+
+const NO_LIMIT: LengthConfig = {
+  summary_max_chars: Number.MAX_SAFE_INTEGER, title_main_max_chars: Number.MAX_SAFE_INTEGER, title_accent_max_chars: Number.MAX_SAFE_INTEGER,
+};
 
 export const ClaimSchema = z.object({
   claim: z.string().trim().min(1),
   evidence: z.string().trim().min(1),
 });
 
-export function draftSchema(config: Pick<PipelineConfig, "summary_max_chars">) {
+export function draftSchema(config: LengthConfig) {
   return z.object({
-    title_main: z.string().trim().min(1),
-    title_accent: z.string().trim(),
+    title_main: z.string().trim().min(1).max(config.title_main_max_chars),
+    title_accent: z.string().trim().max(config.title_accent_max_chars),
     summary: z.string().trim().min(1).max(config.summary_max_chars),
     claims: z.array(ClaimSchema).min(1),
     scene: z.string().trim().min(1),
@@ -30,7 +38,7 @@ export type Draft = z.infer<ReturnType<typeof draftSchema>>;
  * Sortie complète du rédacteur : soit un brouillon, soit le constat que la
  * contrepartie est trop forte pour en faire une bonne nouvelle.
  */
-export function draftOutputSchema(config: Pick<PipelineConfig, "summary_max_chars">) {
+export function draftOutputSchema(config: LengthConfig) {
   return z.discriminatedUnion("verdict", [
     z.object({ verdict: z.literal("not_good_news"), reason: z.string().trim().min(1) }),
     draftSchema(config).extend({ verdict: z.literal("ok") }),
@@ -39,29 +47,44 @@ export function draftOutputSchema(config: Pick<PipelineConfig, "summary_max_char
 
 export type DraftOutput = z.infer<ReturnType<typeof draftOutputSchema>>;
 
-export function parseDraft(
-  json: string,
-  config: Pick<PipelineConfig, "summary_max_chars">,
-): ParseResult<DraftOutput> {
+export function parseDraft(json: string, config: LengthConfig): ParseResult<DraftOutput> {
   return parseJsonWith(draftOutputSchema(config), json);
 }
 
-/** Issue d'une tentative de révision, décidée en code (decideRevise). */
+/** Un champ trop long dans une sortie par ailleurs valide. */
+export interface LengthOverflow {
+  field: "summary" | "title_main" | "title_accent";
+  label: string;
+  chars: number;
+  max: number;
+}
+
+export function lengthOverflows(draft: Draft, config: LengthConfig): LengthOverflow[] {
+  const checks: { field: LengthOverflow["field"]; label: string; max: number }[] = [
+    { field: "summary", label: "le résumé", max: config.summary_max_chars },
+    { field: "title_main", label: "le titre (title_main)", max: config.title_main_max_chars },
+    { field: "title_accent", label: "la chute (title_accent)", max: config.title_accent_max_chars },
+  ];
+  return checks.filter((c) => draft[c.field].length > c.max).map((c) => ({ ...c, chars: draft[c.field].length }));
+}
+
+/** Issue d'une tentative de rédaction ou de révision, décidée en code (decideDraftOutput). */
 export type ReviseStep =
   | { action: "accept"; draft: Draft }
   | { action: "not_good_news"; reason: string }
-  | { action: "retry_shorter"; chars: number }
+  | { action: "retry_shorter"; over: LengthOverflow[] }
   | { action: "reject"; reason: string };
 
 /**
- * Une révision dont seul le résumé est trop long mérite une seconde tentative,
- * avec la consigne explicite de raccourcir, avant rejet. Toute autre erreur
- * de parsing rejette. `attempt` commence à 1 ; `revise_length_retries` vient de la config.
+ * Une sortie dont SEULES des longueurs dépassent (résumé, titre, chute) mérite une tentative de
+ * plus avec la consigne explicite de raccourcir, avant rejet. Toute autre erreur de parsing rejette.
+ * `attempt` commence à 1 ; `revise_length_retries` vient de la config. `prefix` nomme l'étape dans les raisons.
  */
-export function decideRevise(
+export function decideDraftOutput(
   json: string,
   attempt: number,
-  config: Pick<PipelineConfig, "summary_max_chars" | "revise_length_retries">,
+  config: LengthConfig & Pick<PipelineConfig, "revise_length_retries">,
+  prefix: "draft" | "revise" = "revise",
 ): ReviseStep {
   const strict = parseDraft(json, config);
   if (strict.ok) {
@@ -69,17 +92,22 @@ export function decideRevise(
     const { verdict: _verdict, ...draft } = strict.value;
     return { action: "accept", draft };
   }
-  const lenient = parseJsonWith(draftOutputSchema({ summary_max_chars: Number.MAX_SAFE_INTEGER }), json);
+  const lenient = parseJsonWith(draftOutputSchema(NO_LIMIT), json);
   if (lenient.ok && lenient.value.verdict === "ok") {
-    const chars = lenient.value.summary.length;
-    if (attempt <= config.revise_length_retries) return { action: "retry_shorter", chars };
-    return { action: "reject", reason: `revise_too_long: ${chars} caractères après ${attempt} tentative(s), maximum ${config.summary_max_chars}` };
+    const { verdict: _verdict, ...draft } = lenient.value;
+    const over = lengthOverflows(draft, config);
+    if (attempt <= config.revise_length_retries) return { action: "retry_shorter", over };
+    const detail = over.map((o) => `${o.field} ${o.chars}/${o.max}`).join(", ");
+    return { action: "reject", reason: `${prefix}_too_long: ${detail} après ${attempt} tentative(s)` };
   }
-  return { action: "reject", reason: `revise_parse_error: ${strict.error.slice(0, 200)}` };
+  return { action: "reject", reason: `${prefix}_parse_error: ${strict.error.slice(0, 200)}` };
 }
 
+/** Alias historique : décision de révision. */
+export const decideRevise = decideDraftOutput;
+
 /** Règles communes au brouillon et à sa révision : fidélité absolue à la source. */
-export function draftRules(config: Pick<PipelineConfig, "summary_max_chars">): string {
+export function draftRules(config: LengthConfig): string {
   return [
     "RÈGLES ABSOLUES",
     "- Tu rédiges UNIQUEMENT à partir du texte de l'article fourni. Rien d'autre : pas de connaissance extérieure, pas de contexte ajouté, pas de chiffre qui n'y figure pas.",
@@ -96,7 +124,7 @@ export function draftRules(config: Pick<PipelineConfig, "summary_max_chars">): s
     "",
     "FORMAT",
     "- verdict : \"ok\" quand tu livres un brouillon.",
-    "- title_main + title_accent forment le titre en deux parties du design (title_accent est la chute, en italique). Exemple : « La couche d'ozone » / « se répare. »",
+    `- title_main + title_accent forment le titre en deux parties du design (title_accent est la chute, en italique). title_main : ${config.title_main_max_chars} caractères MAXIMUM ; title_accent : ${config.title_accent_max_chars} caractères MAXIMUM. Exemple : « La couche d'ozone » / « se répare. »`,
     "- Le titre est évocateur, c'est voulu ; il n'apporte aucun fait absent du résumé et ne le contredit pas.",
     `- summary : 2 à 3 phrases, ${config.summary_max_chars} caractères MAXIMUM, en français, tutoiement, ton chaleureux et précis.`,
     "- claims : chaque affirmation factuelle du résumé, avec en `evidence` la phrase EXACTE de l'article qui la soutient, recopiée mot pour mot (c'est la seule chose que tu recopies ; elle sera vérifiée par recherche dans le texte).",
@@ -132,32 +160,38 @@ function articleBlock(article: Article): string {
   ].join("\n");
 }
 
-export function buildDraftPrompt(
-  article: Article,
-  config: Pick<PipelineConfig, "summary_max_chars">,
-): Prompt {
+/** Consigne de longueur ajoutée au prompt quand la tentative précédente dépassait. */
+export function shortenInstruction(over: readonly LengthOverflow[]): string[] {
+  if (over.length === 0) return [];
+  const items = over.map((o) => `${o.label} faisait ${o.chars} caractères, maximum ${o.max}`).join(" ; ");
+  return ["", `CONSIGNE DE LONGUEUR : dans ta réponse précédente, ${items}. RACCOURCIS pour tenir sous ces maximums, sans rien ajouter, quitte à retirer un détail secondaire.`];
+}
+
+export interface DraftOptions {
+  /** Champs trop longs de la tentative précédente. */
+  shorten?: readonly LengthOverflow[];
+}
+
+export function buildDraftPrompt(article: Article, config: LengthConfig, options: DraftOptions = {}): Prompt {
   const system = [
     "Tu rédiges la bonne nouvelle du jour pour une application française. Chaque matin, un lecteur reçoit UNE nouvelle vraie, vérifiée et sourcée, à lire en une minute. Un relecteur sévère vérifiera chaque mot contre l'article : la moindre exagération fera rejeter ton texte.",
     "",
     draftRules(config),
   ].join("\n");
-  return { system, user: articleBlock(article) };
+  return { system, user: [articleBlock(article), ...shortenInstruction(options.shorten ?? [])].join("\n") };
 }
 
 /**
  * Étape `revise` — le brouillon est réécrit avec les corrections du relecteur,
  * sans introduire de fait nouveau, puis repasse par verify.
  */
-export interface ReviseOptions {
-  /** Longueur du résumé de la tentative précédente, quand elle dépassait la limite. */
-  shortenFrom?: number;
-}
+export type ReviseOptions = DraftOptions;
 
 export function buildRevisePrompt(
   article: Article,
   draft: Draft,
   problems: readonly VerifyProblem[],
-  config: Pick<PipelineConfig, "summary_max_chars">,
+  config: LengthConfig,
   options: ReviseOptions = {},
 ): Prompt {
   const system = [
@@ -168,9 +202,7 @@ export function buildRevisePrompt(
   const list = problems
     .map((p, i) => `${i + 1}. [${p.type}] passage : « ${p.passage} »\n   correction : ${p.correction}`)
     .join("\n");
-  const shorten = options.shortenFrom === undefined
-    ? []
-    : ["", `CONSIGNE DE LONGUEUR : ta révision précédente faisait ${options.shortenFrom} caractères de résumé, au-delà des ${config.summary_max_chars} autorisés. RACCOURCIS le résumé sous ${config.summary_max_chars} caractères en gardant les corrections, quitte à retirer un détail secondaire.`];
+  const shorten = shortenInstruction(options.shorten ?? []);
   const user = [
     articleBlock(article),
     "",
