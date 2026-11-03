@@ -62,6 +62,7 @@ const VEIL_INK = 0.2;
 
 interface Props {
   view: DailyView;
+  userId: string;
   showArrival: boolean;
   autoDiscover?: boolean;
 }
@@ -72,7 +73,7 @@ interface Props {
  * réel, défilable, prend le relais au pixel près. Pilotée au doigt (tirer la carte vers le haut),
  * au tap (bouton Découvrir ou la carte), ou en simple fondu si « Réduire les animations » est actif.
  */
-export function DailyFlow({ view, showArrival, autoDiscover = false }: Props) {
+export function DailyFlow({ view, userId, showArrival, autoDiscover = false }: Props) {
   const [phase, setPhase] = useState<"arrival" | "fading" | "story">(showArrival ? "arrival" : "story");
   const reducedMotion = useReducedMotion();
   const { width, height } = useWindowDimensions();
@@ -192,7 +193,7 @@ export function DailyFlow({ view, showArrival, autoDiscover = false }: Props) {
   const topBarStyle = useAnimatedStyle(() => ({ opacity: interpolate(progress.value, [0.75, 1], [0, 1], "clamp") }));
   const fadeStyle = useAnimatedStyle(() => ({ opacity: fade.value }));
 
-  if (phase === "story") return <DailyStoryScreen view={view} />;
+  if (phase === "story") return <DailyStoryScreen view={view} userId={userId} />;
 
   // Voile sombre qui se dissipe (« le jour se lève ») : uniforme et sous le soleil du ciel dessiné,
   // en dégradé vertical (plus sombre en haut) sur une vraie image.
@@ -250,7 +251,7 @@ export function DailyFlow({ view, showArrival, autoDiscover = false }: Props) {
   if (phase === "fading") {
     return (
       <View style={styles.screen}>
-        <DailyStoryScreen view={view} />
+        <DailyStoryScreen view={view} userId={userId} />
         <Animated.View style={[StyleSheet.absoluteFill, fadeStyle]} pointerEvents="none">{arrival}</Animated.View>
       </View>
     );

@@ -8,8 +8,15 @@ import { ArrowUpRightIcon, ShareIcon } from "@/ui/Icons.tsx";
 
 type Story = NonNullable<DailyView["pick"]["story"]>;
 
+/** Actions de la feuille ; absentes pendant la transition (contenu non interactif). */
+export interface StoryActions {
+  share: () => void;
+  report: () => void;
+}
+const NO_ACTIONS: StoryActions = { share: () => undefined, report: () => undefined };
+
 /** Contenu de la feuille crème : date, titre en deux parties, lettrine, source, actions. */
-export function StoryBody({ story, accent, stale }: { story: Story; accent: string; stale: boolean }) {
+export function StoryBody({ story, accent, stale, actions }: { story: Story; accent: string; stale: boolean; actions: StoryActions }) {
   const title = titleSize(story.title_main, story.title_accent);
   const sourceDate = formatSourceDate(story.source_date);
   return (
@@ -25,7 +32,7 @@ export function StoryBody({ story, accent, stale }: { story: Story; accent: stri
       <DropCapParagraph text={story.summary} accent={accent} cacheKey={story.id} />
       <Text style={styles.source}>Source — {story.source_name}{sourceDate ? `, ${sourceDate}` : ""}</Text>
       <View style={styles.buttons}>
-        <Pressable style={[styles.button, styles.buttonFilled]} accessibilityRole="button" onPressIn={hapticTap} onPress={() => undefined}>
+        <Pressable style={[styles.button, styles.buttonFilled]} accessibilityRole="button" onPressIn={hapticTap} onPress={actions.share}>
           <ShareIcon color={colors.paper} />
           <Text style={[type.button, { color: colors.paper }]}>Partager</Text>
         </Pressable>
@@ -34,7 +41,7 @@ export function StoryBody({ story, accent, stale }: { story: Story; accent: stri
           <ArrowUpRightIcon color={colors.ink} />
         </Pressable>
       </View>
-      <Pressable onPressIn={hapticTap} onPress={() => undefined} accessibilityRole="link" style={styles.report}>
+      <Pressable onPressIn={hapticTap} onPress={actions.report} accessibilityRole="link" style={styles.report}>
         <Text style={styles.reportText}>Signaler une erreur</Text>
       </Pressable>
     </>
@@ -51,10 +58,10 @@ export function EmptyBody({ themeLabel }: { themeLabel: string }) {
 }
 
 /** Corps de la feuille selon qu'une nouvelle existe ou non. */
-export function SheetContent({ view }: { view: DailyView }) {
+export function SheetContent({ view, actions = NO_ACTIONS }: { view: DailyView; actions?: StoryActions }) {
   const { pick, theme } = view;
   return pick.story
-    ? <StoryBody story={pick.story} accent={theme.palette.accent} stale={pick.stale} />
+    ? <StoryBody story={pick.story} accent={theme.palette.accent} stale={pick.stale} actions={actions} />
     : <EmptyBody themeLabel={theme.label} />;
 }
 

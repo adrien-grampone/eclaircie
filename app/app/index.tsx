@@ -13,7 +13,7 @@ import { PaperTexture } from "@/ui/PaperTexture.tsx";
 type State =
   | { status: "loading" }
   | { status: "onboarding" }
-  | { status: "ready"; view: DailyView; showArrival: boolean }
+  | { status: "ready"; view: DailyView; userId: string; showArrival: boolean }
   | { status: "error"; message: string };
 
 /**
@@ -33,10 +33,10 @@ export default function Index() {
       return;
     }
     bootstrap()
-      .then(async ({ themes, profile }) => {
+      .then(async ({ user, themes, profile }) => {
         if (!profile) return { status: "onboarding" } as const;
         const [view, seen] = await Promise.all([loadDailyView(profile, themes), readArrivalSeen()]);
-        return { status: "ready", view, showArrival: shouldShowArrival(seen, view.today) } as const;
+        return { status: "ready", view, userId: user.id, showArrival: shouldShowArrival(seen, view.today) } as const;
       })
       .then(setState)
       .catch((cause: unknown) => setState({ status: "error", message: cause instanceof Error ? cause.message : String(cause) }));
@@ -45,7 +45,7 @@ export default function Index() {
   if (state.status === "onboarding") return <Redirect href="/onboarding" />;
   if (state.status === "ready") {
     const showArrival = state.showArrival || fromNotification || demo === "show" || demo === "auto";
-    return <DailyFlow view={state.view} showArrival={showArrival} autoDiscover={demo === "auto"} />;
+    return <DailyFlow view={state.view} userId={state.userId} showArrival={showArrival} autoDiscover={demo === "auto"} />;
   }
   return (
     <View style={styles.center}>

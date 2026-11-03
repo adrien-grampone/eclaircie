@@ -13,6 +13,9 @@
       "@/*": [
         "./src/*"
       ],
+      "react-native-view-shot": [
+        "./node_modules/react-native-view-shot/lib/index.d.ts"
+      ],
       "@pipeline/*": [
         "../supabase/functions/_shared/pipeline/*"
       ]

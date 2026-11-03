@@ -132,7 +132,7 @@ export async function stockByTheme(config: AdminConfig): Promise<ThemeStock[]> {
 
 export async function recentReports(): Promise<ReportRow[]> {
   const { data, error } = await adminClient().from("error_reports")
-    .select("id, story_id, message, created_at, stories(id, title_main, title_accent, status, publish_date, theme_id)")
+    .select("id, story_id, reason, message, created_at, stories(id, title_main, title_accent, status, publish_date, theme_id)")
     .order("created_at", { ascending: false }).limit(50);
   if (error) fail("error_reports", error);
   return data as unknown as ReportRow[];

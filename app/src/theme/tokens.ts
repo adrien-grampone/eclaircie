@@ -12,6 +12,8 @@ export const colors = {
 
 export const fonts = {
   title: "Fraunces_600SemiBold",
+  /** Fraunces en graisse normale : thèmes non cochés de l'onboarding. */
+  titleRegular: "Fraunces_400Regular",
   titleAccent: "Fraunces_400Regular_Italic",
   body: "DMSans_400Regular",
   bodyBold: "DMSans_600SemiBold",

@@ -57,6 +57,7 @@ export interface RunRow {
 export interface ReportRow {
   id: string;
   story_id: string | null;
+  reason: string | null;
   message: string | null;
   created_at: string;
   stories: Pick<StoryRow, "id" | "title_main" | "title_accent" | "status" | "publish_date" | "theme_id"> | null;

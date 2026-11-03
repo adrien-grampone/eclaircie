@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { StyleSheet, View, useWindowDimensions } from "react-native";
 import Animated, { interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -8,6 +9,8 @@ import { BookmarkIcon, MenuIcon } from "@/ui/Icons.tsx";
 import { PaperTexture } from "@/ui/PaperTexture.tsx";
 import { Backdrop } from "./story/Backdrop.tsx";
 import { SheetContent } from "./story/StoryContent.tsx";
+import { useShareCard } from "./story/useShareCard.tsx";
+import { ReportSheet } from "@/ui/ReportSheet.tsx";
 
 /** Part de l'écran occupée par l'illustration avant que la feuille crème ne commence. */
 export const IMAGE_SHARE = 0.47;
@@ -24,8 +27,18 @@ export function sheetLayout(height: number): { imageHeight: number; sheetTop: nu
  * Nouvelle du jour. Tout ce qui dépend du défilement passe par le fil UI (useAnimatedScrollHandler) :
  * aucun setState pendant le scroll. La texture papier est une seule image posée au-dessus de tout.
  */
-export function DailyStoryScreen({ view }: { view: DailyView }) {
+export function DailyStoryScreen({ view, userId }: { view: DailyView; userId: string }) {
   const { height } = useWindowDimensions();
+  const story = view.pick.story;
+  const shareCard = useShareCard(view, story);
+  const [reporting, setReporting] = useState(false);
+  const actions = { share: shareCard.share, report: () => setReporting(true) };
+  useEffect(() => {
+    // Démonstration : capture la carte au chargement pour vérifier le fichier exporté.
+    if (process.env.EXPO_PUBLIC_DEMO_SHARE === "capture") setTimeout(shareCard.share, 1500);
+    if (process.env.EXPO_PUBLIC_DEMO_REPORT === "show") setTimeout(() => setReporting(true), 4000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const insets = useSafeAreaInsets();
   const { imageHeight, sheetTop } = sheetLayout(height);
   const scrollY = useSharedValue(0);
@@ -35,6 +48,7 @@ export function DailyStoryScreen({ view }: { view: DailyView }) {
   }));
   return (
     <View style={styles.screen}>
+      {shareCard.element}
       <Animated.View style={[styles.illustration, { height: imageHeight }, backdropStyle]}>
         <Backdrop view={view} />
       </Animated.View>
@@ -48,10 +62,11 @@ export function DailyStoryScreen({ view }: { view: DailyView }) {
       <Animated.ScrollView style={styles.scroll} contentContainerStyle={{ paddingTop: sheetTop }} showsVerticalScrollIndicator={false}
         onScroll={onScroll} scrollEventThrottle={16} contentInsetAdjustmentBehavior="never">
         <View style={[styles.sheet, { minHeight: height - sheetTop, paddingBottom: insets.bottom + space.xl }]}>
-          <SheetContent view={view} />
+          <SheetContent view={view} actions={actions} />
         </View>
       </Animated.ScrollView>
       <PaperTexture />
+      {story ? <ReportSheet visible={reporting} userId={userId} storyId={story.id} onClose={() => setReporting(false)} /> : null}
     </View>
   );
 }

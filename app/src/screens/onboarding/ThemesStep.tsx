@@ -53,9 +53,10 @@ const styles = StyleSheet.create({
   strong: { fontFamily: fonts.bodyBold },
   row: { flexDirection: "row", alignItems: "center", height: 46, borderTopWidth: 1, borderColor: "rgba(31,27,22,0.14)" },
   number: { fontFamily: fonts.titleAccent, fontSize: 16, color: colors.caption, width: 44 },
-  label: { flex: 1, fontFamily: fonts.title, fontSize: 25, color: colors.caption },
-  labelChecked: { color: colors.ink },
-  labelSoon: { opacity: 0.8 },
+  /** Non coché : encre, graisse normale. Coché : gras. Le gris est réservé à « bientôt ». */
+  label: { flex: 1, fontFamily: fonts.titleRegular, fontSize: 25, color: colors.ink },
+  labelChecked: { fontFamily: fonts.title },
+  labelSoon: { color: colors.caption },
   check: { width: 26, height: 26, borderRadius: 13, borderWidth: 1.5, borderColor: "rgba(31,27,22,0.28)", alignItems: "center", justifyContent: "center" },
   soon: { fontFamily: fonts.titleAccent, fontSize: 17, color: colors.caption },
 });
