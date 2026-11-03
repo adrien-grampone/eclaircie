@@ -20,11 +20,11 @@ type State =
  * Entrée : un nouvel utilisateur (sans profil) passe par l'onboarding ; sinon Arrivée du jour à la
  * première ouverture de la journée (ou depuis la notification), puis la Nouvelle du jour.
  * Démonstration : EXPO_PUBLIC_DEMO_ARRIVAL=show force l'arrivée, =auto lance aussi la transition ;
- * EXPO_PUBLIC_DEMO_ONBOARDING=show|time rejoue l'onboarding (profil existant pré-rempli ; `time` ouvre l'écran 2).
+ * EXPO_PUBLIC_DEMO_ONBOARDING=show|time|auto rejoue l'onboarding (`time` ouvre l'écran 2, `auto` joue le parcours seul).
  */
 export default function Index() {
   const demo = process.env.EXPO_PUBLIC_DEMO_ARRIVAL;
-  const demoOnboarding = ["show", "time"].includes(process.env.EXPO_PUBLIC_DEMO_ONBOARDING ?? "");
+  const demoOnboarding = ["show", "time", "auto"].includes(process.env.EXPO_PUBLIC_DEMO_ONBOARDING ?? "");
   const [state, setState] = useState<State>({ status: "loading" });
   const fromNotification = opensArrival(useLastNotificationResponse());
   useEffect(() => {

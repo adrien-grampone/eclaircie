@@ -13,15 +13,28 @@ const BANDS = 24;
 const HILL = 700;
 
 export interface SkyLayout {
-  sun: { top: `${number}%`; right: `${number}%`; size: number };
+  /** `top` en pourcentage du cadre ou en points (onboarding : calculé sous le titre). */
+  sun: { top: `${number}%` | number; right: `${number}%`; size: number };
   /** Hauteur à laquelle chaque colline (claire, moyenne, accent) dépasse du bas. */
   hills: [number, number, number];
 }
 
 /** Plein écran (Nouvelle du jour, Arrivée). */
 export const FULL_SKY: SkyLayout = { sun: { top: "36%", right: "12%", size: 150 }, hills: [190, 125, 70] };
-/** Bandeau de l'onboarding (maquette 01) : soleil plus grand, collines basses. */
-export const BANNER_SKY: SkyLayout = { sun: { top: "27%", right: "13%", size: 176 }, hills: [110, 65, 30] };
+/** Taille du soleil du bandeau d'onboarding et écart entre ses collines. */
+export const BANNER_SUN = 120;
+const BANNER_HILL_GAP = 26;
+
+/**
+ * Bandeau de l'onboarding (maquette 01) : le soleil se place SOUS la zone du titre, à droite, et les
+ * collines commencent au tiers du soleil pour qu'il se couche derrière elles, quelle que soit la hauteur.
+ */
+export function bannerSky(bannerHeight: number, titleBottom: number): SkyLayout {
+  const sunTop = titleBottom;
+  const hillTop = Math.min(bannerHeight - 3 * BANNER_HILL_GAP, sunTop + BANNER_SUN * 0.35);
+  const rise = Math.max(3 * BANNER_HILL_GAP, bannerHeight - hillTop);
+  return { sun: { top: sunTop, right: "7%", size: BANNER_SUN }, hills: [rise, rise - BANNER_HILL_GAP, rise - 2 * BANNER_HILL_GAP] };
+}
 
 export function Sky({ palette, veil, layout = FULL_SKY }: { palette: Palette; veil?: ReactNode; layout?: SkyLayout }) {
   const { sun, hills } = layout;

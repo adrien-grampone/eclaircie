@@ -2,14 +2,13 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { bootstrap, type Bootstrap } from "@/lib/bootstrap.ts";
-import { parseNotifyTime } from "@/lib/onboarding.ts";
 import { OnboardingFlow } from "@/screens/onboarding/OnboardingFlow.tsx";
 import { colors, space, type } from "@/theme/tokens.ts";
 import { PaperTexture } from "@/ui/PaperTexture.tsx";
 
 type State = { status: "loading" } | { status: "ready"; boot: Bootstrap } | { status: "error"; message: string };
 
-/** Écrans 1 et 2. Variable de dev EXPO_PUBLIC_DEMO_ONBOARDING=show|time : rejoue l'onboarding (profil existant pré-rempli), `time` ouvre directement l'écran 2. */
+/** Écrans 1 et 2. Variable de dev EXPO_PUBLIC_DEMO_ONBOARDING=show|time|auto : rejoue l'onboarding, `time` ouvre l'écran 2, `auto` joue le parcours seul. */
 export default function Onboarding() {
   const router = useRouter();
   const [state, setState] = useState<State>({ status: "loading" });
@@ -20,10 +19,9 @@ export default function Onboarding() {
   }, []);
 
   if (state.status === "ready") {
-    const { user, themes, profile } = state.boot;
-    const initial = profile ? { themes: profile.themes, ...parseNotifyTime(profile.notify_time) } : undefined;
-    const initialStep = process.env.EXPO_PUBLIC_DEMO_ONBOARDING === "time" ? "time" : "themes";
-    return <OnboardingFlow userId={user.id} themes={themes} initial={initial} initialStep={initialStep} onDone={() => router.replace("/")} />;
+    const { user, themes } = state.boot;
+    const demo = process.env.EXPO_PUBLIC_DEMO_ONBOARDING;
+    return <OnboardingFlow userId={user.id} themes={themes} initialStep={demo === "time" ? "time" : "themes"} autoplay={demo === "auto"} onDone={() => router.replace("/")} />;
   }
   return (
     <View style={styles.center}>

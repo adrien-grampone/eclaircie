@@ -1,4 +1,4 @@
-import { continueLabel, formatHour, nextTrigger, parseNotifyTime, toNotifyTime, toggleTheme, validateProfile, type OnboardingTheme } from "../onboarding.ts";
+import { continueLabel, formatHour, nextTrigger, paletteThemeId, parseNotifyTime, toNotifyTime, toggleTheme, validateProfile, type OnboardingTheme } from "../onboarding.ts";
 
 const THEMES: OnboardingTheme[] = [
   { id: "planete", label: "Planète", active: true, coming_soon: false },
@@ -23,9 +23,19 @@ describe("toggleTheme", () => {
 
 describe("continueLabel", () => {
   it("accorde le nombre de thèmes", () => {
-    expect(continueLabel(0)).toBe("Continuer");
+    expect(continueLabel(0)).toBe("Choisis au moins un thème");
     expect(continueLabel(1)).toBe("Continuer · 1 thème");
     expect(continueLabel(3)).toBe("Continuer · 3 thèmes");
+  });
+});
+
+describe("paletteThemeId", () => {
+  it("suit le dernier thème coché, revient au précédent quand on décoche, sinon la palette par défaut", () => {
+    expect(paletteThemeId([], "planete")).toBe("planete");
+    expect(paletteThemeId(["science"], "planete")).toBe("science");
+    expect(paletteThemeId(["science", "animaux"], "planete")).toBe("animaux");
+    expect(paletteThemeId(toggleTheme(["science", "animaux"], THEMES[1]!), "planete")).toBe("animaux");
+    expect(paletteThemeId(toggleTheme(["science", "animaux"], { id: "animaux", label: "Animaux", active: true, coming_soon: false }), "planete")).toBe("science");
   });
 });
 

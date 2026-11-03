@@ -1,11 +1,11 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Pressable, StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { hapticTap } from "@/lib/haptics.ts";
 import { colors, radius, sizes, space, type, type Palette } from "@/theme/tokens.ts";
 import { CrossfadeSky } from "@/ui/CrossfadeSky.tsx";
 import { PaperTexture } from "@/ui/PaperTexture.tsx";
-import { BANNER_SKY } from "@/ui/Sky.tsx";
+import { bannerSky } from "@/ui/Sky.tsx";
 import { sheetStyle } from "../DailyStory.tsx";
 
 /** Part de l'écran occupée par le bandeau de ciel (maquette 01). */
@@ -31,12 +31,16 @@ export function OnboardingFrame({ palette, caption, titleMain, titleAccent, cta,
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const bannerHeight = Math.round(height * BANNER_SHARE) + radius.sheet;
+  const titleTop = insets.top + space.xl;
+  const [titleHeight, setTitleHeight] = useState(0);
+  // Le soleil se cale sous le titre mesuré : il ne passe jamais derrière le texte.
+  const layout = bannerSky(bannerHeight, titleTop + titleHeight + space.xs);
   return (
     <View style={styles.screen}>
       <View style={[styles.banner, { height: bannerHeight }]}>
-        <CrossfadeSky palette={palette} layout={BANNER_SKY} />
+        <CrossfadeSky palette={palette} layout={layout} />
       </View>
-      <View style={[styles.titleBlock, { top: insets.top + space.xl }]} pointerEvents="none">
+      <View style={[styles.titleBlock, { top: titleTop }]} pointerEvents="none" onLayout={(e) => setTitleHeight(e.nativeEvent.layout.height)}>
         <Text style={[type.caption, styles.caption]}>{caption}</Text>
         <Text style={styles.title}>
           <Text style={[type.title, styles.titleText]}>{titleMain}</Text>

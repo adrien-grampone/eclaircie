@@ -21,6 +21,14 @@ export const ONBOARDING_COPY = {
 } as const;
 
 /** Heure par défaut du rendez-vous (spec §8) et pas des minutes du sélecteur. */
+/**
+ * Palette du ciel : celle du dernier thème COCHÉ (la sélection garde l'ordre des coches) ; décocher
+ * revient au thème coché précédent ; sans sélection, la palette par défaut (premier thème).
+ */
+export function paletteThemeId(selected: readonly string[], fallback: string | undefined): string | undefined {
+  return selected[selected.length - 1] ?? fallback;
+}
+
 export const DEFAULT_NOTIFY = { hour: 8, minute: 0 } as const;
 export const MINUTE_STEP = 15;
 
@@ -35,9 +43,9 @@ export function toggleTheme(selected: readonly string[], theme: OnboardingTheme)
   return selected.includes(theme.id) ? selected.filter((id) => id !== theme.id) : [...selected, theme.id];
 }
 
-/** « Continuer · 3 thèmes », « Continuer · 1 thème », « Continuer » à zéro. */
+/** « Continuer · 3 thèmes », « Continuer · 1 thème », « Choisis au moins un thème » à zéro. */
 export function continueLabel(count: number): string {
-  if (count <= 0) return "Continuer";
+  if (count <= 0) return "Choisis au moins un thème";
   return `Continuer · ${count} thème${count > 1 ? "s" : ""}`;
 }
 
