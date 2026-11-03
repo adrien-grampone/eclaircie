@@ -15,6 +15,7 @@ export const CONFIG_ROWS: ConfigRow[] = [
   { key: "schedule_recent_days", value: 10 },
   { key: "schedule_max_age_days", value: 30 },
   { key: "stock_alert_days", value: 7 },
+  { key: "image_alert_days", value: 2 },
   { key: "schedule_max_source_share", value: 0.3 },
   { key: "schedule_source_window_days", value: 14 },
   { key: "schedule_input_status", value: "verified" },

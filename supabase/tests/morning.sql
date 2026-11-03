@@ -68,8 +68,16 @@ stock as (
   left join stories s on s.theme_id = t.id and s.status = 'scheduled'
   where t.active and not t.coming_soon group by t.id, t.position, today.d order by t.position
 ),
+images as (
+  select 10, 'images à faire', 'programmées sans image',
+         format('%s sur 14 jours, prochaine échéance %s, %s alerte(s) J-2 ouverte(s)',
+                count(*), coalesce(min(s.publish_date)::text, 'aucune'),
+                (select count(*) from pipeline_alerts a where a.kind = 'image_missing' and a.resolved_at is null))
+  from stories s cross join today
+  where s.status = 'scheduled' and s.image_path is null and s.publish_date between today.d and today.d + 13
+),
 next_days as (
-  select 10, 'à paraître', s.publish_date::text || ' ' || s.theme_id,
+  select 11, 'à paraître', s.publish_date::text || ' ' || s.theme_id,
          s.title_main || coalesce(' ' || s.title_accent, '') || ' (' || s.source_name || ')'
   from stories s cross join today
   where s.status = 'scheduled' and s.publish_date between today.d and today.d + 2
@@ -79,6 +87,6 @@ select section, item, value from (
   select * from runs union all select * from run_errors union all select * from cron_state
   union all select * from alerts union all select * from raw union all select * from queue
   union all select * from triage_rate union all select * from stories_by_theme
-  union all select * from stock union all select * from next_days
+  union all select * from stock union all select * from images union all select * from next_days
 ) r(sec, section, item, value)
 order by sec, item;

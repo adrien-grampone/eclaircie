@@ -40,3 +40,8 @@ export { triageRejectReason } from "./triage.ts";
 export type { TriageRejectReason } from "./triage.ts";
 export { DedupVerdictSchema, buildDedupPrompt, matchedCandidate, parseDedup, resolveDuplicate } from "./dedup.ts";
 export type { DedupCard, DedupDecision, DedupStory, DedupVerdict } from "./dedup.ts";
+export {
+  ILLUSTRATION_ASPECT, ILLUSTRATION_MAX_SIZE, ILLUSTRATION_STYLE_PROMPT, buildIllustrationPrompt,
+  fallbackPrefix, fitImage, illustrationPath, imageAlertFingerprint, pickFallbackImage, planImageAlerts,
+} from "./illustration.ts";
+export type { ImageAlertPlan, ImageFit, ImageStatusStory } from "./illustration.ts";

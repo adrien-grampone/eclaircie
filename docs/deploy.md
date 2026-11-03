@@ -9,8 +9,11 @@ Postgres (migrations), Edge Functions (Deno), pg_cron + pg_net pour le déclench
 supabase link --project-ref hrnvtcqoywxggnkevxxc        # une fois
 supabase db push                                         # migrations manquantes
 supabase functions deploy                                # toutes les fonctions (ou une : deploy dedup)
-supabase secrets set --env-file supabase/functions/.env  # ANTHROPIC_API_KEY (jamais commitée)
+supabase secrets set ANTHROPIC_API_KEY=…                 # seule clé utilisée en prod (jamais commitée)
 ```
+
+Les Edge Functions n'utilisent que `ANTHROPIC_API_KEY` : ne pas pousser tout `supabase/functions/.env`
+en secrets (il peut contenir des clés locales sans usage en prod, comme `GEMINI_API_KEY`).
 
 Puis, une seule fois, dans l'éditeur SQL du dashboard, l'URL que pg_cron appelle :
 
@@ -42,8 +45,48 @@ Chaque fonction traite `batch_size` éléments et s'arrête d'elle-même au plaf
 Modèles : tout sur `claude-haiku-5-5` (décision budget du 2026-11-03 ; la spec §4 prévoyait Sonnet
 pour draft/verify). Changer un modèle = `supabase/functions/_shared/claude.ts`, puis redéployer.
 
-Statut d'entrée de schedule : `pipeline_config.schedule_input_status` vaut `verified` tant
-qu'illustrate et review n'existent pas ; passer à `approved` quand ils seront en place.
+Statut d'entrée de schedule : `pipeline_config.schedule_input_status` vaut `verified` : schedule
+programme les stories vérifiées, puis le texte est validé et l'image déposée dans le back-office
+(décision du 2026-11-03 : pas d'Edge Function illustrate, illustrations faites à la main).
+
+## Illustrations à la main et back-office
+
+Les illustrations sont générées à la main dans l'app Gemini (mode Pro, 3:4) à partir du prompt
+affiché par le back-office (prompt de style fixe de `_shared/pipeline/illustration.ts` + palette en
+mots du thème, `themes.palette_words` + `scene` du brouillon). Une story programmée sans `image_path`
+est « en attente d'image » ; à J-`image_alert_days` (config, 2) sans image, schedule ouvre une alerte
+`image_missing`, résolue au dépôt. Si une nouvelle est publiée sans image, l'app affiche une image de
+secours du thème : `fallback/<theme_id>/*.webp` dans le bucket public `illustrations`
+(`pickFallbackImage`, choix déterministe par story).
+
+Le back-office est l'application Next.js du dossier `admin/` (une page par onglet : Images à faire,
+À valider, Stock, Signalements, Santé). Il tourne **en local, branché sur la prod** (pas de Vercel
+pour l'instant) :
+
+```sh
+cd admin && npm install
+cp .env.example .env.local     # puis remplir les valeurs (fichier ignoré par git)
+npm run dev                    # http://localhost:3000
+```
+
+- `admin/.env.local` : `SUPABASE_URL` (https://hrnvtcqoywxggnkevxxc.supabase.co), `SUPABASE_ANON_KEY`
+  (clé anon ou publishable, sert uniquement à la session de connexion), `SUPABASE_SERVICE_ROLE_KEY`
+  (toutes les lectures et écritures, côté serveur seulement, jamais `NEXT_PUBLIC_`), `ADMIN_EMAILS`
+  (emails autorisés, séparés par des virgules). Clés : dashboard → Project Settings → API Keys.
+- Auth Supabase : connexion par lien magique (OTP email). Dans Authentication → URL Configuration →
+  Redirect URLs, ajouter `http://localhost:3000/auth/callback`. Tout compte hors `ADMIN_EMAILS` est
+  refusé par `admin/proxy.ts`, même connecté.
+- Dépôt d'image : recadrage 3:4, réduction sous 1792×2400 et conversion WebP se font dans le
+  navigateur (canvas, `fitImage`), puis la Server Action écrit `<story_id>.webp` dans le bucket avec
+  la clé service_role et remplit `image_path`. Le navigateur n'écrit jamais dans le bucket : la seule
+  policy de `storage.objects` est la lecture publique, toute écriture avec la clé anon est refusée.
+  Taille d'envoi : 8 Mo (`next.config.ts`).
+- Contre le stack local : mêmes variables avec les valeurs de `supabase status`, et Mailpit
+  (`http://127.0.0.1:54324`) reçoit les liens de connexion.
+
+Option pour plus tard, Vercel : Root Directory `admin`, activer « Include source files outside of the
+Root Directory » (le module pur d'illustration est importé depuis `supabase/functions/_shared/pipeline/`),
+mêmes variables, et ajouter `https://<domaine>/auth/callback` aux Redirect URLs.
 
 ## Surveillance
 
@@ -51,7 +94,8 @@ qu'illustrate et review n'existent pas ; passer à `approved` quand ils seront e
 - `pipeline_alerts` : une alerte ouverte par empreinte, résolue automatiquement quand la cause
   disparaît. Types : `cron_failed`, `function_error` (HTTP non 200 vu par pg_net), `step_error`
   (dernier run en erreur), `step_stale` (étape muette depuis 3 h, collect 4 h), `stock_low`
-  (stock programmé d'un thème sous `stock_alert_days`).
+  (stock programmé d'un thème sous `stock_alert_days`), `image_missing` (story programmée à
+  J-`image_alert_days` sans illustration).
 - Rapport du matin, une seule requête :
 
 ```sh

@@ -43,6 +43,8 @@ export const PipelineConfigSchema = z.object({
   schedule_max_age_days: z.number().int().positive(),
   /** §4.9 — alerte si le stock programmé d'un thème descend sous N jours. */
   stock_alert_days: z.number().int().positive(),
+  /** Illustrations à la main — alerte `image_missing` quand une story programmée dans moins de N jours n'a pas d'image. */
+  image_alert_days: z.number().int().min(0),
   /** §4.9 — part maximale d'une même source parmi les nouvelles d'un thème… */
   schedule_max_source_share: z.number().min(0).max(1),
   /** …sur cette fenêtre glissante, en jours. */
