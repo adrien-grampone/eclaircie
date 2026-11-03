@@ -25,7 +25,7 @@ export { checkEvidence } from "./evidence.ts";
 export type { EvidenceCheck } from "./evidence.ts";
 export { FATAL_TYPES, PROBLEM_TYPES, VerifyProblemSchema, VerifySchema, buildVerifyPrompt, decideVerify, parseVerify } from "./verify.ts";
 export type { Decision, ProblemType, Verify, VerifyContext, VerifyDecision, VerifyProblem } from "./verify.ts";
-export { pickForSchedule, sourceWithinShare, storyAgeDays } from "./schedule.ts";
+export { isStockLow, pickForSchedule, scheduleHorizon, sourceWithinShare, stockDays, storyAgeDays } from "./schedule.ts";
 export { applyEditorialRules, mainTheme } from "./editorial.ts";
 export type { EditorialOutcome } from "./editorial.ts";
 export { collectMaxAgeDays, isFreshEnough } from "./collect.ts";

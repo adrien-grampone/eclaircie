@@ -30,6 +30,11 @@ export const PipelineConfigSchema = z.object({
   auto_approve_min_score: z.number().min(0).max(1),
   /** §4.8 — …et trust_level minimal de la source. */
   auto_approve_min_trust: z.number().int().min(1).max(3),
+  /**
+   * §4.9 — statut d'entrée de schedule. `approved` quand illustrate et review
+   * existent ; `verified` tant qu'ils n'existent pas (décision du 2026-11-03).
+   */
+  schedule_input_status: z.enum(["verified", "illustrated", "approved"]),
   /** §4.9 — nombre de jours à programmer d'avance. */
   schedule_horizon_days: z.number().int().positive(),
   /** §4.9 — une story est « récente » en dessous de N jours. */

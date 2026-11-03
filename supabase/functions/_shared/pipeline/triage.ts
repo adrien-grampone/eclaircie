@@ -12,18 +12,31 @@ export const KINDS = ["achievement", "protection", "breakthrough", "discovery", 
 /** Sujet de l'étude, quand l'article en rapporte une. */
 export const STUDY_SUBJECTS = ["human", "animal", "in_vitro", "not_a_study"] as const;
 
+/** Une valeur hors de la liste devient null ; exigée ensuite seulement pour une bonne nouvelle. */
+function lenientEnum<const T extends readonly [string, ...string[]]>(values: T) {
+  return z.preprocess(
+    (value) => (typeof value === "string" && (values as readonly string[]).includes(value) ? value : null),
+    z.enum(values).nullable(),
+  );
+}
+
 export const TriageSchema = z.object({
   is_good_news: z.boolean(),
   /** Le premier élément est le thème principal : c'est lui qui va dans stories.theme_id. */
   themes: z.array(z.string().min(1)),
-  kind: z.enum(KINDS),
-  study_subject: z.enum(STUDY_SUBJECTS),
+  /** Sur une mauvaise nouvelle le modèle met souvent "", null ou "not_applicable" : toléré (null). */
+  kind: lenientEnum(KINDS),
+  study_subject: lenientEnum(STUDY_SUBJECTS),
   is_fact: z.boolean(),
   is_promotional: z.boolean(),
   positivity: z.number().min(0).max(1),
   significance: z.number().min(0).max(1),
   evergreen: z.boolean().default(false),
   reason: z.string(),
+}).superRefine((triage, ctx) => {
+  if (!triage.is_good_news) return;
+  if (triage.kind === null) ctx.addIssue({ code: "custom", path: ["kind"], message: `attendu l'une des valeurs ${KINDS.join(", ")}` });
+  if (triage.study_subject === null) ctx.addIssue({ code: "custom", path: ["study_subject"], message: `attendu l'une des valeurs ${STUDY_SUBJECTS.join(", ")}` });
 });
 
 export type Triage = z.infer<typeof TriageSchema>;

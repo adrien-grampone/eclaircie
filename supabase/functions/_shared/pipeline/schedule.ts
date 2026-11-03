@@ -1,5 +1,5 @@
 import type { PipelineConfig } from "./config.ts";
-import { dateOfTimestamp, daysBetween } from "./dates.ts";
+import { addDays, dateOfTimestamp, daysBetween } from "./dates.ts";
 import type { IsoDate } from "./types.ts";
 
 /** Une story `approved` non programmée, candidate pour un jour donné. */
@@ -101,4 +101,23 @@ export function pickForSchedule(
     });
 
   return ranked[0]?.candidate ?? null;
+}
+
+/** Les jours à programmer : `today` inclus, sur `schedule_horizon_days` jours. */
+export function scheduleHorizon(today: IsoDate, config: Pick<PipelineConfig, "schedule_horizon_days">): IsoDate[] {
+  return Array.from({ length: config.schedule_horizon_days }, (_, i) => addDays(today, i));
+}
+
+/**
+ * Stock programmé d'un thème (§4.9) : nombre de jours distincts, de `today` inclus,
+ * qui ont une nouvelle programmée. Les jours passés ne comptent pas.
+ */
+export function stockDays(alreadyScheduled: readonly ScheduledStory[], today: IsoDate): number {
+  const days = new Set(alreadyScheduled.filter((s) => daysBetween(today, s.publishDate) >= 0).map((s) => s.publishDate));
+  return days.size;
+}
+
+/** Alerte de stock (§4.9) : vrai quand le stock programmé est sous `stock_alert_days`. */
+export function isStockLow(stock: number, config: Pick<PipelineConfig, "stock_alert_days">): boolean {
+  return stock < config.stock_alert_days;
 }

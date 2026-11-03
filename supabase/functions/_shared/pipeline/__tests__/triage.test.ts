@@ -1,4 +1,4 @@
-import { buildTriagePrompt, isTriageAccepted, parseTriage, triageScore, type Triage } from "../triage.ts";
+import { buildTriagePrompt, isTriageAccepted, parseTriage, triageRejectReason, triageScore, type Triage } from "../triage.ts";
 import { CONFIG } from "./fixtures/config.ts";
 
 const GOOD: Triage = {
@@ -70,6 +70,18 @@ describe("parseTriage", () => {
     const badKind = parseTriage('{"is_good_news":true,"themes":["science"],"kind":"miracle","study_subject":"human","is_fact":true,"is_promotional":false,"positivity":0.7,"significance":0.6,"reason":"ok"}');
     expect(badKind.ok).toBe(false);
     if (!badKind.ok) expect(badKind.error).toMatch(/kind/);
+  });
+
+  it("tolère un kind ou un study_subject invalide quand ce n'est pas une bonne nouvelle", () => {
+    for (const kind of ['""', "null", '"not_applicable"']) {
+      const result = parseTriage(`{"is_good_news":false,"themes":[],"kind":${kind},"study_subject":"","is_fact":true,"is_promotional":false,"positivity":0.1,"significance":0.2,"reason":"mauvaise nouvelle"}`);
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.value.kind).toBeNull();
+        expect(result.value.study_subject).toBeNull();
+        expect(triageRejectReason(result.value, 0.9, CONFIG)).toBe("not_good_news");
+      }
+    }
   });
 
   it("refuse une positivité hors de [0, 1] ou un champ manquant", () => {

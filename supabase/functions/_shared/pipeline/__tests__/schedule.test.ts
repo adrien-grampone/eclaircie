@@ -1,4 +1,4 @@
-import { pickForSchedule, sourceWithinShare, storyAgeDays, type ScheduleCandidate, type ScheduledStory } from "../schedule.ts";
+import { isStockLow, pickForSchedule, scheduleHorizon, sourceWithinShare, stockDays, storyAgeDays, type ScheduleCandidate, type ScheduledStory } from "../schedule.ts";
 import { CONFIG } from "./fixtures/config.ts";
 
 const DAY = "2026-11-10";
@@ -138,5 +138,32 @@ describe("pickForSchedule — part maximale d'une source (30 % sur 14 jours)", (
     expect(sourceWithinShare("Mongabay", already, DAY, CONFIG)).toBe(false); // 2/5 = 40 %
     expect(sourceWithinShare("Mongabay", already, DAY, { ...CONFIG, schedule_max_source_share: 0.5 })).toBe(true);
     expect(sourceWithinShare("mongabay ", already, DAY, { ...CONFIG, schedule_max_source_share: 0.5 })).toBe(true);
+  });
+});
+
+describe("scheduleHorizon", () => {
+  it("part d'aujourd'hui inclus et couvre schedule_horizon_days jours", () => {
+    const days = scheduleHorizon(DAY, { schedule_horizon_days: 3 });
+    expect(days).toEqual(["2026-11-10", "2026-11-11", "2026-11-12"]);
+  });
+});
+
+describe("stockDays / isStockLow", () => {
+  const scheduled: ScheduledStory[] = [
+    { publishDate: daysAgo(1), sourceName: "A" },
+    { publishDate: DAY, sourceName: "A" },
+    { publishDate: "2026-11-11", sourceName: "B" },
+    { publishDate: "2026-11-11", sourceName: "C" },
+    { publishDate: "2026-11-13", sourceName: "B" },
+  ];
+
+  it("compte les jours distincts à partir d'aujourd'hui, sans le passé", () => {
+    expect(stockDays(scheduled, DAY)).toBe(3);
+    expect(stockDays([], DAY)).toBe(0);
+  });
+
+  it("alerte strictement sous stock_alert_days", () => {
+    expect(isStockLow(3, { stock_alert_days: 7 })).toBe(true);
+    expect(isStockLow(7, { stock_alert_days: 7 })).toBe(false);
   });
 });

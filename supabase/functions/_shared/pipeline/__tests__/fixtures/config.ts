@@ -17,6 +17,7 @@ export const CONFIG_ROWS: ConfigRow[] = [
   { key: "stock_alert_days", value: 7 },
   { key: "schedule_max_source_share", value: 0.3 },
   { key: "schedule_source_window_days", value: 14 },
+  { key: "schedule_input_status", value: "verified" },
   { key: "max_triage_per_day", value: 200 },
   { key: "max_draft_per_day", value: 40 },
   { key: "batch_size", value: 10 },

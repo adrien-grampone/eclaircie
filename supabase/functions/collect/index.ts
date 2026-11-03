@@ -1,5 +1,6 @@
 /**
- * collect — §4.1. Lit les flux actifs les moins récemment lus (batch_size sources),
+ * collect — §4.1. Lit TOUS les flux actifs (aucun appel à un modèle, donc pas de lot),
+ * les moins récemment lus d'abord,
  * insère les articles de moins de collect_max_age_days dans raw_articles
  * (url unique, doublons ignorés). Aucun appel à un modèle.
  */
@@ -34,8 +35,7 @@ Deno.serve(async () => {
       .from("sources")
       .select("id, name, feed_url, trust_level")
       .eq("active", true)
-      .order("last_fetched_at", { ascending: true, nullsFirst: true })
-      .limit(config.batch_size);
+      .order("last_fetched_at", { ascending: true, nullsFirst: true });
     if (error) throw new Error(`sources : ${error.message}`);
     const sources = (data ?? []) as SourceRow[];
     const now = new Date();
