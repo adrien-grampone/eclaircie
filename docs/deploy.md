@@ -66,6 +66,13 @@ pour l'instant) :
 ```sh
 cd admin && npm install
 cp .env.example .env.local     # puis remplir les valeurs (fichier ignoré par git)
+# Pour viser la pile locale (supabase start) : cp .env.local.example .env.local
+```
+
+Sur la prod, le lien magique doit pouvoir revenir sur `http://localhost:3000/auth/callback` : cette URL doit figurer dans
+Authentication → URL Configuration → Redirect URLs du projet hébergé (`supabase config diff` montre la liste distante).
+
+```sh
 npm run dev                    # http://localhost:3000
 ```
 

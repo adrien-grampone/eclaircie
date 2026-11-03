@@ -46,12 +46,14 @@ const GLASS_SOLID_AT = 0.12;
 /** Part du trajet au bout de laquelle le flou (et le liseré) du verre a disparu. */
 const BLUR_END = 0.35;
 /**
- * Contenus : celui de l'arrivée glisse vers le haut en s'effaçant (0 → 35 %), la nouvelle apparaît de
- * 25 à 70 %. Jamais de feuille vide, jamais deux textes lisibles au même endroit.
+ * Contenus, SANS chevauchement : celui de l'arrivée glisse vers le haut en s'effaçant (0 → 25 %), puis
+ * la nouvelle apparaît de 30 à 70 % avec un léger glissement depuis le bas. Le court instant sur la
+ * carte crème unie est voulu.
  */
-const ARRIVAL_FADE = [0, 0.35] as const;
+const ARRIVAL_FADE = [0, 0.25] as const;
 const ARRIVAL_LIFT = -48;
-const STORY_FADE = [0.25, 0.7] as const;
+const STORY_FADE = [0.3, 0.7] as const;
+const STORY_RISE = 12;
 /** Part du trajet au bout de laquelle le bas de la carte est passé sous le bord de l'écran. */
 const BOTTOM_END = 0.2;
 /** Voile sombre de l'arrivée sur le ciel dessiné (uniforme, sous le soleil) : part d'accent et part d'encre. */
@@ -183,7 +185,10 @@ export function DailyFlow({ view, showArrival, autoDiscover = false }: Props) {
     opacity: interpolate(progress.value, ARRIVAL_FADE, [1, 0], "clamp"),
     transform: [{ translateY: interpolate(progress.value, ARRIVAL_FADE, [0, ARRIVAL_LIFT], "clamp") }],
   }));
-  const storyContentStyle = useAnimatedStyle(() => ({ opacity: interpolate(progress.value, STORY_FADE, [0, 1], "clamp") }));
+  const storyContentStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(progress.value, STORY_FADE, [0, 1], "clamp"),
+    transform: [{ translateY: interpolate(progress.value, STORY_FADE, [STORY_RISE, 0], "clamp") }],
+  }));
   const topBarStyle = useAnimatedStyle(() => ({ opacity: interpolate(progress.value, [0.75, 1], [0, 1], "clamp") }));
   const fadeStyle = useAnimatedStyle(() => ({ opacity: fade.value }));
 
