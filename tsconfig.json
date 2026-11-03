@@ -31,6 +31,7 @@
   },
   "include": [
     "supabase/functions/_shared/pipeline/**/*.ts",
+    "app/src/lib/color.ts",
     "app/src/lib/daily.ts",
     "app/src/lib/illustration.ts",
     "app/src/lib/__tests__/**/*.ts",

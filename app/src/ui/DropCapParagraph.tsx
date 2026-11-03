@@ -6,24 +6,40 @@ import { sizes, space, type } from "@/theme/tokens.ts";
 /** Lignes à côté de la lettrine. */
 const BESIDE_LINES = 2;
 
+/** Lignes mesurées, mémorisées par story et largeur : la mesure (onTextLayout) ne se fait qu'une fois. */
+const measured = new Map<string, { text: string }[]>();
+
+interface Props {
+  text: string;
+  accent: string;
+  /** Identifiant stable du texte (id de la story), clé de la mémorisation. */
+  cacheKey: string;
+}
+
 /**
- * Paragraphe à lettrine : le texte (sans sa première lettre) est d'abord mesuré, invisible, dans la
+ * Paragraphe à lettrine : le texte (sans sa première lettre) est mesuré une fois, invisible, dans la
  * largeur réduite (largeur − lettrine − écart). Les deux premières lignes mesurées vont à côté de la
  * lettrine, le reste en pleine largeur, avec le même interlignage : aucun trou entre les lignes 2 et 3.
  */
-export function DropCapParagraph({ text, accent }: { text: string; accent: string }) {
+export function DropCapParagraph({ text, accent, cacheKey }: Props) {
   const trimmed = text.trim();
   const cap = trimmed.slice(0, 1);
   const body = trimmed.slice(1).trimStart();
   const [width, setWidth] = useState(0);
-  const [lines, setLines] = useState<{ text: string }[] | null>(null);
+  const [, bump] = useState(0);
+  const key = `${cacheKey}:${width}`;
+  const lines = measured.get(key) ?? null;
   const besideWidth = Math.max(0, width - sizes.dropCap - space.s);
 
   const onLayout = (e: LayoutChangeEvent) => {
     const next = Math.round(e.nativeEvent.layout.width);
-    if (next !== width) { setWidth(next); setLines(null); }
+    if (next !== width) setWidth(next);
   };
-  const onTextLayout = (e: TextLayoutEvent) => setLines(e.nativeEvent.lines.map((l) => ({ text: l.text })));
+  const onTextLayout = (e: TextLayoutEvent) => {
+    if (measured.has(key)) return;
+    measured.set(key, e.nativeEvent.lines.map((l) => ({ text: l.text })));
+    bump((n) => n + 1);
+  };
 
   const split = lines ? splitMeasuredLines(lines, BESIDE_LINES) : null;
   return (

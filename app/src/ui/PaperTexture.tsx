@@ -1,29 +1,17 @@
-import { Image, StyleSheet, View, useWindowDimensions } from "react-native";
+import { memo } from "react";
+import { Image, StyleSheet } from "react-native";
 import { absoluteFill, paperTexture } from "@/theme/tokens.ts";
 
-const noise = require("../../assets/paper-noise.png");
+const noise = require("../../assets/paper-noise.png") // Metro choisit la variante @3x;
 
 /**
- * Overlay de texture papier : tuile de bruit répétée en grille (resizeMode "repeat" n'est pas
- * honoré par la nouvelle architecture), fondu multiply, 10 %. Ne capte pas les touches.
+ * Texture papier : UNE image pré-rendue à la taille de l'écran (@3x), posée une fois par écran
+ * au-dessus de tout, hors du contenu qui défile. Fondu multiply, 10 %. Ne capte pas les touches.
  */
-export function PaperTexture() {
-  const { width, height } = useWindowDimensions();
-  const { tile, opacity } = paperTexture;
-  const cols = Math.ceil(width / tile);
-  const rows = Math.ceil(height / tile);
-  return (
-    <View style={[absoluteFill, styles.layer, { opacity }]} pointerEvents="none" accessible={false}>
-      {Array.from({ length: rows }, (_, r) => (
-        <View key={r} style={styles.row}>
-          {Array.from({ length: cols }, (_, c) => <Image key={c} source={noise} style={{ width: tile, height: tile }} />)}
-        </View>
-      ))}
-    </View>
-  );
-}
+export const PaperTexture = memo(function PaperTexture() {
+  return <Image source={noise} resizeMode="cover" style={styles.texture} pointerEvents="none" accessible={false} fadeDuration={0} />;
+});
 
 const styles = StyleSheet.create({
-  layer: { overflow: "hidden", mixBlendMode: "multiply" },
-  row: { flexDirection: "row" },
+  texture: { ...absoluteFill, opacity: paperTexture.opacity, mixBlendMode: "multiply" },
 });

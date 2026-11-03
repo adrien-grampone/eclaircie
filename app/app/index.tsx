@@ -1,22 +1,28 @@
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { shouldShowArrival } from "@/lib/arrival.ts";
+import { readArrivalSeen } from "@/lib/arrivalStore.ts";
 import { loadDailyView, type DailyView } from "@/lib/stories.ts";
-import { DailyStoryScreen } from "@/screens/DailyStory.tsx";
-import { PaperTexture } from "@/ui/PaperTexture.tsx";
+import { DailyFlow } from "@/screens/DailyFlow.tsx";
 import { colors, space, type } from "@/theme/tokens.ts";
+import { PaperTexture } from "@/ui/PaperTexture.tsx";
 
-type State = { status: "loading" } | { status: "ready"; view: DailyView } | { status: "error"; message: string };
+type State = { status: "loading" } | { status: "ready"; view: DailyView; showArrival: boolean } | { status: "error"; message: string };
 
-/** Écran 4 : la Nouvelle du jour, sur les vraies données. */
+/** Écran 3 puis 4 : Arrivée du jour à la première ouverture de la journée, puis la Nouvelle du jour. */
 export default function Index() {
+  // Démonstration : EXPO_PUBLIC_DEMO_ARRIVAL=show force l'arrivée, =auto lance aussi la transition.
+  const demo = process.env.EXPO_PUBLIC_DEMO_ARRIVAL;
   const [state, setState] = useState<State>({ status: "loading" });
   useEffect(() => {
-    loadDailyView()
-      .then((view) => setState({ status: "ready", view }))
+    Promise.all([loadDailyView(), readArrivalSeen()])
+      .then(([view, seen]) => setState({ status: "ready", view, showArrival: shouldShowArrival(seen, view.today) }))
       .catch((cause: unknown) => setState({ status: "error", message: cause instanceof Error ? cause.message : String(cause) }));
   }, []);
 
-  if (state.status === "ready") return <DailyStoryScreen view={state.view} />;
+  if (state.status === "ready") {
+    return <DailyFlow view={state.view} showArrival={state.showArrival || demo === "show" || demo === "auto"} autoDiscover={demo === "auto"} />;
+  }
   return (
     <View style={styles.center}>
       <PaperTexture />

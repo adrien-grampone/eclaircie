@@ -43,7 +43,7 @@ export const radius = { button: 16, sheet: 30, pill: 999 } as const;
 export const space = { xs: 6, s: 12, m: 16, l: 24, xl: 32 } as const;
 export const sizes = { button: 54, glassButton: 52, dropCap: 64 } as const;
 /** Texture papier : PNG de bruit en tuile, multiply, 10 %. */
-export const paperTexture = { opacity: 0.1, tile: 128 } as const;
+export const paperTexture = { opacity: 0.1 } as const;
 /** Verre : flou expo-blur ~40 + bordure blanche à 50 %. */
 export const glass = { intensity: 40, border: "rgba(255,255,255,0.5)", tint: "rgba(245,239,228,0.55)" } as const;
 
