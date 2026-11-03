@@ -19,8 +19,8 @@ export {
   triageScore,
 } from "./triage.ts";
 export type { Triage, TriageInput } from "./triage.ts";
-export { ClaimSchema, buildDraftPrompt, buildRevisePrompt, draftOutputSchema, draftRules, draftSchema, parseDraft } from "./draft.ts";
-export type { Draft, DraftOutput } from "./draft.ts";
+export { ClaimSchema, buildDraftPrompt, buildRevisePrompt, decideRevise, draftOutputSchema, draftRules, draftSchema, parseDraft } from "./draft.ts";
+export type { Draft, DraftOutput, ReviseOptions, ReviseStep } from "./draft.ts";
 export { checkEvidence } from "./evidence.ts";
 export type { EvidenceCheck } from "./evidence.ts";
 export { FATAL_TYPES, PROBLEM_TYPES, VerifyProblemSchema, VerifySchema, buildVerifyPrompt, decideVerify, parseVerify } from "./verify.ts";
@@ -38,5 +38,5 @@ export { classifyExtraction, extractMainText } from "./extract.ts";
 export type { ExtractOutcome, Extracted } from "./extract.ts";
 export { triageRejectReason } from "./triage.ts";
 export type { TriageRejectReason } from "./triage.ts";
-export { embeddingInput, isDuplicate, resolveDuplicates } from "./dedup.ts";
-export type { DedupDecision, DedupStory, Neighbour } from "./dedup.ts";
+export { DedupVerdictSchema, buildDedupPrompt, matchedCandidate, parseDedup, resolveDuplicate } from "./dedup.ts";
+export type { DedupCard, DedupDecision, DedupStory, DedupVerdict } from "./dedup.ts";

@@ -63,7 +63,7 @@ Deno.serve(async () => {
           { title: article.title, sourceName: article.sources?.name ?? "source inconnue", url: article.url, publishedAt: article.published_at, fullText: article.full_text },
           config,
         );
-        const reply = await askModel(MODELS.draft, prompt, { maxTokens: 8192, effort: "medium", thinking: true });
+        const reply = await askModel(MODELS.draft, prompt, { maxTokens: 4096, effort: "low", thinking: true });
         if (reply.stopReason === "refusal" || reply.stopReason === "max_tokens") {
           return fail(article, `draft_incomplete: ${reply.stopReason}`);
         }

@@ -1,11 +1,12 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { Prompt } from "./pipeline/types.ts";
 
-/** Modèles fixés par la spec §4 : Haiku pour le tri, Sonnet pour rédaction et vérification. */
+/** Tout sur Haiku 5.5 : 20× moins cher que Sonnet 5.5 par token (décision du 2026-11-03, budget API). */
 export const MODELS = {
   triage: "claude-haiku-5-5",
-  draft: "claude-sonnet-5-5",
-  verify: "claude-sonnet-5-5",
+  draft: "claude-haiku-5-5",
+  verify: "claude-haiku-5-5",
+  dedup: "claude-haiku-5-5",
 } as const;
 
 let client: Anthropic | null = null;

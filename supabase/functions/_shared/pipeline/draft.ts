@@ -46,6 +46,38 @@ export function parseDraft(
   return parseJsonWith(draftOutputSchema(config), json);
 }
 
+/** Issue d'une tentative de révision, décidée en code (decideRevise). */
+export type ReviseStep =
+  | { action: "accept"; draft: Draft }
+  | { action: "not_good_news"; reason: string }
+  | { action: "retry_shorter"; chars: number }
+  | { action: "reject"; reason: string };
+
+/**
+ * Une révision dont seul le résumé est trop long mérite une seconde tentative,
+ * avec la consigne explicite de raccourcir, avant rejet. Toute autre erreur
+ * de parsing rejette. `attempt` commence à 1 ; `revise_length_retries` vient de la config.
+ */
+export function decideRevise(
+  json: string,
+  attempt: number,
+  config: Pick<PipelineConfig, "summary_max_chars" | "revise_length_retries">,
+): ReviseStep {
+  const strict = parseDraft(json, config);
+  if (strict.ok) {
+    if (strict.value.verdict === "not_good_news") return { action: "not_good_news", reason: strict.value.reason };
+    const { verdict: _verdict, ...draft } = strict.value;
+    return { action: "accept", draft };
+  }
+  const lenient = parseJsonWith(draftOutputSchema({ summary_max_chars: Number.MAX_SAFE_INTEGER }), json);
+  if (lenient.ok && lenient.value.verdict === "ok") {
+    const chars = lenient.value.summary.length;
+    if (attempt <= config.revise_length_retries) return { action: "retry_shorter", chars };
+    return { action: "reject", reason: `revise_too_long: ${chars} caractères après ${attempt} tentative(s), maximum ${config.summary_max_chars}` };
+  }
+  return { action: "reject", reason: `revise_parse_error: ${strict.error.slice(0, 200)}` };
+}
+
 /** Règles communes au brouillon et à sa révision : fidélité absolue à la source. */
 export function draftRules(config: Pick<PipelineConfig, "summary_max_chars">): string {
   return [
@@ -112,11 +144,17 @@ export function buildDraftPrompt(
  * Étape `revise` — le brouillon est réécrit avec les corrections du relecteur,
  * sans introduire de fait nouveau, puis repasse par verify.
  */
+export interface ReviseOptions {
+  /** Longueur du résumé de la tentative précédente, quand elle dépassait la limite. */
+  shortenFrom?: number;
+}
+
 export function buildRevisePrompt(
   article: Article,
   draft: Draft,
   problems: readonly VerifyProblem[],
   config: Pick<PipelineConfig, "summary_max_chars">,
+  options: ReviseOptions = {},
 ): Prompt {
   const system = [
     "Tu révises la bonne nouvelle du jour d'une application française. Un relecteur a relevé des problèmes précis dans un brouillon. Corrige-les TOUS, en appliquant la correction proposée ou une formulation plus prudente, sans introduire aucun fait nouveau. Tout ce que le relecteur n'a pas signalé reste tel quel. Le texte corrigé doit toujours se lire comme une bonne nouvelle et finir sur elle.",
@@ -126,6 +164,9 @@ export function buildRevisePrompt(
   const list = problems
     .map((p, i) => `${i + 1}. [${p.type}] passage : « ${p.passage} »\n   correction : ${p.correction}`)
     .join("\n");
+  const shorten = options.shortenFrom === undefined
+    ? []
+    : ["", `CONSIGNE DE LONGUEUR : ta révision précédente faisait ${options.shortenFrom} caractères de résumé, au-delà des ${config.summary_max_chars} autorisés. RACCOURCIS le résumé sous ${config.summary_max_chars} caractères en gardant les corrections, quitte à retirer un détail secondaire.`];
   const user = [
     articleBlock(article),
     "",
@@ -134,6 +175,7 @@ export function buildRevisePrompt(
     "",
     "PROBLÈMES RELEVÉS PAR LE RELECTEUR",
     list,
+    ...shorten,
   ].join("\n");
   return { system, user };
 }

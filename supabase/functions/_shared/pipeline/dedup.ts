@@ -1,10 +1,13 @@
+import { z } from "zod";
 import type { PipelineConfig } from "./config.ts";
+import { parseJsonWith } from "./json.ts";
+import type { ParseResult, Prompt } from "./types.ts";
 
 /**
- * Étape `dedup` (§4.6) — embedding de `title_main + summary`, comparé aux stories
- * des `dedup_window_days` derniers jours du même thème. Au-delà de
- * `dedup_similarity`, c'est le même événement : on garde celle dont la source a
- * le meilleur trust_level. La recherche vectorielle se fait en SQL ; ici, la décision.
+ * Étape `dedup` (§4.6, version sans embeddings) — Claude Haiku compare la story à
+ * tester aux stories du même thème sur `dedup_window_days` jours et désigne, le cas
+ * échéant, celle qui rapporte le même événement. La décision reste en code : la
+ * source la mieux notée gagne, une story programmée n'est jamais remplacée.
  */
 
 export interface DedupStory {
@@ -15,50 +18,88 @@ export interface DedupStory {
   createdAt: string;
 }
 
-export interface Neighbour extends DedupStory {
-  /** Similarité cosinus dans [0, 1]. */
-  similarity: number;
+/** Ce que le modèle voit d'une story : identifiant, titre, résumé, source, date. */
+export interface DedupCard {
+  id: string;
+  title: string;
+  summary: string;
+  sourceName: string;
+  sourceDate: string | null;
+}
+
+export const DedupVerdictSchema = z.object({
+  duplicate_of: z.string().trim().min(1).nullable(),
+  reason: z.string().trim().min(1),
+});
+export type DedupVerdict = z.infer<typeof DedupVerdictSchema>;
+
+export function parseDedup(json: string): ParseResult<DedupVerdict> {
+  return parseJsonWith(DedupVerdictSchema, json);
+}
+
+/**
+ * L'identifiant désigné doit être l'un des candidats proposés ; sinon on considère
+ * la story unique (le modèle a halluciné un identifiant) et on le signale.
+ */
+export function matchedCandidate<T extends { id: string }>(verdict: DedupVerdict, candidates: readonly T[]): T | null {
+  if (verdict.duplicate_of === null) return null;
+  return candidates.find((c) => c.id === verdict.duplicate_of) ?? null;
 }
 
 export type DedupDecision =
   | { decision: "unique" }
-  | { decision: "reject_story"; duplicateOf: string; similarity: number }
+  | { decision: "reject_story"; duplicateOf: string }
   | { decision: "keep_story"; rejectIds: string[] };
 
 /** Statuts d'une story existante qu'une nouvelle venue mieux sourcée peut remplacer. */
 const REPLACEABLE = new Set(["verified", "illustrated", "approved"]);
 
-/** Texte dont on calcule l'embedding : titre complet puis résumé. */
-export function embeddingInput(story: { title_main: string; title_accent: string | null; summary: string }): string {
-  return `${story.title_main} ${story.title_accent ?? ""}`.trim() + "\n" + story.summary;
-}
-
-export function isDuplicate(similarity: number, config: Pick<PipelineConfig, "dedup_similarity">): boolean {
-  return similarity >= config.dedup_similarity;
-}
-
 /**
- * - aucun voisin au-dessus du seuil → unique ;
- * - un voisin déjà programmé (ou mieux sourcé, ou aussi bien sourcé mais plus ancien) → la story est rejetée ;
- * - sinon la story gagne et les doublons remplaçables sont rejetés.
+ * - pas de doublon → unique ;
+ * - le doublon est déjà programmé, ou mieux sourcé, ou aussi bien sourcé mais plus ancien → la story est rejetée ;
+ * - sinon la story gagne et le doublon est rejeté.
  */
-export function resolveDuplicates(
-  story: DedupStory,
-  neighbours: readonly Neighbour[],
-  config: Pick<PipelineConfig, "dedup_similarity">,
-): DedupDecision {
-  const duplicates = neighbours.filter((n) => isDuplicate(n.similarity, config));
-  if (duplicates.length === 0) return { decision: "unique" };
+export function resolveDuplicate(story: DedupStory, duplicate: DedupStory | null): DedupDecision {
+  if (!duplicate) return { decision: "unique" };
+  const duplicateWins =
+    !REPLACEABLE.has(duplicate.status) ||
+    duplicate.trustLevel > story.trustLevel ||
+    (duplicate.trustLevel === story.trustLevel && duplicate.createdAt <= story.createdAt);
+  return duplicateWins
+    ? { decision: "reject_story", duplicateOf: duplicate.id }
+    : { decision: "keep_story", rejectIds: [duplicate.id] };
+}
 
-  const beats = (a: DedupStory, b: DedupStory): boolean =>
-    a.trustLevel > b.trustLevel || (a.trustLevel === b.trustLevel && a.createdAt < b.createdAt);
+function card(c: DedupCard): string {
+  return [`id : ${c.id}`, `source : ${c.sourceName}${c.sourceDate ? ` (${c.sourceDate})` : ""}`, `titre : ${c.title}`, `résumé : ${c.summary}`].join("\n");
+}
 
-  const winner = duplicates.find((d) => !REPLACEABLE.has(d.status) || beats(d, story));
-  if (winner) {
-    const best = duplicates
-      .filter((d) => !REPLACEABLE.has(d.status) || beats(d, story))
-      .sort((a, b) => b.similarity - a.similarity)[0] ?? winner;
-    return { decision: "reject_story", duplicateOf: best.id, similarity: best.similarity };
-  }
-  return { decision: "keep_story", rejectIds: duplicates.map((d) => d.id) };
+export function buildDedupPrompt(
+  story: DedupCard,
+  candidates: readonly DedupCard[],
+  config: Pick<PipelineConfig, "dedup_window_days">,
+): Prompt {
+  const system = [
+    "Tu détectes les doublons pour une application qui publie une bonne nouvelle par jour et par thème. Deux nouvelles sont des doublons quand elles rapportent le MÊME ÉVÉNEMENT (même fait, même lieu, même acteurs, même période), même si les angles, les sources ou les chiffres mis en avant diffèrent.",
+    "",
+    "Ne sont PAS des doublons : deux événements distincts sur un même sujet (deux aires protégées différentes, deux études différentes sur les coraux), une suite ou une mise à jour avec un fait nouveau, ou une simple proximité de thème.",
+    "",
+    `Tu reçois la nouvelle à tester, puis les nouvelles déjà retenues sur le même thème ces ${config.dedup_window_days} derniers jours, chacune avec son id. Réponds UNIQUEMENT avec un objet JSON strict :`,
+    "{",
+    '  "duplicate_of": "<id exact de la nouvelle déjà retenue qui rapporte le même événement, ou null>",',
+    '  "reason": "une phrase en français qui justifie"',
+    "}",
+    "",
+    "Au moindre doute sérieux sur l'identité de l'événement, réponds null : un doublon manqué coûte moins qu'une vraie nouvelle écartée à tort. Si plusieurs candidates rapportent le même événement, choisis la plus proche.",
+  ].join("\n");
+
+  const user = [
+    "NOUVELLE À TESTER",
+    card(story),
+    "",
+    candidates.length === 0 ? "NOUVELLES DÉJÀ RETENUES : aucune" : "NOUVELLES DÉJÀ RETENUES",
+    ...candidates.map((c, i) => `--- candidate ${i + 1} ---\n${card(c)}`),
+  ].join("\n");
+
+  return { system, user };
 }

@@ -1,4 +1,4 @@
-import { buildDraftPrompt, buildRevisePrompt, parseDraft } from "../draft.ts";
+import { buildDraftPrompt, buildRevisePrompt, decideRevise, parseDraft } from "../draft.ts";
 import { CONFIG } from "./fixtures/config.ts";
 import { OZONE, OZONE_DRAFT_JSON, loadOzoneDraft } from "./fixtures/articles.ts";
 
@@ -142,5 +142,44 @@ describe("buildRevisePrompt", () => {
     expect(prompt.system).toMatch(/sans introduire aucun fait nouveau/);
     expect(prompt.system).toMatch(/« could » reste « pourrait »/); // mêmes règles que le draft
     expect(prompt.system).toMatch(/finir sur elle/);
+  });
+});
+
+describe("decideRevise", () => {
+  it("accepte une révision valide, sans le champ verdict", () => {
+    const out = decideRevise(OZONE_DRAFT_JSON, 1, CONFIG);
+    expect(out.action).toBe("accept");
+    if (out.action === "accept") expect("verdict" in out.draft).toBe(false);
+  });
+
+  it("demande une seconde tentative plus courte quand seul le résumé dépasse", () => {
+    const out = decideRevise(withField("summary", "a".repeat(380)), 1, CONFIG);
+    expect(out).toEqual({ action: "retry_shorter", chars: 380 });
+  });
+
+  it("rejette si le résumé dépasse encore après les tentatives permises (revise_length_retries)", () => {
+    const out = decideRevise(withField("summary", "a".repeat(380)), 2, CONFIG);
+    expect(out.action).toBe("reject");
+    if (out.action === "reject") expect(out.reason).toMatch(/revise_too_long: 380 caractères après 2 tentative/);
+    expect(decideRevise(withField("summary", "a".repeat(380)), 2, { ...CONFIG, revise_length_retries: 2 }).action).toBe("retry_shorter");
+    expect(decideRevise(withField("summary", "a".repeat(380)), 1, { ...CONFIG, revise_length_retries: 0 }).action).toBe("reject");
+  });
+
+  it("rejette toute autre erreur de parsing sans nouvelle tentative", () => {
+    const out = decideRevise(withField("claims", []), 1, CONFIG);
+    expect(out.action).toBe("reject");
+    if (out.action === "reject") expect(out.reason).toMatch(/^revise_parse_error/);
+    expect(decideRevise("pas du json", 1, CONFIG).action).toBe("reject");
+  });
+
+  it("remonte un verdict not_good_news de la révision", () => {
+    expect(decideRevise('{"verdict":"not_good_news","reason":"trop de contreparties"}', 1, CONFIG)).toEqual({ action: "not_good_news", reason: "trop de contreparties" });
+  });
+
+  it("ajoute la consigne de raccourcir au prompt de révision quand on le demande", () => {
+    const prompt = buildRevisePrompt(OZONE, loadOzoneDraft(), [], CONFIG, { shortenFrom: 380 });
+    expect(prompt.user).toMatch(/CONSIGNE DE LONGUEUR : ta révision précédente faisait 380 caractères/);
+    expect(prompt.user).toMatch(/RACCOURCIS le résumé sous 350 caractères/);
+    expect(buildRevisePrompt(OZONE, loadOzoneDraft(), [], CONFIG).user).not.toContain("CONSIGNE DE LONGUEUR");
   });
 });

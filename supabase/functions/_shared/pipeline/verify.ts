@@ -141,6 +141,7 @@ export function buildVerifyPrompt(article: Article, draft: Draft, context: Verif
     "",
     "TYPES DE PROBLÈMES",
     "- fact_error : un fait, un chiffre, un nom ou un lien de causalité que l'article ne dit pas, ou contredit. Rejet définitif.",
+    "  Un claim dont le fait de base est dans l'article mais qui ajoute un simple qualificatif (« mieux », « nombreux », « enfin ») reste `supported: true` : signale le qualificatif en overstatement, pas en fact_error.",
     "- overstatement : terme plus fort ou plus certain que la source (certitude pour un espoir, résultat pour un plan, généralisation).",
     "- missing_caveat : une limite, opposition ou contrepartie importante de l'article est passée sous silence.",
     "- translation_issue : traduction qui ajoute une précision ou change le sens (« beetles » → « carabes »). RAPPEL : une traduction FIDÈLE d'un mot anglais n'est JAMAIS un translation_issue (« folly » → « insensé » est correct), même si le mot français n'apparaît pas dans l'article.",

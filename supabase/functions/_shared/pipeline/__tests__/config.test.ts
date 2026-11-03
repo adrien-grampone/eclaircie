@@ -21,12 +21,12 @@ describe("parseConfig", () => {
 
   it("refuse une valeur hors bornes", () => {
     const rows = CONFIG_ROWS.map((r) =>
-      r.key === "dedup_similarity" ? { key: r.key, value: 1.5 } : r,
+      r.key === "triage_min_score" ? { key: r.key, value: 1.5 } : r,
     );
     const result = parseConfig(rows);
     expect(result.ok).toBe(false);
     if (result.ok) return;
-    expect(result.error).toMatch(/dedup_similarity/);
+    expect(result.error).toMatch(/triage_min_score/);
   });
 
   it("ignore les clés inconnues", () => {

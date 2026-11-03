@@ -8,9 +8,7 @@ export const CONFIG_ROWS: ConfigRow[] = [
   { key: "triage_min_score", value: 0.65 },
   { key: "extract_min_chars", value: 800 },
   { key: "summary_max_chars", value: 350 },
-  { key: "dedup_similarity", value: 0.88 },
-  { key: "dedup_window_days", value: 90 },
-  { key: "embedding_model", value: "voyage-3.5" },
+  { key: "dedup_window_days", value: 30 },
   { key: "auto_approve_min_score", value: 0.8 },
   { key: "auto_approve_min_trust", value: 3 },
   { key: "schedule_horizon_days", value: 14 },
@@ -23,6 +21,7 @@ export const CONFIG_ROWS: ConfigRow[] = [
   { key: "max_draft_per_day", value: 40 },
   { key: "batch_size", value: 10 },
   { key: "verify_max_passes", value: 2 },
+  { key: "revise_length_retries", value: 1 },
 ];
 
 export function loadConfig(): PipelineConfig {

@@ -59,7 +59,7 @@ Deno.serve(async () => {
           draft,
           { pass, previousProblems },
         );
-        const reply = await askModel(MODELS.verify, prompt, { maxTokens: 8192, effort: "medium", thinking: true });
+        const reply = await askModel(MODELS.verify, prompt, { maxTokens: 4096, effort: "low", thinking: true });
         if (reply.stopReason === "refusal" || reply.stopReason === "max_tokens") {
           return settle("rejected", `verify_incomplete: ${reply.stopReason}`, null);
         }

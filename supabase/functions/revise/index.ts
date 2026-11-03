@@ -8,7 +8,7 @@ import { MODELS, askModel } from "../_shared/claude.ts";
 import { errorMessage, json, mapLimit } from "../_shared/http.ts";
 import { STORY_SELECT, draftOf, type StoryRow } from "../_shared/stories.ts";
 import { planBatch } from "../_shared/pipeline/budget.ts";
-import { buildRevisePrompt, parseDraft } from "../_shared/pipeline/draft.ts";
+import { buildRevisePrompt, decideRevise, type ReviseOptions } from "../_shared/pipeline/draft.ts";
 
 interface ItemResult {
   id: string;
@@ -43,20 +43,26 @@ Deno.serve(async () => {
       const last = story.verify_log[story.verify_log.length - 1];
       if (!article || !last) return reject("revise_missing_context");
       try {
-        const prompt = buildRevisePrompt(
-          { title: article.title, sourceName: story.source_name, url: story.source_url, publishedAt: article.published_at, fullText: article.full_text },
-          draftOf(story), last.verify.problems, config,
-        );
-        const reply = await askModel(MODELS.draft, prompt, { maxTokens: 8192, effort: "medium", thinking: true });
-        if (reply.stopReason === "refusal" || reply.stopReason === "max_tokens") return reject(`revise_incomplete: ${reply.stopReason}`);
-        const parsed = parseDraft(reply.text, config);
-        if (!parsed.ok) return reject(`revise_parse_error: ${parsed.error.slice(0, 200)}`);
-        if (parsed.value.verdict === "not_good_news") return reject(`revise_not_good_news: ${parsed.value.reason.slice(0, 300)}`);
-        const d = parsed.value;
-        await db.from("stories")
-          .update({ title_main: d.title_main, title_accent: d.title_accent || null, summary: d.summary, claims: d.claims, scene: d.scene, status: "drafted", reject_reason: null })
-          .eq("id", story.id);
-        return { id: story.id, title: d.title_main, outcome: "revised", reason: null };
+        const articleInput = { title: article.title, sourceName: story.source_name, url: story.source_url, publishedAt: article.published_at, fullText: article.full_text };
+        let options: ReviseOptions = {};
+        // Tentative 1, puis une de plus par revise_length_retries si seul le résumé est trop long.
+        for (let attempt = 1; ; attempt++) {
+          const prompt = buildRevisePrompt(articleInput, draftOf(story), last.verify.problems, config, options);
+          const reply = await askModel(MODELS.draft, prompt, { maxTokens: 4096, effort: "low", thinking: true });
+          if (reply.stopReason === "refusal" || reply.stopReason === "max_tokens") return reject(`revise_incomplete: ${reply.stopReason}`);
+          const step = decideRevise(reply.text, attempt, config);
+          if (step.action === "retry_shorter") {
+            options = { shortenFrom: step.chars };
+            continue;
+          }
+          if (step.action === "reject") return reject(step.reason);
+          if (step.action === "not_good_news") return reject(`revise_not_good_news: ${step.reason.slice(0, 300)}`);
+          const d = step.draft;
+          await db.from("stories")
+            .update({ title_main: d.title_main, title_accent: d.title_accent || null, summary: d.summary, claims: d.claims, scene: d.scene, status: "drafted", reject_reason: null })
+            .eq("id", story.id);
+          return { id: story.id, title: d.title_main, outcome: "revised", reason: null };
+        }
       } catch (cause) {
         const message = errorMessage(cause);
         console.error(`revise ${story.id} : ${message}`);

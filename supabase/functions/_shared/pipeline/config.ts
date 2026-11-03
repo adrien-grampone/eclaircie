@@ -24,12 +24,8 @@ export const PipelineConfigSchema = z.object({
   extract_min_chars: z.number().int().positive(),
   /** §4.4 — longueur maximale du résumé. */
   summary_max_chars: z.number().int().positive(),
-  /** §4.6 — similarité cosinus au-delà de laquelle c'est le même événement. */
-  dedup_similarity: z.number().min(0).max(1),
-  /** §4.6 — fenêtre de comparaison en jours. */
+  /** §4.6 — fenêtre de comparaison des doublons, en jours. */
   dedup_window_days: z.number().int().positive(),
-  /** §4.6 — modèle d'embeddings (1024 dimensions, cf. stories.embedding). */
-  embedding_model: z.string().min(1),
   /** §4.8 — auto-validation : score minimal… */
   auto_approve_min_score: z.number().min(0).max(1),
   /** §4.8 — …et trust_level minimal de la source. */
@@ -54,6 +50,8 @@ export const PipelineConfigSchema = z.object({
   batch_size: z.number().int().positive(),
   /** §4.5 — passes de vérification maximales (draft → verify → revise → verify = 2). */
   verify_max_passes: z.number().int().positive(),
+  /** §4.5 — tentatives supplémentaires de révision quand seul le résumé est trop long. */
+  revise_length_retries: z.number().int().min(0),
 });
 
 export type PipelineConfig = z.infer<typeof PipelineConfigSchema>;
