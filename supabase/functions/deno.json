@@ -1,5 +1,9 @@
 {
   "imports": {
-    "zod": "npm:zod@4.6.7"
+    "zod": "npm:zod@4.6.7",
+    "linkedom": "npm:linkedom@0.18.15",
+    "@mozilla/readability": "npm:@mozilla/readability@0.6.0",
+    "@supabase/supabase-js": "npm:@supabase/supabase-js@2.118.0",
+    "@anthropic-ai/sdk": "npm:@anthropic-ai/sdk@1.4.0"
   }
 }

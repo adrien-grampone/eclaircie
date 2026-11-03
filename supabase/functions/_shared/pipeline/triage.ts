@@ -70,6 +70,28 @@ export function isTriageAccepted(
   );
 }
 
+/** Codes de rejet au triage, agrégeables dans les rapports (`raw_articles.reject_reason`). */
+export type TriageRejectReason =
+  | "not_good_news"
+  | "not_fact"
+  | "promotional"
+  | "no_theme"
+  | "low_score";
+
+/** Première raison qui disqualifie, dans l'ordre des conditions de §4.2 ; null si accepté. */
+export function triageRejectReason(
+  triage: Triage,
+  score: number,
+  config: Pick<PipelineConfig, "triage_min_score">,
+): TriageRejectReason | null {
+  if (!triage.is_good_news) return "not_good_news";
+  if (!triage.is_fact) return "not_fact";
+  if (triage.is_promotional) return "promotional";
+  if (triage.themes.length === 0) return "no_theme";
+  if (score < config.triage_min_score) return "low_score";
+  return null;
+}
+
 export function buildTriagePrompt(input: TriageInput, themes: readonly ThemeRef[]): Prompt {
   const themeList = themes.map((t) => `- "${t.id}" : ${t.label}`).join("\n");
   const system = [

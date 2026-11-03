@@ -15,6 +15,9 @@ export const CONFIG_ROWS: ConfigRow[] = [
   { key: "schedule_recent_days", value: 10 },
   { key: "schedule_max_age_days", value: 30 },
   { key: "stock_alert_days", value: 7 },
+  { key: "max_triage_per_day", value: 200 },
+  { key: "max_draft_per_day", value: 40 },
+  { key: "batch_size", value: 10 },
 ];
 
 export function loadConfig(): PipelineConfig {

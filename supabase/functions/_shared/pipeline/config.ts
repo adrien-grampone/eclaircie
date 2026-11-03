@@ -38,6 +38,12 @@ export const PipelineConfigSchema = z.object({
   schedule_max_age_days: z.number().int().positive(),
   /** §4.9 — alerte si le stock programmé d'un thème descend sous N jours. */
   stock_alert_days: z.number().int().positive(),
+  /** Garde-fou de coût — appels Haiku (triage) par jour, toutes invocations confondues. */
+  max_triage_per_day: z.number().int().min(0),
+  /** Garde-fou de coût — appels Sonnet (draft) par jour. */
+  max_draft_per_day: z.number().int().min(0),
+  /** Éléments traités par invocation d'une Edge Function. */
+  batch_size: z.number().int().positive(),
 });
 
 export type PipelineConfig = z.infer<typeof PipelineConfigSchema>;
