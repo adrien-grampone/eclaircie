@@ -50,8 +50,6 @@ export const OZONE_DRAFT_JSON = JSON.stringify({
   title_accent: "se répare.",
   summary:
     "Bonne nouvelle venue du ciel : la couche d'ozone se reconstitue. Selon le rapport de l'ONU publié ce lundi, elle devrait retrouver son niveau de 1980 vers 2066 au-dessus de l'Antarctique. Le Protocole de Montréal a éliminé près de 99 % des substances qui l'abîmaient.",
-  why_good:
-    "C'est la preuve qu'un accord mondial fondé sur la science peut réparer un dommage planétaire.",
   claims: [
     {
       claim: "l'ozone retrouvera son niveau de 1980 vers 2066 au-dessus de l'Antarctique",
@@ -74,8 +72,6 @@ export const OZONE_VERIFY_JSON = JSON.stringify({
     { index: 0, supported: true, note: "" },
     { index: 1, supported: true, note: "" },
   ],
-  facts_in_article: true,
-  no_exaggeration: true,
   problems: [],
   verdict: "approve",
 });

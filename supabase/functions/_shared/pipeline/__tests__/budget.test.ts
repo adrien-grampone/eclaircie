@@ -25,7 +25,7 @@ describe("budget journalier", () => {
 
 describe("triageRejectReason", () => {
   const base: Triage = {
-    is_good_news: true, themes: ["science"], is_fact: true, is_promotional: false,
+    is_good_news: true, themes: ["science"], kind: "breakthrough", study_subject: "not_a_study", is_fact: true, is_promotional: false,
     positivity: 0.9, significance: 0.8, evergreen: false, reason: "",
   };
 

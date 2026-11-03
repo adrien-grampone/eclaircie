@@ -10,6 +10,8 @@ import { formatIssues } from "./json.ts";
 export const PipelineConfigSchema = z.object({
   /** §4.1 — articles plus vieux que N jours ignorés à la collecte. */
   collect_max_age_days: z.number().int().positive(),
+  /** §4.1 — fenêtre élargie pour les sources trust_level 3 (institutions, revues). */
+  collect_max_age_days_trust3: z.number().int().positive(),
   /** §4.2 — pondérations du score de tri. */
   triage_weights: z.object({
     positivity: z.number().min(0),
@@ -38,12 +40,18 @@ export const PipelineConfigSchema = z.object({
   schedule_max_age_days: z.number().int().positive(),
   /** §4.9 — alerte si le stock programmé d'un thème descend sous N jours. */
   stock_alert_days: z.number().int().positive(),
+  /** §4.9 — part maximale d'une même source parmi les nouvelles d'un thème… */
+  schedule_max_source_share: z.number().min(0).max(1),
+  /** …sur cette fenêtre glissante, en jours. */
+  schedule_source_window_days: z.number().int().positive(),
   /** Garde-fou de coût — appels Haiku (triage) par jour, toutes invocations confondues. */
   max_triage_per_day: z.number().int().min(0),
   /** Garde-fou de coût — appels Sonnet (draft) par jour. */
   max_draft_per_day: z.number().int().min(0),
   /** Éléments traités par invocation d'une Edge Function. */
   batch_size: z.number().int().positive(),
+  /** §4.5 — passes de vérification maximales (draft → verify → revise → verify = 2). */
+  verify_max_passes: z.number().int().positive(),
 });
 
 export type PipelineConfig = z.infer<typeof PipelineConfigSchema>;

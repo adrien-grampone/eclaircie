@@ -7,9 +7,17 @@ import type { ParseResult, Prompt, ThemeRef } from "./types.ts";
  * Étape `triage` (§4.2) — Claude Haiku lit titre + extrait RSS + source et
  * renvoie ce JSON. `evergreen` est marqué ici pour la programmation (§4.9).
  */
+/** Nature de la bonne nouvelle (règle éditoriale). */
+export const KINDS = ["achievement", "protection", "breakthrough", "discovery", "solidarity", "culture_win"] as const;
+/** Sujet de l'étude, quand l'article en rapporte une. */
+export const STUDY_SUBJECTS = ["human", "animal", "in_vitro", "not_a_study"] as const;
+
 export const TriageSchema = z.object({
   is_good_news: z.boolean(),
+  /** Le premier élément est le thème principal : c'est lui qui va dans stories.theme_id. */
   themes: z.array(z.string().min(1)),
+  kind: z.enum(KINDS),
+  study_subject: z.enum(STUDY_SUBJECTS),
   is_fact: z.boolean(),
   is_promotional: z.boolean(),
   positivity: z.number().min(0).max(1),
@@ -76,7 +84,9 @@ export type TriageRejectReason =
   | "not_fact"
   | "promotional"
   | "no_theme"
-  | "low_score";
+  | "low_score"
+  | "discovery_outside_science"
+  | "health_requires_human";
 
 /** Première raison qui disqualifie, dans l'ordre des conditions de §4.2 ; null si accepté. */
 export function triageRejectReason(
@@ -105,10 +115,18 @@ export function buildTriagePrompt(input: TriageInput, themes: readonly ThemeRef[
     "Thèmes possibles (utilise uniquement ces identifiants) :",
     themeList,
     "",
+    "RÈGLES ÉDITORIALES",
+    "- `themes` : le PREMIER élément est le thème principal, celui qui sera affiché. Mets-le en tête.",
+    "- `kind` : achievement (un résultat obtenu, un projet achevé), protection (une espèce, un lieu, des personnes mieux protégées), breakthrough (une avancée avec bénéfice concret), discovery (un savoir nouveau sans bénéfice concret immédiat), solidarity (entraide, générosité, inclusion), culture_win (patrimoine, langue, création, accès à la culture).",
+    "- Une `discovery` n'est une bonne nouvelle QUE pour le thème science. Si tu la classes discovery, mets uniquement science.",
+    "- Santé = un résultat chez l'HUMAIN : essai clinique, traitement autorisé, baisse mesurée d'une maladie. Une étude sur l'animal ou in vitro ne peut JAMAIS avoir le thème sante ; renseigne `study_subject` honnêtement.",
+    "",
     "Réponds UNIQUEMENT avec un objet JSON strict, sans commentaire, de la forme :",
     "{",
     '  "is_good_news": true,',
     '  "themes": ["planete"],',
+    '  "kind": "protection",',
+    '  "study_subject": "not_a_study",',
     '  "is_fact": true,',
     '  "is_promotional": false,',
     '  "positivity": 0.9,',
@@ -117,7 +135,7 @@ export function buildTriagePrompt(input: TriageInput, themes: readonly ThemeRef[
     '  "reason": "courte justification en français"',
     "}",
     "",
-    "positivity et significance sont des nombres entre 0 et 1.",
+    "positivity et significance sont des nombres entre 0 et 1. study_subject vaut human, animal, in_vitro ou not_a_study.",
     "evergreen vaut true si la nouvelle restera vraie et intéressante dans plusieurs mois (une découverte, un résultat durable), false si elle est liée à l'actualité immédiate.",
   ].join("\n");
 

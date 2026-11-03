@@ -1,0 +1,228 @@
+
+==== 1. REJECTED — animaux — The Guardian — Wildlife
+TITRE    : Le méloé rare / est de retour.
+RÉSUMÉ   : Après près de 60 ans, un coléoptère rare a été redécouvert au pays de Galles, sur le site de Castlemartin, dans le Pembrokeshire. Des larves y ont été repérées lors du relevé de 2026, signe que l'espèce s'y reproduit à nouveau. (227 car.)
+POURQUOI : Une espèce menacée d'extinction en Grande-Bretagne se reproduit de nouveau sur un site où l'on craignait pour sa survie.
+CLAIM    : Un coléoptère rare a été redécouvert au pays de Galles après près de 60 ans.
+ EVIDENCE : « A rare beetle has been rediscovered in Wales after nearly 60 years, conservationists have said. »
+CLAIM    : Il a été trouvé sur le site de Castlemartin, dans le Pembrokeshire.
+ EVIDENCE : « The short-necked oil beetle, driven to the brink of extinction in Britain due to habitat loss over the course of the 20th century, has been found at the Castlemartin range in Pembrokeshire, according to Natural Resources Wales (NRW). »
+CLAIM    : Le relevé de 2026 a révélé des larves, ce qui suggère que l'espèce se reproduit à nouveau.
+ EVIDENCE : « However, the 2026 survey discovered larvae distributed in such a way to suggest hatchlings from a larger batch of immature beetles had thrived. »
+VERDICT  : rejected — verify_failed: Le titre et le résumé présentent le méloé comme « de retour », ce qui exagère. L'article rapporte une redécouverte sur un site, avec des craintes persistantes sur la viabilité de l'espèce : deux relevés (2022 et 2025) n'ont trouvé que des adultes morts. | Le brouillon traduit « short-necked oil beetle » par « méloé », sans que ce nom français figure dans l'article. C'est une identification taxonomique non vérifiable par l'article. Elle est probablement correcte, mais le doute impose un rejet. | Le résumé dit que « près de 60 ans » se sont écoulés depuis la dernière observation au pays de Galles. L'article indique pourtant que l'espèce a été redécouverte en 2006 dans le Devon, et qu'elle a depuis été trouvée dans les Hébrides et à Salisbury Plain. Il précise aussi que le coléoptère a été signalé à Castlemartin en 2020, ce qui contredit la formule « Après près de 60 ans … redécouvert » si elle est rapprochée de 2026. La chronologie du brouillon est ambiguë. | Le résumé aff
+SOURCE   : https://www.theguardian.com/environment/2026/nov/01/rare-short-necked-oil-beetle-rediscovered-wales
+
+==== 2. REJECTED — planete — The Guardian — Wildlife
+TITRE    : 30 millions de livres réunis / pour rendre un domaine à la nature.
+RÉSUMÉ   : Les Wildlife Trusts ont réuni 30 millions de livres pour acheter le domaine de Rothbury, dans le Northumberland, qui couvre plus de 3 800 hectares. Le projet vise à restaurer et étendre les habitats, pour aider notamment les écureuils roux et peut-être le retour des campagnols amphibies. (288 car.)
+POURQUOI : Grâce à des milliers de donateurs, un immense territoire va pouvoir être restauré pour la faune sauvage et ouvert aux visiteurs.
+CLAIM    : Les Wildlife Trusts ont réuni 30 millions de livres pour acheter le domaine de Rothbury, dans le Northumberland.
+ EVIDENCE : « One of the most ambitious nature recovery projects ever undertaken in England can go ahead after campaigners announced they had raised £30m to buy an estate in Northumberland. »
+CLAIM    : Le domaine couvre plus de 3 800 hectares.
+ EVIDENCE : « At more than 3,800 hectares (nearly 15 sq miles), the Rothbury estate is the largest piece of land in single ownership to have come up for sale in England for more than 30 years. »
+CLAIM    : Le projet vise à restaurer et étendre les habitats pour augmenter les espèces déjà présentes, comme les écureuils roux.
+ EVIDENCE : « The trust has big plans and hopes that by making interventions, restoring and extending habitats, it can increase numbers of species which are already there, whether mountain bumblebees or red squirrels. »
+CLAIM    : Le retour des campagnols amphibies est envisagé comme une possibilité.
+ EVIDENCE : « “We should have water voles in this landscape,” said Pratt. “Maybe we can help bring them back. »
+VERDICT  : rejected — verify_failed: Le « Pourquoi c'est bien » affirme qu'un immense territoire « va pouvoir être restauré pour la faune sauvage et ouvert aux visiteurs » : c'est formulé comme une certitude, alors que l'article parle d'objectifs et d'espoirs (« hopes », « aims », « maybe », « hopefully »). L'ouverture aux visiteurs n'est que suggérée par une citation de Pratt (« make sure that people come here and really enjoy getting close to wildlife ») et par la croyance que le tourisme de nature profitera à la ville. | L'article mentionne une contrepartie que le brouillon passe sous silence : certains agriculteurs jugent le projet une « folie » (« folly »), et un conseiller conservateur local s'inquiète pour la production alimentaire, la gestion traditionnelle des terres et la rentabilité des exploitations. La nouvelle n'est donc pas sans réserve. | Le « Pourquoi c'est bien » attribue le financement à « des milliers de donateurs » alors que l'article précise que le total de 30 M£ provient aussi de la N
+SOURCE   : https://www.theguardian.com/environment/2026/oct/30/wildlife-trusts-northumberland-nature-recovery-rothbury-estate
+
+==== 3. REJECTED — planete — The Guardian — Wildlife
+TITRE    : Une ferme anglaise / fait revenir les oiseaux.
+RÉSUMÉ   : Dans le Leicestershire, la ferme-test d'Allerton voit ses oiseaux de ferme augmenter de 145 % depuis 1992, alors que leur nombre baisse de 23 % au niveau national. Graines d'hiver, bandes pour insectes et semis sans labour y aident la faune. (241 car.)
+POURQUOI : Une exploitation qui produit de la nourriture montre que le déclin des oiseaux des champs n'est pas une fatalité et que d'autres fermes peuvent s'en inspirer.
+CLAIM    : Les oiseaux de ferme d'Allerton ont augmenté de 145 % depuis 1992.
+ EVIDENCE : « Farm bird abundance at Allerton has risen 145% since 1992 when monitoring began, compared with a 23% decline nationally over the same period. »
+CLAIM    : Au niveau national, ces oiseaux ont reculé de 23 % sur la même période.
+ EVIDENCE : « Farm bird abundance at Allerton has risen 145% since 1992 when monitoring began, compared with a 23% decline nationally over the same period. »
+CLAIM    : La ferme se situe sur la frontière entre le Leicestershire et le Rutland et sert de lieu de recherche.
+ EVIDENCE : « The Allerton Project is a working farm and research centre on the Leicestershire-Rutland border, where farmers and scientists have spent more than three decades testing how farming can produce food while supporting wildlife. »
+CLAIM    : Des bandes de graines sauvages fournissent de la nourriture aux oiseaux en hiver.
+ EVIDENCE : « In these unkempt strips found all over the farm, kale, teasel, sorghum and millet are grown to supply seeds to birds through winter. »
+CLAIM    : Les bandes d'herbes où hibernent les carabes fournissent des insectes aux oiseaux.
+ EVIDENCE : « “But also they provide insect food for birds.” »
+CLAIM    : Du côté non labouré, les oiseaux viennent se nourrir, pas du côté labouré.
+ EVIDENCE : « “When we’re watching to see where the birds are landing to feed, none of them are going on to the ploughed side,” says Leake, the director of the Allerton Project farm, standing on the trashy side. »
+VERDICT  : rejected — verify_failed: Le claim 4 emploie « carabes » alors que l'article parle seulement de « beetles » : l'espèce n'est pas précisée, c'est une précision non soutenue par l'article. | Le résumé dit que « leur nombre baisse de 23 % au niveau national » au présent, comme un déclin en cours. L'article parle d'un déclin de 23 % sur la période depuis 1992 : le résumé est imprécis sur la période. | Le résumé affirme que les trois pratiques (graines d'hiver, bandes pour insectes, semis sans labour) « aident la faune ». L'article ne mesure pas l'effet de chacune. Le semis direct est présenté par Leake à partir de l'observation de la présence d'oiseaux sur la parcelle, sans lien démontré avec l'augmentation de 145 %. Le lien de causalité est donc surestimé. | Le titre et le résumé disent que la ferme « fait revenir les oiseaux ». Or l'article ne dit pas que les oiseaux étaient absents. De plus, les chiffres de 145 % viennent d'un projet dirigé par Leake, qui défend sa propre ferme, sans validation in
+SOURCE   : https://www.theguardian.com/environment/2026/oct/31/this-is-a-robust-recipe-the-experimental-farm-bucking-the-decline-in-uk-birds
+
+==== 4. REJECTED — planete — Reporterre
+TITRE    : Une grotte d'Ariège / protège ses chauves-souris.
+RÉSUMÉ   : À Tourtouse, en Ariège, le Conservatoire d'espaces naturels a acheté un hectare de terres à l'entrée d'une grotte. Plus de 5 000 chauves-souris, jusqu'à douze espèces, y vivent. Il a fallu six ans pour convaincre les propriétaires et réunir 23 000 euros. (254 car.)
+POURQUOI : Acheter ces terres protège durablement l'une des plus importantes colonies de chauves-souris de France, dont certaines espèces sont menacées.
+CLAIM    : Le Conservatoire d'espaces naturels d'Ariège a acheté un hectare de terres à l'entrée de la grotte de Tourtouse.
+ EVIDENCE : « En plus de cette protection, le Conservatoire d’espaces naturels d’Ariège a acheté, le 9 juillet, un hectare de terres à l’entrée de la grotte de Tourtouse. »
+CLAIM    : Plus de 5 000 chauves-souris et jusqu'à douze espèces vivent dans cette colonie.
+ EVIDENCE : « Dans cette colonie, plus de 5 000 individus et jusqu’à douze espèces peuvent cohabiter, dont certaines menacées, comme le minioptère de Schreibers. »
+CLAIM    : L'association a travaillé six ans pour obtenir l'accord des propriétaires et réunir 23 000 euros.
+ EVIDENCE : « L’acquisition de la parcelle s’est construite dans la durée : l’association a travaillé six ans pour obtenir l’accord des propriétaires et réunir les 23 000 euros nécessaires, financés en grande majorité par un don privé. »
+VERDICT  : rejected — verify_failed: Le résumé affirme que « plus de 5 000 chauves-souris, jusqu'à douze espèces, y vivent » alors que l'article dit que ces individus et espèces « peuvent cohabiter » ; l'effectif réel varie selon la saison (plus d'un millier recensées le soir du reportage, au minimum quatre espèces). | « Protège durablement » est une formulation plus forte que l'article, qui ne parle pas de protection durable ; l'achat d'un hectare est présenté comme une protection « complémentaire » à Natura 2000, et non comme une garantie durable. | « Il a fallu six ans pour convaincre les propriétaires » : l'article dit « obtenir l'accord des propriétaires », et le mot « convaincre » est une paraphrase qui prête une intention non écrite. | L'article comporte d'importantes contreparties : déclin de 30 % des populations de chauves-souris en France entre 2013 et 2024, réchauffement de la grotte d'environ 0,1 degré par an, menaces liées aux pesticides et aux éoliennes. La nouvelle est positive mais le brouil
+SOURCE   : https://reporterre.net/Une-association-achete-les-abords-d-une-grotte-pour-proteger-ses-5-000-chauve-souris
+
+==== 5. VERIFIED — animaux — Reporterre
+TITRE    : Éoliennes à l'arrêt la nuit : / les chauves-souris respirent.
+RÉSUMÉ   : Une étude du Cesco, le centre de recherche du Muséum national d'histoire naturelle, montre qu'arrêter les éoliennes certaines nuits, quand le vent est faible et le temps doux, réduit de plus de 80 % la mortalité des chauves-souris. Sur les parcs concernés, elle est divisée par cinq. (283 car.)
+POURQUOI : Une mesure simple permet de concilier énergie éolienne et protection des chauves-souris, qui régulent notamment les insectes ravageurs de l'agriculture.
+CLAIM    : L'étude a été menée par le Cesco, qui appartient au Muséum national d'histoire naturelle.
+ EVIDENCE : « Une étude menée par des scientifiques du Cesco (Centre d’écologie et des sciences de la conservation, qui appartient au Muséum national d’histoire naturelle) »
+CLAIM    : Arrêter temporairement les éoliennes la nuit réduit la mortalité des chauves-souris de plus de 80 %.
+ EVIDENCE : « montre qu’arrêter temporairement les éoliennes la nuit permet de réduire la mortalité des chauves-souris de plus de 80 %. »
+CLAIM    : L'arrêt concerne les périodes de la nuit où le vent est faible et les températures suffisamment douces.
+ EVIDENCE : « l’arrêt des éoliennes pendant certaines périodes de la nuit, lorsque le vent est faible et les températures suffisamment douces »
+CLAIM    : Sur les parcs où les éoliennes sont arrêtées, la mortalité est divisée par cinq.
+ EVIDENCE : « Sur les parcs où les éoliennes sont arrêtées, la mortalité des chauves-souris est divisée par cinq »
+CLAIM    : Les chauves-souris régulent les insectes ravageurs de l'agriculture.
+ EVIDENCE : « elles régulent par exemple les insectes ravageurs de l’agriculture. »
+VERDICT  : verified
+SOURCE   : https://reporterre.net/Stopper-les-eoliennes-la-nuit-cinq-fois-moins-de-collisions-pour-les-chauves-souris
+
+==== 6. REJECTED — solidarite — Reporterre
+TITRE    : Une épicerie sur roues / qui brise l'isolement.
+RÉSUMÉ   : Dans l'Hérault, le camion Roul'Contact passe deux fois par mois dans six communes. Il propose des produits de qualité à deux tarifs, dont un solidaire, et des ateliers comme des cours de cuisine pour retisser du lien. (217 car.)
+POURQUOI : En milieu rural, où la précarité alimentaire touche aussi, ce projet aide à mieux manger tout en rompant la solitude, sans honte ni jugement.
+CLAIM    : Le camion passe deux fois par mois dans six communes de l'Hérault.
+ EVIDENCE : « Deux fois par mois, le camion sillonne la campagne héraultaise, s’arrêtant dans six communes différentes. »
+CLAIM    : Chaque produit est proposé à deux tarifs, dont un solidaire.
+ EVIDENCE : « Pour chaque denrée, deux tarifs, dont un solidaire. »
+CLAIM    : L'association organise des animations, dont des cours de cuisine, pour lutter contre l'isolement.
+ EVIDENCE : « À chaque étape, l’association Terre-Contact propose donc des animations : cours de cuisine, espace pitchoun pour les enfants, atelier bien-être avec une esthéticienne. »
+VERDICT  : rejected — verify_failed: Le résumé affirme que le projet permet « de mieux manger tout en rompant la solitude, sans honte ni jugement » : l'article ne dit pas que c'est sans honte ni jugement. La coordinatrice dit que dans les dispositifs classiques on a peur du jugement, mais elle reconnaît aussi que la mixité est difficile, car certains pensent que « c'est une épicerie sociale, ce n'est pas pour moi ». La formule est donc une extrapolation. | Le résumé indique que le camion « propose des produits de qualité » sans nuance ; l'article précise que certains produits sont bio ou locaux, et que le but est une alimentation de qualité. Formulation présentée comme un acquis alors qu'il s'agit en partie d'un objectif affiché. | Contrepartie importante omise : l'épicerie ne peut accueillir que douze personnes par étape, sur orientation d'une assistante sociale, et pour une durée limitée (par ex. six mois). L'article juge cela « insuffisant par rapport aux besoins ». Le budget est aussi difficile à boucle
+SOURCE   : https://reporterre.net/En-tournee-avec-ce-camion-epicerie-solidaire-qui-permet-de-mieux-se-nourrir-en-brisant-l-isolement
+
+==== 7. REJECTED — sante — Reporterre
+TITRE    : À Lille, une maison apaisante / pour prendre soin de soi.
+RÉSUMÉ   : À Lille, l'association Ikambere accueille des femmes précaires obèses, diabétiques ou hypertendues. Elles y trouvent des ateliers gratuits de sport adapté, de diététique et de cuisine, ainsi qu'un repas partagé chaque midi en semaine. (234 car.)
+POURQUOI : Des femmes qui n'ont pas les moyens d'aller en salle de sport ni d'acheter des produits frais trouvent un lieu gratuit pour s'occuper de leur santé, ensemble.
+CLAIM    : Ikambere accueille à Lille des femmes précaires obèses, diabétiques ou hypertendues.
+ EVIDENCE : « À Lille, l’association Ikambere a créé une structure destinée aux patientes précaires obèses, diabétiques ou hypertendues. »
+CLAIM    : Les ateliers gratuits portent sur l'activité physique adaptée, la diététique et la cuisine.
+ EVIDENCE : « Elle propose des ateliers gratuits d’activité physique adaptée, de diététique, de cuisine et des partages de déjeuners tous les jours en semaine. »
+CLAIM    : Un repas partagé a lieu chaque midi en semaine.
+ EVIDENCE : « Elle propose des ateliers gratuits d’activité physique adaptée, de diététique, de cuisine et des partages de déjeuners tous les jours en semaine. »
+VERDICT  : rejected — verify_failed: Le « Pourquoi c'est bien » affirme que le lieu est « gratuit » dans son ensemble. L'article ne précise la gratuité que pour les ateliers, pas pour le repas partagé, et la formulation généralise donc au-delà de la source. | Le « Pourquoi c'est bien » dit que ces femmes « n'ont pas les moyens d'aller en salle de sport ni d'acheter des produits frais ». C'est une généralisation. L'article cite le cas de Jessica, qui ne peut pas payer l'abonnement, et indique que la plupart des femmes dépendent des colis alimentaires, mais pas que toutes sont dans cette situation. | L'article contient des nuances que le brouillon ne reprend pas : les femmes ne peuvent pas toutes appliquer les conseils tout de suite, et la directrice dit seulement qu'elles en auront « sûrement la possibilité à l'avenir ». Le brouillon ne relève aucun résultat de santé mesuré (la phrase « Ça fonctionne bien » est un simple témoignage), ce qui est cohérent avec son contenu. La nouvelle reste positive, mais il f
+SOURCE   : https://reporterre.net/Ca-fonctionne-bien-cette-association-aide-les-femmes-precaires-a-prendre-leur-sante-a-bras-le-corps
+
+==== 8. REJECTED — science — Mongabay
+TITRE    : Les forêts variées / tiennent mieux le coup.
+RÉSUMÉ   : Une étude publiée dans Nature Communications a analysé 88 116 parcelles de forêt aux États-Unis. Plus une forêt compte d'espèces d'arbres, mieux elle résiste aux extrêmes climatiques combinés, comme la chaleur et la sécheresse, et mieux elle récupère ensuite. (259 car.)
+POURQUOI : Face au dérèglement climatique, la diversité des arbres offre aux forêts naturelles une protection concrète, et les gestionnaires disposent d'une piste claire pour s'adapter.
+CLAIM    : L'étude a été publiée dans Nature Communications.
+ EVIDENCE : « The study, published in July in Nature Communications, examined thousands of acres of U.S. woodlands. »
+CLAIM    : Les chercheurs ont retenu 88 116 parcelles de forêt aux États-Unis.
+ EVIDENCE : « From this dataset, the researchers involved in the most recent study selected 88,116 forest plots across the continental U.S. that had no record of human disturbance or events like fire. »
+CLAIM    : Plus une forêt est diverse en espèces d'arbres, mieux elle résiste aux extrêmes climatiques combinés comme chaleur et sécheresse.
+ EVIDENCE : « It found that the higher diversity of tree species in a forest, the better equipped it will be to handle the compound climate extremes that result from global warming, such as when extreme heat occurs at the same time as drought or unusually high rainfall. »
+CLAIM    : Les forêts plus diversifiées récupèrent aussi mieux après ces événements.
+ EVIDENCE : « The study found that diversity did have a protective effect: More diverse forests were more resilient during compound climate events, and recovered more effectively afterwards. »
+VERDICT  : rejected — verify_failed: Le « Pourquoi c'est bien » affirme que la diversité offre « une protection concrète » aux forêts naturelles. L'article est plus nuancé : la diversité n'est ni le seul facteur ni le plus fort, la température moyenne annuelle pouvant avoir un impact plus grand. Les chercheurs soulignent aussi que l'effet n'est pas égal selon les types d'événements. | « Les gestionnaires disposent d'une piste claire pour s'adapter » est trop affirmatif. L'article dit que les résultats donnent « un bon point de départ ». Schnabel et Qiao reconnaissent des lacunes : les effets varient selon les régions, il y a peu d'informations utilisables localement, et la transposition des parcelles expérimentales aux forêts reste mal comprise. | Le résumé généralise (« mieux elle résiste ») sans mentionner que le lien est observationnel et limité aux forêts américaines étudiées. Il omet aussi que l'effet est plus marqué pour chaleur + sécheresse que pour chaleur + fortes pluies, et que les événements étud
+SOURCE   : https://news.mongabay.com/2026/11/diverse-forests-can-better-withstand-extreme-weather-events-study-finds-heres-why/
+
+==== 9. REJECTED — solidarite — Mongabay
+TITRE    : Les peuples autochtones / ont voix au chapitre.
+RÉSUMÉ   : À la COP17 en Arménie, les peuples autochtones et les communautés locales ont consolidé leur rôle dans la Convention sur la diversité biologique. Leur organe dédié, créé en 2024, est désormais pleinement opérationnel : il peut conseiller les États, rédiger des textes de décision et élaborer des lignes directrices. (315 car.)
+POURQUOI : Ceux qui vivent au plus près de la nature disposent désormais d'un siège officiel pour peser sur les décisions mondiales de protection de la biodiversité.
+CLAIM    : À la COP17 en Arménie, les peuples autochtones et les communautés locales ont renforcé leur rôle dans la prise de décision de la Convention sur la diversité biologique.
+ EVIDENCE : « At the 2026 U.N. Biodiversity Conference in Armenia (COP17), Indigenous peoples and local communities strengthened their role in the decision-making of the Convention on Biological Diversity (CBD), with the full operationalization of a subsidiary body within the treaty. »
+CLAIM    : L'organe subsidiaire a été créé en 2024.
+ EVIDENCE : « The Subsidiary body on Article 8(j) (SB8J) was historically created at the 2024 biodiversity summit in Colombia. »
+CLAIM    : Cet organe permet de conseiller les États, de rédiger des textes de décision et d'élaborer des lignes directrices.
+ EVIDENCE : « It allows Indigenous peoples and local communities (IP&LCs) to advise parties, draft decision texts and handle tasks assigned to them, such as developing guidelines for the implementation of global conservation goals with the full participation of IP&LCs. »
+VERDICT  : rejected — verify_failed: Le résumé affirme que l'organe est « désormais pleinement opérationnel » ; l'article parle de « full operationalization » adoptée à la COP17, mais précise que les délégués ont discuté de ce que cela impliquait (fonction, gouvernance, budget, calendrier). Rien ne prouve que l'organe fonctionne déjà pleinement : c'est une adoption de ses modalités, pas un état de fait constaté. | « Ceux qui vivent au plus près de la nature disposent désormais d'un siège officiel pour peser sur les décisions mondiales » est une extrapolation : l'article ne parle pas de « siège officiel » et dit que l'organe conseille les parties, sans pouvoir décisionnel. Le titre « ont voix au chapitre » et le titre de l'article (« decision-making powers ») sont plus forts que ce que décrit le contenu, où l'organe est consultatif. | Contrepartie omise : la représentation a fait l'objet d'un désaccord important. Le compromis a supprimé la mention des sept régions socioculturelles, que les négociateurs autoc
+SOURCE   : https://news.mongabay.com/short-article/2026/11/indigenous-peoples-and-local-communities-solidify-decision-making-powers-at-cop17/
+
+==== 10. REJECTED — planete — Mongabay
+TITRE    : Une forêt d'Angola / enfin protégée.
+RÉSUMÉ   : En avril, après des années d'appels de scientifiques, le gouvernement angolais a créé l'aire de conservation de la Serra do Pingano, dans la province d'Uíge. Cette forêt de transition abrite des espèces rares, dont certaines amphibiens encore inconnus de la science. (266 car.)
+POURQUOI : Une forêt riche en espèces uniques, qui perd du terrain depuis vingt ans, bénéficie enfin d'un statut officiel de protection.
+CLAIM    : Le gouvernement angolais a créé l'aire de conservation de la Serra do Pingano en avril, après des années d'appels.
+ EVIDENCE : « After years of appeals, the Angolan government established the Serra do Pingano Conservation Area in April. »
+CLAIM    : La forêt se situe dans la province d'Uíge.
+ EVIDENCE : « Located in Uíge province, the SPFE encompasses several densely forested mountain ranges of high biological value. »
+CLAIM    : La zone est une transition entre forêt tropicale humide et savane de miombo.
+ EVIDENCE : « Pingano forms an ecological transition zone between tropical rainforest and miombo savanna, bringing together elements of western Central African forests and species and evolutionary lineages associated with southern and eastern Africa. »
+CLAIM    : Plusieurs amphibiens dépendants de la forêt n'ont pas encore été décrits formellement par la science.
+ EVIDENCE : « Lautenschläger also cited several forest-dependent amphibians that science has yet to describe formally. »
+VERDICT  : rejected — verify_failed: Le titre « enfin protégée » et la phrase « bénéficie enfin d'un statut officiel de protection » présentent la nouvelle comme un succès net. L'article apporte de lourdes contreparties : au moins la moitié de Serra do Pingano est déjà déforestée selon Lautenschläger, et la zone protégée est bien plus petite que celle proposée par les chercheurs. Certaines zones d'une biodiversité exceptionnelle sont défrichées en ce moment même, et la mise en œuvre est incertaine. | Le résumé omet que la forêt continue de disparaître (43 % de perte de la forêt centrale en vingt ans, 21 % pour l'ensemble de l'écosystème). Le lecteur est ainsi induit à croire que la protection règle le problème, alors que l'article la décrit comme tardive et limitée. | Le résumé écrit « certaines amphibiens », ce qui est une faute d'accord (« certains amphibiens »). C'est mineur, mais gênant pour un label « vérifié ». | La nouvelle n'est pas purement positive : l'article est centré sur la perte rapide de for
+SOURCE   : https://news.mongabay.com/2026/10/angola-designates-serra-do-pingano-as-a-protected-area-amid-rapid-forest-loss/
+
+==== 11. REJECTED — planete — Mongabay
+TITRE    : Du bambou et des coquilles / contre les inondations.
+RÉSUMÉ   : À Pamarawan, village de pêcheurs des Philippines, des structures en bambou, des coquilles d'huîtres et des fibres de coco protègent la côte. Selon les responsables locaux, le village n'a plus été inondé depuis presque deux ans, alors que des communes voisines ont été submergées cette année. (291 car.)
+POURQUOI : Une solution simple, faite de matériaux locaux, a mis un village à l'abri des inondations et pourrait inspirer d'autres zones côtières.
+CLAIM    : Le village de Pamarawan est un village de pêcheurs aux Philippines protégé par des structures en bambou, des coquilles d'huîtres et des fibres de coco.
+ EVIDENCE : « It used locally available materials, such as bamboo poles, oyster shells and coconut husks, to protect Pamarawan from tidal waves and storm surges. »
+CLAIM    : Selon un responsable du village, Pamarawan n'a plus été inondé depuis presque deux ans.
+ EVIDENCE : « “It has been almost two years now that we have not been flooded,” Dayao said, crediting it to the nature-based solutions project. »
+CLAIM    : Cette année, le village a échappé aux inondations qui ont durement touché les communautés voisines.
+ EVIDENCE : « Barangay Councilor Ferdinand Cruz concurred, saying that this year, Pamarawan escaped the flooding that hit neighboring communities hard. »
+VERDICT  : rejected — verify_failed: Le « Pourquoi c'est bien » affirme sans nuance qu'une solution « a mis un village à l'abri des inondations ». L'article ne rapporte que des déclarations de responsables locaux, et le projet est un pilote encore inachevé (achèvement prévu plus tard cette année). Le texte attribue la protection au projet sans preuve indépendante : c'est une causalité présentée comme acquise. | L'article mentionne des contreparties absentes du brouillon : plus de 50 résidents ont perdu leurs revenus (bak lad, fermes d'huîtres), seuls certains exploitants de baklad ont été indemnisés, et tous les habitants n'ont pas soutenu le projet initialement. La nouvelle n'est donc pas sans contrepartie cachée. | Le résumé indique « protègent la côte » au présent comme un fait établi, alors que l'article précise que les effets attendus (hausse du fond marin, mangroves, récifs d'huîtres) sont encore à venir et que le projet n'est pas terminé. | Dans le résumé, « des fibres de coco » et « communes voisine
+SOURCE   : https://news.mongabay.com/2026/10/philippine-village-uses-nature-to-defend-against-floods-with-bamboo-shells-and-husks/
+
+==== 12. VERIFIED — science — Phys.org — Biology
+TITRE    : Les lysosomes, simples recycleurs ? / Ils guident aussi le cœur.
+RÉSUMÉ   : Des chercheurs des universités de Liverpool et d'Oxford ont découvert que les lysosomes, vus jusque-là comme les centres de recyclage de la cellule, aident aussi le pacemaker naturel du cœur à accélérer. Ces résultats pourraient éclairer de futures études sur la fibrillation atriale. (284 car.)
+POURQUOI : Mieux comprendre comment le cœur règle son rythme ouvre de nouvelles pistes pour étudier les troubles du rythme cardiaque comme la fibrillation atriale.
+CLAIM    : Des chercheurs des universités de Liverpool et d'Oxford ont découvert que les lysosomes, vus jusque-là comme des centres de recyclage, jouent un rôle dans la régulation du rythme naturel du cœur.
+ EVIDENCE : « Scientists have discovered that lysosomes, structures traditionally viewed as the cell's recycling centers, also play a role in regulating the heart's natural rhythm. »
+CLAIM    : Les lysosomes aident le pacemaker naturel du cœur à réagir quand le cœur doit battre plus vite.
+ EVIDENCE : « Researchers at the University of Liverpool and University of Oxford, working with national and international collaborators, found that lysosomes act as signaling centers in heart cells, helping the heart's natural pacemaker respond when the heart needs to beat faster. »
+CLAIM    : Ces résultats pourraient éclairer de futures études sur la fibrillation atriale.
+ EVIDENCE : « The findings, published in Cardiovascular Research, provide fresh insight into the biological processes involved in regulating heart rhythm and could help inform future studies into conditions such as atrial fibrillation, a common heart rhythm disorder. »
+VERDICT  : verified
+SOURCE   : https://phys.org/news/2026-11-lysosomes-cell-recycling-centers-heart.html
+
+==== 13. REJECTED — animaux — Mongabay
+TITRE    : Le loris de Bangka, / pas disparu après tout.
+RÉSUMÉ   : Un petit primate venimeux que l'on croyait peut-être éteint vit toujours sur l'île indonésienne de Bangka. Une étude a analysé plus de 90 loris secourus par l'ONG Alobi, dont 86 soignés puis relâchés depuis 2015 dans des fragments de forêt protégée. Les menaces persistent. (273 car.)
+POURQUOI : Une espèce classée « peut-être éteinte » est bel et bien vivante, et des habitants et une ONG locale l'aident déjà à survivre.
+CLAIM    : Le loris de Bangka, primate venimeux que l'on pensait peut-être éteint, survit sur l'île de Bangka en Indonésie.
+ EVIDENCE : « A small, venomous primate that scientists thought had gone extinct still survives on Indonesia’s Bangka Island, and to the communities there was never really “lost,” according to a recent study. »
+CLAIM    : L'étude a analysé plus de 90 loris secourus par l'ONG locale Alobi.
+ EVIDENCE : « In the latest study, researchers analyzed more than 90 Bangka slow lorises that the Alobi Wildlife Rescue Center, a local NGO, had rescued from backyards, roadsides, and plantations after being contacted by residents. »
+CLAIM    : Depuis 2015, 86 loris secourus puis rétablis ont été relâchés dans des fragments de forêt protégée.
+ EVIDENCE : « However, 86 lorises rescued since 2015 that subsequently recovered were released into remaining protected forest fragments. »
+CLAIM    : Les menaces persistent : l'habitat forestier du loris a reculé de 62 % entre 2000 et 2012.
+ EVIDENCE : « Loris forest habitat on the island decreased by 62% between 2000 and 2012, the authors write. »
+VERDICT  : rejected — verify_failed: Le résumé indique que l'étude a analysé plus de 90 loris « dont 86 soignés puis relâchés ». L'article ne dit pas que les 86 font partie des 90 analysés : les 86 sont des loris secourus depuis 2015, sans lien établi avec l'échantillon de l'étude. Le « dont » crée un lien non soutenu. | La section « Pourquoi c'est bien » affirme que « des habitants » aident déjà l'espèce à survivre. L'article dit seulement que les résidents ont contacté l'ONG, ce qui est une lecture généreuse. Elle affirme aussi que l'espèce est « bel et bien vivante » alors que le statut officiel n'a pas encore été réévalué (la réévaluation est seulement recommandée). | La nouvelle comporte une contrepartie importante : les loris subissent des brûlures électriques, des collisions avec des véhicules et des attaques de chiens, au moins trois sont morts, et l'habitat a reculé de 62 % à cause de l'exploitation minière illégale et de la déforestation. Le résumé ne mentionne ces menaces que par un « Les menaces
+SOURCE   : https://news.mongabay.com/short-article/2026/11/venomous-indonesian-primate-feared-extinct-still-clings-on-but-threats-persist/
+
+==== 14. REJECTED — science — Phys.org — Biology
+TITRE    : Les bactéries du corail / l'aident à tenir face à la chaleur.
+RÉSUMÉ   : Des chercheurs de NYU Abu Dhabi ont découvert que des bactéries du genre Endozoicomonas fabriquent des hormones stéroïdes quand l'eau se réchauffe. Ces hormones aident le corail à renforcer son immunité et favorisent la survie de ses cellules face à la chaleur. (261 car.)
+POURQUOI : Cette découverte ouvre une piste nouvelle pour protéger les coraux, au moment où les océans continuent de se réchauffer.
+CLAIM    : L'étude vient de NYU Abu Dhabi.
+ EVIDENCE : « A new study from NYU Abu Dhabi has revealed how coral-associated bacteria help corals withstand extreme heat by producing steroid hormones that strengthen their immune response. »
+CLAIM    : Les bactéries Endozoicomonas produisent des hormones stéroïdes quand les températures montent.
+ EVIDENCE : « Published in Nature Microbiology, the study shows that Endozoicomonas, a group of bacteria commonly associated with corals worldwide, produces steroid hormones including testosterone and progesterone when temperatures rise. »
+CLAIM    : Ces hormones renforcent la réponse immunitaire du corail et augmentent la survie de ses cellules face à la chaleur.
+ EVIDENCE : « These hormones help corals mount a stronger immune response to heat stress, increasing the survival of coral cells. »
+CLAIM    : Les résultats pourraient inspirer de nouvelles approches de conservation des coraux.
+ EVIDENCE : « It provides new insight into the role of coral-associated bacteria in helping corals respond to environmental stress and could inform new approaches to coral conservation as ocean temperatures continue to rise. »
+VERDICT  : rejected — verify_failed: Le résumé dit que les bactéries « fabriquent des hormones stéroïdes quand l'eau se réchauffe » sans préciser que l'étude porte sur une espèce précise (Acropora pharaonis, golfe Arabique), ce qui peut laisser croire à une généralisation à tous les coraux. | La section « Pourquoi c'est bien » affirme que la découverte « ouvre une piste nouvelle pour protéger les coraux ». L'article est plus prudent : les résultats « could inform new approaches » et « point to a potential new direction ». Le brouillon présente une piste potentielle comme une piste ouverte, ce qui est une légère surinterprétation. | Le titre « Les bactéries du corail l'aident à tenir face à la chaleur » est formulé de façon générale. L'article précise que les cellules du corail survivent mieux, pas forcément le corail entier. Le titre est donc un raccourci qui dépasse ce que l'étude montre.
+SOURCE   : https://phys.org/news/2026-11-reveals-coral-bacteria-corals-survive.html
+
+==== 15. REJECTED — science — Phys.org — Biology
+TITRE    : Du sang de dinosaure / vieux de 115 millions d'années.
+RÉSUMÉ   : Des chercheurs menés par l'université Curtin ont trouvé des globules rouges fossilisés dans les os d'un dinosaure brésilien, Aratasaurus museunacionali. De l'hème, composant de l'hémoglobine, y est resté préservé. Un minéral, la hausmannite, aurait agi comme une capsule temporelle. (282 car.)
+POURQUOI : Cette découverte montre que des molécules fragiles peuvent survivre bien plus longtemps qu'on le pensait, ce qui ouvre de nouvelles façons d'étudier la vie ancienne.
+CLAIM    : Une équipe internationale menée par l'université Curtin a découvert des globules rouges fossilisés.
+ EVIDENCE : « An international research team led by Curtin University has for the first time uncovered unequivocal evidence of fossilized red blood cells and amino acids of collagen, reshaping our understanding of fossil preservation and molecular longevity in deep time. »
+CLAIM    : Les globules rouges ont été trouvés dans les os d'un dinosaure théropode de 115 millions d'années nommé Aratasaurus museunacionali, découvert dans le nord-ouest du Brésil.
+ EVIDENCE : « In a study published in Proceedings of the National Academy of Sciences, researchers discovered mineralized red blood cells and intact heme biomolecules in limb bones of a 115-million-year-old theropod dinosaur known as Aratasaurus museunacionali, recovered in northwestern Brazil. »
+CLAIM    : De l'hème, composant de l'hémoglobine qui transporte l'oxygène, était préservé dans les échantillons.
+ EVIDENCE : « The samples contained preserved heme—the oxygen-carrying component of hemoglobin—which essentially confirmed fossilized blood remains. »
+CLAIM    : La hausmannite a minéralisé les globules rouges et a agi comme une capsule temporelle naturelle.
+ EVIDENCE : « The red blood cells were mineralized with hausmannite, which acted like a natural time capsule by helping stabilize the cellular structures and biomolecular components (including amino acids of collagen) across such a long geological time. »
+VERDICT  : rejected — verify_failed: Le titre « Du sang de dinosaure vieux de 115 millions d'années » est affirmatif, alors que l'article reste plus nuancé : il parle de globules rouges fossilisés et d'hème préservé, qui « confirmait essentiellement » des restes de sang fossilisé. Ce n'est pas du sang au sens propre. | Le résumé utilise le conditionnel (« aurait agi comme une capsule temporelle »), alors que le claim 3 l'affirme au passé, sans conditionnel. L'article la présente comme un fait (« acted like a natural time capsule »), donc la formulation du résumé est plus prudente que la source. Les deux versions sont incohérentes entre elles. | « Des molécules fragiles peuvent survivre bien plus longtemps qu'on le pensait » généralise à partir d'un seul spécimen. L'article parle de « défier des hypothèses » pour l'hémoglobine, mais le terme « fragiles » et la généralisation ne figurent pas dans l'article. | « Ce qui ouvre de nouvelles façons d'étudier la vie ancienne » transforme en résultat une perspective
+SOURCE   : https://phys.org/news/2026-10-dinosaur-blood-oldest-discovery-rewrites.html
+
+==== 16. REJECTED — science — Phys.org — Biology
+TITRE    : Deux nouveaux bandicoots / sortis des tiroirs.
+RÉSUMÉ   : Après dix ans d'enquête dans des collections de musées, des chercheurs ont reconnu deux espèces de bandicoots jusque-là passées inaperçues. Ils ont aussi montré que le quenda vivait bien plus à l'est qu'on le pensait, autour d'Adélaïde. (236 car.)
+POURQUOI : Des spécimens oubliés dans des tiroirs ont permis de mieux connaître la faune australienne et d'affiner la façon de la protéger.
+CLAIM    : Une enquête de dix ans sur des spécimens de musée a révélé deux espèces de bandicoots jusque-là non reconnues.
+ EVIDENCE : « A 10-year scientific investigation of museum specimens has uncovered two previously unrecognized bandicoot species, expanded the known range of the iconic quenda (or southeastern brown bandicoot) and reshaped understanding of one of Australia's native mammal groups. »
+CLAIM    : Le quenda a vécu autour d'Adélaïde, plus à l'est qu'on ne le croyait.
+ EVIDENCE : « The quenda has long been regarded as a Western Australian species. However, we found it once lived around Adelaide, Kangaroo Island and the Nuyts Archipelago. »
+VERDICT  : rejected — verify_failed: Contrepartie cachée : l'une des deux nouvelles espèces (le petit bandicoot brun, Isoodon microtis) est considérée comme éteinte depuis environ un siècle. L'article parle d'émotions mitigées, ce qui rend la nouvelle moins franchement positive que le brouillon ne le laisse croire. Le résumé ne le mentionne pas et présente les deux espèces comme de simples découvertes. | Le brouillon omet que la révision classe l'aire du bandicoot brun du sud comme plus restreinte, ce qui peut aggraver son risque de conservation (déjà classé en danger). Le « pourquoi c'est bien » affirme un affinement de la protection sans cette nuance. | Le résumé dit que le quenda « vivait » autour d'Adélaïde sans préciser qu'il s'agit d'une aire historique. L'article indique que les populations d'Australie-Méridionale restent petites et demandent une protection continue. | La nouvelle n'est pas purement positive : une des deux espèces est éteinte, ce qui justifie un rejet par prudence.
+SOURCE   : https://phys.org/news/2026-11-bandicoot-species-trawling-museum-drawers.html

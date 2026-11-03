@@ -5,12 +5,14 @@
  */
 import { loadConfig, recordRun, serviceClient } from "../_shared/db.ts";
 import { errorMessage, fetchText, json, mapLimit } from "../_shared/http.ts";
+import { collectMaxAgeDays, isFreshEnough } from "../_shared/pipeline/collect.ts";
 import { parseFeed } from "../_shared/pipeline/rss.ts";
 
 interface SourceRow {
   id: string;
   name: string;
   feed_url: string;
+  trust_level: number;
 }
 
 interface SourceReport {
@@ -30,22 +32,20 @@ Deno.serve(async () => {
     const config = await loadConfig(db);
     const { data, error } = await db
       .from("sources")
-      .select("id, name, feed_url")
+      .select("id, name, feed_url, trust_level")
       .eq("active", true)
       .order("last_fetched_at", { ascending: true, nullsFirst: true })
       .limit(config.batch_size);
     if (error) throw new Error(`sources : ${error.message}`);
     const sources = (data ?? []) as SourceRow[];
-    const minPublished = Date.now() - config.collect_max_age_days * 86_400_000;
+    const now = new Date();
 
     const reports = await mapLimit(sources, 5, async (source): Promise<SourceReport> => {
       const fetchedAt = new Date().toISOString();
       try {
         const xml = await fetchText(source.feed_url, FEED_TIMEOUT_MS, FEED_ACCEPT);
-        const items = parseFeed(xml).filter((item) => {
-          if (!item.publishedAt) return true;
-          return new Date(item.publishedAt).getTime() >= minPublished;
-        });
+        const maxAgeDays = collectMaxAgeDays(source.trust_level, config);
+        const items = parseFeed(xml).filter((item) => isFreshEnough(item.publishedAt, maxAgeDays, now));
         const rows = items.map((item) => ({
           source_id: source.id,
           url: item.url,

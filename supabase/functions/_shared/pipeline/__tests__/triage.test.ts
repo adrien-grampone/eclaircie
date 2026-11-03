@@ -4,6 +4,8 @@ import { CONFIG } from "./fixtures/config.ts";
 const GOOD: Triage = {
   is_good_news: true,
   themes: ["planete"],
+  kind: "protection",
+  study_subject: "not_a_study",
   is_fact: true,
   is_promotional: false,
   positivity: 0.9,
@@ -54,7 +56,7 @@ describe("isTriageAccepted", () => {
 describe("parseTriage", () => {
   it("valide la sortie JSON stricte et met evergreen à false par défaut", () => {
     const result = parseTriage(
-      '{"is_good_news":true,"themes":["science"],"is_fact":true,"is_promotional":false,"positivity":0.7,"significance":0.6,"reason":"ok"}',
+      '{"is_good_news":true,"themes":["science"],"kind":"discovery","study_subject":"not_a_study","is_fact":true,"is_promotional":false,"positivity":0.7,"significance":0.6,"reason":"ok"}',
     );
     expect(result.ok).toBe(true);
     if (!result.ok) return;
@@ -62,9 +64,17 @@ describe("parseTriage", () => {
     expect(result.value.themes).toEqual(["science"]);
   });
 
+  it("exige kind et study_subject parmi les valeurs autorisées", () => {
+    const noKind = parseTriage('{"is_good_news":true,"themes":["science"],"study_subject":"human","is_fact":true,"is_promotional":false,"positivity":0.7,"significance":0.6,"reason":"ok"}');
+    expect(noKind.ok).toBe(false);
+    const badKind = parseTriage('{"is_good_news":true,"themes":["science"],"kind":"miracle","study_subject":"human","is_fact":true,"is_promotional":false,"positivity":0.7,"significance":0.6,"reason":"ok"}');
+    expect(badKind.ok).toBe(false);
+    if (!badKind.ok) expect(badKind.error).toMatch(/kind/);
+  });
+
   it("refuse une positivité hors de [0, 1] ou un champ manquant", () => {
     const outOfRange = parseTriage(
-      '{"is_good_news":true,"themes":["science"],"is_fact":true,"is_promotional":false,"positivity":1.4,"significance":0.6,"reason":"ok"}',
+      '{"is_good_news":true,"themes":["science"],"kind":"discovery","study_subject":"not_a_study","is_fact":true,"is_promotional":false,"positivity":1.4,"significance":0.6,"reason":"ok"}',
     );
     expect(outOfRange.ok).toBe(false);
     if (!outOfRange.ok) expect(outOfRange.error).toMatch(/positivity/);
@@ -75,7 +85,7 @@ describe("parseTriage", () => {
 
   it("tolère une réponse entourée de prose ou de clôtures markdown", () => {
     const result = parseTriage(
-      'Voici le tri :\n```json\n{"is_good_news":false,"themes":[],"is_fact":true,"is_promotional":false,"positivity":0.1,"significance":0.2,"reason":"mauvaise nouvelle"}\n```',
+      'Voici le tri :\n```json\n{"is_good_news":false,"themes":[],"kind":"achievement","study_subject":"not_a_study","is_fact":true,"is_promotional":false,"positivity":0.1,"significance":0.2,"reason":"mauvaise nouvelle"}\n```',
     );
     expect(result.ok).toBe(true);
   });
@@ -90,6 +100,9 @@ describe("buildTriagePrompt", () => {
     expect(prompt.system).toContain('"science" : Science');
     expect(prompt.system).toContain('"sante" : Santé');
     expect(prompt.system).toContain("evergreen");
+    expect(prompt.system).toMatch(/discovery.*QUE pour le thème science/);
+    expect(prompt.system).toMatch(/animal ou in vitro ne peut JAMAIS avoir le thème sante/);
+    expect(prompt.system).toMatch(/PREMIER élément est le thème principal/);
     expect(prompt.user).toContain("Source : CNRS");
     expect(prompt.user).toContain("Titre : Titre test");
     expect(prompt.user).toContain("Extrait : Extrait test");

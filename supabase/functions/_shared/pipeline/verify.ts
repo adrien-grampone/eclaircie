@@ -1,13 +1,24 @@
 import { z } from "zod";
+import type { PipelineConfig } from "./config.ts";
 import type { Draft } from "./draft.ts";
 import { parseJsonWith } from "./json.ts";
 import type { Article, ParseResult, Prompt } from "./types.ts";
 
 /**
  * Étape `verify` (§4.5) — un SECOND appel Sonnet, qui ne voit pas le raisonnement
- * du premier. Il reçoit l'article et le brouillon. La présence des evidences dans
- * le texte est contrôlée en code (checkEvidence), pas ici.
+ * du premier. La présence des evidences dans le texte est contrôlée en code
+ * (checkEvidence), pas ici. La décision finale est prise en code (decideVerify).
  */
+export const PROBLEM_TYPES = ["fact_error", "overstatement", "missing_caveat", "translation_issue"] as const;
+export type ProblemType = (typeof PROBLEM_TYPES)[number];
+
+export const VerifyProblemSchema = z.object({
+  type: z.enum(PROBLEM_TYPES),
+  passage: z.string().trim().min(1),
+  correction: z.string().trim().min(1),
+});
+export type VerifyProblem = z.infer<typeof VerifyProblemSchema>;
+
 export const VerifySchema = z.object({
   claims: z.array(
     z.object({
@@ -16,58 +27,93 @@ export const VerifySchema = z.object({
       note: z.string().default(""),
     }),
   ),
-  facts_in_article: z.boolean(),
-  no_exaggeration: z.boolean(),
-  problems: z.array(z.string()),
+  problems: z.array(VerifyProblemSchema),
   verdict: z.enum(["approve", "reject"]),
 });
-
 export type Verify = z.infer<typeof VerifySchema>;
 
 export function parseVerify(json: string): ParseResult<Verify> {
   return parseJsonWith(VerifySchema, json);
 }
 
-/**
- * Le moindre doute rejette : verdict `approve`, chaque claim du brouillon évalué
- * exactement une fois et soutenu, chiffres/dates/noms présents, pas
- * d'exagération, aucun problème listé.
- */
-export function isVerifyPassed(verify: Verify, draft: Pick<Draft, "claims">): boolean {
-  if (verify.verdict !== "approve") return false;
-  if (!verify.facts_in_article || !verify.no_exaggeration) return false;
-  if (verify.problems.length > 0) return false;
-  if (verify.claims.length !== draft.claims.length) return false;
+export type VerifyDecision = "verified" | "revise" | "rejected";
 
-  const seen = new Set<number>();
-  for (const entry of verify.claims) {
-    if (!entry.supported) return false;
-    if (entry.index >= draft.claims.length || seen.has(entry.index)) return false;
-    seen.add(entry.index);
+export interface Decision {
+  decision: VerifyDecision;
+  /** Raison lisible en cas de rejet ou de révision. */
+  reason: string | null;
+}
+
+/**
+ * Décision en code, quoi que dise le verdict du modèle :
+ * - un claim non soutenu, ou une liste de claims incohérente → rejet (c'est un fait) ;
+ * - au moins un `fact_error` → rejet définitif ;
+ * - d'autres problèmes → révision si on n'a pas atteint `verify_max_passes`, sinon rejet ;
+ * - aucun problème mais verdict `reject` → rejet (le doute l'emporte) ;
+ * - aucun problème et verdict `approve` → validé.
+ */
+export function decideVerify(
+  verify: Verify,
+  draft: Pick<Draft, "claims">,
+  pass: number,
+  config: Pick<PipelineConfig, "verify_max_passes">,
+): Decision {
+  const indices = new Set(verify.claims.map((c) => c.index));
+  const coherent =
+    verify.claims.length === draft.claims.length &&
+    indices.size === draft.claims.length &&
+    [...indices].every((i) => i < draft.claims.length);
+  if (!coherent) return { decision: "rejected", reason: "verify_failed: liste de claims incohérente" };
+
+  const unsupported = verify.claims.filter((c) => !c.supported);
+  if (unsupported.length > 0) {
+    const notes = unsupported.map((c) => `claim ${c.index}: ${c.note || "non soutenu"}`).join(" | ");
+    return { decision: "rejected", reason: `fact_error: ${notes}` };
   }
-  return seen.size === draft.claims.length;
+
+  const factErrors = verify.problems.filter((p) => p.type === "fact_error");
+  if (factErrors.length > 0) {
+    return { decision: "rejected", reason: `fact_error: ${factErrors.map((p) => p.passage).join(" | ")}` };
+  }
+
+  if (verify.problems.length > 0) {
+    const summary = verify.problems.map((p) => `${p.type}: ${p.passage}`).join(" | ");
+    if (pass >= config.verify_max_passes) {
+      return { decision: "rejected", reason: `verify_failed après ${pass} passe(s): ${summary}` };
+    }
+    return { decision: "revise", reason: summary };
+  }
+
+  if (verify.verdict !== "approve") return { decision: "rejected", reason: "verify_failed: verdict reject sans problème listé" };
+  return { decision: "verified", reason: null };
 }
 
 export function buildVerifyPrompt(article: Article, draft: Draft): Prompt {
   const system = [
-    "Tu es relecteur-vérificateur pour une application qui publie chaque matin une bonne nouvelle sous le label « vérifié et sourcé ». Une seule erreur publiée détruit cette promesse. Tu es donc sévère : le moindre doute = reject.",
+    "Tu es relecteur-vérificateur pour une application qui publie chaque matin une bonne nouvelle sous le label « vérifié et sourcé ». Une seule erreur publiée détruit cette promesse. Tu es sévère sur les faits, mais tu classes chaque problème pour qu'un rédacteur puisse corriger.",
     "",
     "Tu reçois un article et un brouillon rédigé par un autre modèle. Vérifie, en te fondant UNIQUEMENT sur l'article :",
     "1. Chaque claim est réellement soutenu par son evidence, et l'evidence dit bien ce que le claim affirme (pas une lecture généreuse).",
-    "2. Chaque chiffre, date et nom propre du summary figure dans l'article.",
-    "3. Le summary n'exagère pas : « pourrait » ne devient pas « va », une étude sur la souris ne devient pas « un traitement », un objectif ne devient pas un résultat, une corrélation ne devient pas une cause.",
-    "4. La nouvelle est bien positive sans contrepartie cachée dans l'article.",
+    "2. Chaque chiffre, date et nom propre du titre et du résumé figure dans l'article, avec la même portée.",
+    "3. Le texte n'exagère pas : « pourrait » ne devient pas « va », une étude sur la souris ne devient pas « un traitement », un objectif ne devient pas un résultat, une corrélation ne devient pas une cause.",
+    "4. Si l'article contient une limite, une opposition ou une contrepartie importante, le résumé la mentionne.",
+    "",
+    "TYPES DE PROBLÈMES",
+    "- fact_error : un fait, un chiffre, un nom ou un lien de causalité que l'article ne dit pas, ou contredit. Rejet définitif.",
+    "- overstatement : terme plus fort ou plus certain que la source (certitude pour un espoir, résultat pour un plan, généralisation).",
+    "- missing_caveat : une limite, opposition ou contrepartie importante de l'article est passée sous silence.",
+    "- translation_issue : traduction qui ajoute une précision ou change le sens (« beetles » → « carabes »). Une traduction FIDÈLE d'un terme anglais n'est PAS un problème, même si le mot français n'apparaît pas dans l'article.",
+    "",
+    "Pour chaque problème, cite le passage fautif du brouillon tel quel et propose une correction concrète. Ne signale pas deux fois le même problème. Ne signale rien qui ne soit pas un problème.",
     "",
     "Réponds UNIQUEMENT avec un objet JSON strict de la forme :",
     "{",
     '  "claims": [ { "index": 0, "supported": true, "note": "" } ],',
-    '  "facts_in_article": true,',
-    '  "no_exaggeration": true,',
-    '  "problems": [],',
+    '  "problems": [ { "type": "overstatement", "passage": "…", "correction": "…" } ],',
     '  "verdict": "approve"',
     "}",
     "",
-    "`claims` contient une entrée par claim du brouillon, dans l'ordre, avec son index (à partir de 0). `problems` liste en français chaque problème constaté. `verdict` vaut \"approve\" seulement si tout est irréprochable, sinon \"reject\".",
+    "`claims` contient une entrée par claim du brouillon, dans l'ordre, avec son index (à partir de 0). `verdict` vaut \"approve\" seulement si `problems` est vide, sinon \"reject\".",
   ].join("\n");
 
   const claims = draft.claims
@@ -85,7 +131,6 @@ export function buildVerifyPrompt(article: Article, draft: Draft): Prompt {
     "BROUILLON À VÉRIFIER",
     `Titre : ${draft.title_main} ${draft.title_accent}`.trim(),
     `Résumé : ${draft.summary}`,
-    `Pourquoi c'est bien : ${draft.why_good}`,
     "Claims :",
     claims,
   ].join("\n");

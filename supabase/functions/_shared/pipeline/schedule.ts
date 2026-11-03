@@ -20,7 +20,10 @@ export interface ScheduledStory {
   sourceName: string;
 }
 
-type ScheduleConfig = Pick<PipelineConfig, "schedule_recent_days" | "schedule_max_age_days">;
+type ScheduleConfig = Pick<
+  PipelineConfig,
+  "schedule_recent_days" | "schedule_max_age_days" | "schedule_max_source_share" | "schedule_source_window_days"
+>;
 
 /** Âge en jours d'une story au jour `day`, jamais négatif. */
 export function storyAgeDays(candidate: ScheduleCandidate, day: IsoDate): number {
@@ -40,12 +43,34 @@ function sameSource(a: string, b: string): boolean {
 }
 
 /**
+ * Plafond de part d'une source (§4.9, règle ajoutée) : sur la fenêtre glissante
+ * des `schedule_source_window_days` jours se terminant à `day`, une source ne
+ * dépasse pas `schedule_max_source_share` des nouvelles du thème, la nouvelle
+ * candidate comprise. Au moins une nouvelle est toujours permise (fenêtre vide).
+ */
+export function sourceWithinShare(
+  sourceName: string,
+  alreadyScheduled: readonly ScheduledStory[],
+  day: IsoDate,
+  config: Pick<PipelineConfig, "schedule_max_source_share" | "schedule_source_window_days">,
+): boolean {
+  const inWindow = alreadyScheduled.filter((s) => {
+    const age = daysBetween(s.publishDate, day);
+    return age >= 0 && age < config.schedule_source_window_days;
+  });
+  const fromSource = inWindow.filter((s) => sameSource(s.sourceName, sourceName)).length;
+  const maxPerSource = Math.max(1, Math.floor(config.schedule_max_source_share * (inWindow.length + 1)));
+  return fromSource + 1 <= maxPerSource;
+}
+
+/**
  * Choisit la story à programmer pour `day` sur UN thème (§4.9).
  * `candidates` et `alreadyScheduled` concernent ce thème uniquement.
  *
  * - récentes (< schedule_recent_days) d'abord, puis intemporelles, puis le reste ;
  * - jamais une non-intemporelle de plus de schedule_max_age_days ;
  * - pas la même source que la veille ou le lendemain déjà programmés ;
+ * - une source ne dépasse pas sa part maximale sur la fenêtre glissante ;
  * - à égalité : meilleur score, puis plus récente, puis id (déterminisme).
  *
  * Renvoie null si rien n'est programmable, ou si `day` est déjà pris.
@@ -66,6 +91,7 @@ export function pickForSchedule(
     .map((candidate) => ({ candidate, age: storyAgeDays(candidate, day) }))
     .filter(({ candidate, age }) => candidate.evergreen || age <= config.schedule_max_age_days)
     .filter(({ candidate }) => !neighbourSources.some((s) => sameSource(s, candidate.sourceName)))
+    .filter(({ candidate }) => sourceWithinShare(candidate.sourceName, alreadyScheduled, day, config))
     .map((entry) => ({ ...entry, tier: tierOf(entry.age, entry.candidate, config) }))
     .sort((a, b) => {
       if (a.tier !== b.tier) return a.tier - b.tier;

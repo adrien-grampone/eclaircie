@@ -1,4 +1,4 @@
-import { pickForSchedule, storyAgeDays, type ScheduleCandidate, type ScheduledStory } from "../schedule.ts";
+import { pickForSchedule, sourceWithinShare, storyAgeDays, type ScheduleCandidate, type ScheduledStory } from "../schedule.ts";
 import { CONFIG } from "./fixtures/config.ts";
 
 const DAY = "2026-11-10";
@@ -78,10 +78,13 @@ describe("pickForSchedule", () => {
     expect(pickForSchedule([sameSource], yesterday, DAY, CONFIG)).toBeNull();
   });
 
-  it("autorise la même source à deux jours d'écart", () => {
+  it("autorise la même source à deux jours d'écart (part restant sous 30 %)", () => {
     const sameSource = candidate({ id: "same", sourceName: "Le Monde" });
-    const twoDaysAgo: ScheduledStory[] = [{ publishDate: daysAgo(2), sourceName: "Le Monde" }];
-    expect(pickForSchedule([sameSource], twoDaysAgo, DAY, CONFIG)?.id).toBe("same");
+    const already: ScheduledStory[] = [
+      { publishDate: daysAgo(2), sourceName: "Le Monde" },
+      ...["A", "B", "C", "D", "E", "F"].map((s, i) => ({ publishDate: daysAgo(i + 3), sourceName: s })),
+    ];
+    expect(pickForSchedule([sameSource], already, DAY, CONFIG)?.id).toBe("same");
   });
 
   it("renvoie null sans candidat ou si le jour est déjà programmé", () => {
@@ -94,5 +97,46 @@ describe("pickForSchedule", () => {
     const list = [candidate({ id: "b", score: 0.5 }), candidate({ id: "a", score: 0.9 })];
     pickForSchedule(list, [], DAY, CONFIG);
     expect(list.map((c) => c.id)).toEqual(["b", "a"]);
+  });
+});
+
+describe("pickForSchedule — part maximale d'une source (30 % sur 14 jours)", () => {
+  const scheduled = (names: string[]): ScheduledStory[] =>
+    names.map((sourceName, i) => ({ publishDate: daysAgo(i + 2), sourceName }));
+
+  it("laisse passer la première nouvelle d'un thème vide", () => {
+    expect(pickForSchedule([candidate({ id: "a", sourceName: "Mongabay" })], [], DAY, CONFIG)?.id).toBe("a");
+  });
+
+  it("bloque une source déjà à 30 % de la fenêtre, et préfère une autre source", () => {
+    // 10 programmées dans la fenêtre dont 3 Mongabay : 4/11 = 36 % > 30 %
+    const already = scheduled(["Mongabay", "A", "Mongabay", "B", "C", "Mongabay", "D", "E", "F", "G"]);
+    const mongabay = candidate({ id: "m", sourceName: "Mongabay", score: 0.99 });
+    const other = candidate({ id: "o", sourceName: "Reporterre", score: 0.5 });
+    expect(pickForSchedule([mongabay, other], already, DAY, CONFIG)?.id).toBe("o");
+    expect(pickForSchedule([mongabay], already, DAY, CONFIG)).toBeNull();
+  });
+
+  it("autorise la source tant qu'elle reste sous le seuil", () => {
+    // 10 programmées dont 2 Mongabay : 3/11 = 27 % ≤ 30 %
+    const already = scheduled(["Mongabay", "A", "Mongabay", "B", "C", "D", "E", "F", "G", "H"]);
+    expect(pickForSchedule([candidate({ id: "m", sourceName: "Mongabay" })], already, DAY, CONFIG)?.id).toBe("m");
+  });
+
+  it("ne compte que la fenêtre glissante de la config", () => {
+    const old: ScheduledStory[] = [
+      { publishDate: daysAgo(20), sourceName: "Mongabay" },
+      { publishDate: daysAgo(16), sourceName: "Mongabay" },
+      { publishDate: daysAgo(15), sourceName: "Mongabay" },
+    ];
+    expect(pickForSchedule([candidate({ id: "m", sourceName: "Mongabay" })], old, DAY, CONFIG)?.id).toBe("m");
+    expect(sourceWithinShare("Mongabay", old, DAY, { ...CONFIG, schedule_source_window_days: 30 })).toBe(false);
+  });
+
+  it("suit le seuil de la config", () => {
+    const already = scheduled(["Mongabay", "A", "B", "C"]);
+    expect(sourceWithinShare("Mongabay", already, DAY, CONFIG)).toBe(false); // 2/5 = 40 %
+    expect(sourceWithinShare("Mongabay", already, DAY, { ...CONFIG, schedule_max_source_share: 0.5 })).toBe(true);
+    expect(sourceWithinShare("mongabay ", already, DAY, { ...CONFIG, schedule_max_source_share: 0.5 })).toBe(true);
   });
 });

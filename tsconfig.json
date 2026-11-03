@@ -16,5 +16,5 @@
     "skipLibCheck": true,
     "types": ["vitest/globals"]
   },
-  "include": ["supabase/functions/_shared/**/*.ts", "vitest.config.ts"]
+  "include": ["supabase/functions/_shared/pipeline/**/*.ts", "vitest.config.ts"]
 }

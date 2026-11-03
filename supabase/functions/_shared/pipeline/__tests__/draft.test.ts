@@ -1,4 +1,4 @@
-import { buildDraftPrompt, parseDraft } from "../draft.ts";
+import { buildDraftPrompt, buildRevisePrompt, parseDraft } from "../draft.ts";
 import { CONFIG } from "./fixtures/config.ts";
 import { OZONE, OZONE_DRAFT_JSON } from "./fixtures/articles.ts";
 
@@ -38,10 +38,15 @@ describe("parseDraft", () => {
     expect(parseDraft(withField("claims", [{ claim: "x" }]), CONFIG).ok).toBe(false);
   });
 
-  it("exige title_main, why_good et scene non vides", () => {
+  it("exige title_main et scene non vides", () => {
     expect(parseDraft(withField("title_main", ""), CONFIG).ok).toBe(false);
-    expect(parseDraft(withField("why_good", ""), CONFIG).ok).toBe(false);
     expect(parseDraft(withField("scene", ""), CONFIG).ok).toBe(false);
+  });
+
+  it("ignore un why_good résiduel : le champ n'existe plus", () => {
+    const result = parseDraft(withField("why_good", "ancien champ"), CONFIG);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect("why_good" in result.value).toBe(false);
   });
 
   it("accepte un title_accent vide (la chute est optionnelle dans le design)", () => {
@@ -74,10 +79,14 @@ describe("buildDraftPrompt", () => {
     expect(prompt.user).toContain(`Titre : ${OZONE.title}`);
   });
 
-  it("impose les règles produit : texte fourni uniquement, pas de copie, pas d'exagération", () => {
+  it("impose les règles produit : texte fourni uniquement, pas de copie, fidélité de ton et de précision", () => {
     expect(prompt.system).toMatch(/UNIQUEMENT à partir du texte/);
     expect(prompt.system).toMatch(/ne recopies JAMAIS/);
-    expect(prompt.system).toMatch(/« pourrait » ne devient pas « va »/);
+    expect(prompt.system).toMatch(/« could » reste « pourrait »/);
+    expect(prompt.system).toMatch(/« beetles » ne devient pas « carabes »/);
+    expect(prompt.system).toMatch(/limite, une opposition ou une contrepartie/);
+    expect(prompt.system).toMatch(/title_accent peut être évocateur, mais n'apporte AUCUN fait/);
+    expect(prompt.system).not.toContain("why_good");
   });
 
   it("annonce la longueur maximale lue dans la config", () => {
@@ -86,7 +95,7 @@ describe("buildDraftPrompt", () => {
   });
 
   it("décrit les six champs attendus", () => {
-    for (const field of ["title_main", "title_accent", "summary", "why_good", "claims", "scene"]) {
+    for (const field of ["title_main", "title_accent", "summary", "claims", "scene"]) {
       expect(prompt.system).toContain(`"${field}"`);
     }
   });
@@ -94,5 +103,24 @@ describe("buildDraftPrompt", () => {
   it("indique une date inconnue plutôt que null", () => {
     const noDate = buildDraftPrompt({ ...OZONE, publishedAt: null }, CONFIG);
     expect(noDate.user).toContain("(date inconnue)");
+  });
+});
+
+describe("buildRevisePrompt", () => {
+  it("fournit l'article, le brouillon et les problèmes numérotés avec leur correction", () => {
+    const draft = parseDraft(OZONE_DRAFT_JSON, CONFIG);
+    if (!draft.ok) throw new Error(draft.error);
+    const prompt = buildRevisePrompt(OZONE, draft.value, [
+      { type: "overstatement", passage: "se répare.", correction: "est en voie de guérison." },
+      { type: "missing_caveat", passage: "Le Protocole de Montréal a éliminé", correction: "mentionner le ralentissement dû au CFC-11" },
+    ], CONFIG);
+    expect(prompt.user).toContain(OZONE.fullText);
+    expect(prompt.user).toContain('"title_main": "La couche d\'ozone"');
+    expect(prompt.user).toMatch(/1\. \[overstatement\] passage : « se répare\. »/);
+    expect(prompt.user).toMatch(/2\. \[missing_caveat\]/);
+    expect(prompt.user).toContain("correction : est en voie de guérison.");
+    expect(prompt.system).toMatch(/Corrige-les TOUS/);
+    expect(prompt.system).toMatch(/sans introduire aucun fait nouveau/);
+    expect(prompt.system).toMatch(/« could » reste « pourrait »/); // mêmes règles que le draft
   });
 });
