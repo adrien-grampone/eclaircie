@@ -3,6 +3,8 @@ import { CONFIG } from "./fixtures/config.ts";
 
 const GOOD: Triage = {
   is_good_news: true,
+  is_scheduled_event: false,
+  is_food_health_claim: false,
   themes: ["planete"],
   kind: "protection",
   study_subject: "not_a_study",
@@ -70,6 +72,15 @@ describe("parseTriage", () => {
     const badKind = parseTriage('{"is_good_news":true,"themes":["science"],"kind":"miracle","study_subject":"human","is_fact":true,"is_promotional":false,"positivity":0.7,"significance":0.6,"reason":"ok"}');
     expect(badKind.ok).toBe(false);
     if (!badKind.ok) expect(badKind.error).toMatch(/kind/);
+  });
+
+  it("met is_scheduled_event et is_food_health_claim à false quand ils manquent", () => {
+    const result = parseTriage('{"is_good_news":true,"themes":["science"],"kind":"discovery","study_subject":"not_a_study","is_fact":true,"is_promotional":false,"positivity":0.7,"significance":0.6,"reason":"ok"}');
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value.is_scheduled_event).toBe(false);
+      expect(result.value.is_food_health_claim).toBe(false);
+    }
   });
 
   it("tolère un kind ou un study_subject invalide quand ce n'est pas une bonne nouvelle", () => {

@@ -4,7 +4,8 @@ import type { Triage } from "../triage.ts";
 function triage(overrides: Partial<Triage>): Triage {
   return {
     is_good_news: true, themes: ["planete"], kind: "achievement", study_subject: "not_a_study",
-    is_fact: true, is_promotional: false, positivity: 0.8, significance: 0.7, evergreen: false, reason: "",
+    is_fact: true, is_promotional: false, is_scheduled_event: false, is_food_health_claim: false,
+    positivity: 0.8, significance: 0.7, evergreen: false, reason: "",
     ...overrides,
   };
 }
@@ -67,5 +68,31 @@ describe("applyEditorialRules — thème principal", () => {
   it("rejette no_theme quand la liste est vide", () => {
     expect(applyEditorialRules(triage({ themes: [] })).reason).toBe("no_theme");
     expect(mainTheme({ themes: [] })).toBeNull();
+  });
+});
+
+describe("applyEditorialRules — événements du calendrier", () => {
+  it("rejette une remise de prix annuelle, même bien notée", () => {
+    const out = applyEditorialRules(triage({ is_scheduled_event: true, themes: ["culture"], kind: "culture_win", positivity: 0.95 }));
+    expect(out.reason).toBe("scheduled_event");
+  });
+
+  it("laisse passer un prix pour une avancée concrète quand le modèle a mis faux", () => {
+    const out = applyEditorialRules(triage({ is_scheduled_event: false, themes: ["sante"], kind: "breakthrough" }));
+    expect(out.reason).toBeNull();
+  });
+});
+
+describe("applyEditorialRules — études nutritionnelles", () => {
+  it("rejette une étude « tel aliment est bon pour… » quel que soit le thème", () => {
+    for (const themes of [["sante"], ["science"], ["planete"]]) {
+      const out = applyEditorialRules(triage({ is_food_health_claim: true, themes, study_subject: "human" }));
+      expect(out.reason).toBe("food_health_claim");
+    }
+  });
+
+  it("passe avant les autres règles", () => {
+    const out = applyEditorialRules(triage({ is_food_health_claim: true, kind: "discovery", themes: ["animaux"] }));
+    expect(out.reason).toBe("food_health_claim");
   });
 });

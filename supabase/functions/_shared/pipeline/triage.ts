@@ -29,6 +29,10 @@ export const TriageSchema = z.object({
   study_subject: lenientEnum(STUDY_SUBJECTS),
   is_fact: z.boolean(),
   is_promotional: z.boolean(),
+  /** Événement du calendrier : prix annuel, festival, sortie, classement. Absent = false. */
+  is_scheduled_event: z.boolean().default(false),
+  /** Étude « tel aliment / complément est bon pour… ». Absent = false. */
+  is_food_health_claim: z.boolean().default(false),
   positivity: z.number().min(0).max(1),
   significance: z.number().min(0).max(1),
   evergreen: z.boolean().default(false),
@@ -99,7 +103,9 @@ export type TriageRejectReason =
   | "no_theme"
   | "low_score"
   | "discovery_outside_science"
-  | "health_requires_human";
+  | "health_requires_human"
+  | "scheduled_event"
+  | "food_health_claim";
 
 /** Première raison qui disqualifie, dans l'ordre des conditions de §4.2 ; null si accepté. */
 export function triageRejectReason(
@@ -133,6 +139,8 @@ export function buildTriagePrompt(input: TriageInput, themes: readonly ThemeRef[
     "- `kind` : achievement (un résultat obtenu, un projet achevé), protection (une espèce, un lieu, des personnes mieux protégées), breakthrough (une avancée avec bénéfice concret), discovery (un savoir nouveau sans bénéfice concret immédiat), solidarity (entraide, générosité, inclusion), culture_win (patrimoine, langue, création, accès à la culture).",
     "- Une `discovery` n'est une bonne nouvelle QUE pour le thème science. Si tu la classes discovery, mets uniquement science.",
     "- Santé = un résultat chez l'HUMAIN : essai clinique, traitement autorisé, baisse mesurée d'une maladie. Une étude sur l'animal ou in vitro ne peut JAMAIS avoir le thème sante ; renseigne `study_subject` honnêtement.",
+    "- `is_scheduled_event` : vrai pour un événement du calendrier, qui a lieu de toute façon : remise de prix ou récompense annuelle (Goncourt, Nobel, César…), festival, sortie d'une œuvre, classement, palmarès. Ce n'est pas une bonne nouvelle. Exception : un prix qui récompense une avancée concrète (un traitement, une technique) → faux, et juge l'avancée elle-même.",
+    "- `is_food_health_claim` : vrai pour une étude du type « tel aliment, boisson ou complément est bénéfique pour… ». Jamais acceptée, quel que soit le thème.",
     "",
     "Réponds UNIQUEMENT avec un objet JSON strict, sans commentaire, de la forme :",
     "{",
@@ -142,6 +150,8 @@ export function buildTriagePrompt(input: TriageInput, themes: readonly ThemeRef[
     '  "study_subject": "not_a_study",',
     '  "is_fact": true,',
     '  "is_promotional": false,',
+    '  "is_scheduled_event": false,',
+    '  "is_food_health_claim": false,',
     '  "positivity": 0.9,',
     '  "significance": 0.8,',
     '  "evergreen": false,',

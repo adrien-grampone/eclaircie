@@ -46,22 +46,24 @@ interface ItemResult {
  * d'un statut déjà passé (pour comparer après un changement de règles). Un article
  * re-trié et accepté garde son statut ; rejeté, il passe en `rejected`.
  * { "exclude_sources": ["ONU", "Climat"] } écarte les sources dont le nom contient
- * l'un de ces mots (test ciblé d'un lot).
+ * l'un de ces mots (test ciblé d'un lot). { "retriage": "triaged", "ids": [...] }
+ * rejoue des articles précis, quel que soit leur triage précédent.
  */
 interface Options {
   retriage: string | null;
   excludeSources: string[];
+  ids: string[];
 }
 
 const STEP = "triage";
 
 async function readOptions(req: Request): Promise<Options> {
   try {
-    const body = (await req.json()) as { retriage?: unknown; exclude_sources?: unknown };
-    const exclude = Array.isArray(body.exclude_sources) ? body.exclude_sources.filter((v): v is string => typeof v === "string") : [];
-    return { retriage: typeof body.retriage === "string" ? body.retriage : null, excludeSources: exclude };
+    const body = (await req.json()) as { retriage?: unknown; exclude_sources?: unknown; ids?: unknown };
+    const strings = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : []);
+    return { retriage: typeof body.retriage === "string" ? body.retriage : null, excludeSources: strings(body.exclude_sources), ids: strings(body.ids) };
   } catch {
-    return { retriage: null, excludeSources: [] };
+    return { retriage: null, excludeSources: [], ids: [] };
   }
 }
 
@@ -107,8 +109,9 @@ Deno.serve(async (req) => {
       .from("triage_queue")
       .select("id, title, snippet, status, triage, source_name, trust_level")
       .eq("status", options.retriage ?? "new");
-    // En re-triage, on ne reprend que les articles triés avec l'ancien schéma (sans `kind`).
-    if (options.retriage) query = query.is("triage->kind", null);
+    // En re-triage sans ids, on ne reprend que les articles triés avec l'ancien schéma (sans `kind`).
+    if (options.ids.length > 0) query = query.in("id", options.ids);
+    else if (options.retriage) query = query.is("triage->kind", null);
     for (const word of options.excludeSources) query = query.not("source_name", "ilike", `%${word}%`);
     const { data, error } = await query
       .order("published_at", { ascending: false, nullsFirst: false })
