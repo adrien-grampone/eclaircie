@@ -51,9 +51,13 @@ describe("parseDraft", () => {
     expect(parseDraft(withField("claims", [{ claim: "x" }]), CONFIG).ok).toBe(false);
   });
 
-  it("exige title_main et scene non vides", () => {
+  it("exige title_main et scene non vides, et nettoie les espaces de scene", () => {
     expect(parseDraft(withField("title_main", ""), CONFIG).ok).toBe(false);
     expect(parseDraft(withField("scene", ""), CONFIG).ok).toBe(false);
+    expect(parseDraft(withField("scene", "   "), CONFIG).ok).toBe(false);
+    const padded = parseDraft(withField("scene", "  three wind turbines on hills  "), CONFIG);
+    expect(padded.ok).toBe(true);
+    if (padded.ok && padded.value.verdict === "ok") expect(padded.value.scene).toBe("three wind turbines on hills");
   });
 
   it("ignore un why_good résiduel : le champ n'existe plus", () => {
@@ -90,6 +94,16 @@ describe("buildDraftPrompt", () => {
     expect(prompt.user).toContain(`Source : ${OZONE.sourceName}`);
     expect(prompt.user).toContain(`URL : ${OZONE.url}`);
     expect(prompt.user).toContain(`Titre : ${OZONE.title}`);
+  });
+
+  it("impose les règles du champ scene : sujet exact ou générique, peu d'éléments, silhouettes sans visage, aucun texte", () => {
+    expect(prompt.system).toMatch(/scene : .*en anglais/);
+    expect(prompt.system).toMatch(/EXACT .* ou GÉNÉRIQUE .*, jamais approximatif/);
+    expect(prompt.system).toMatch(/peu d'éléments/);
+    expect(prompt.system).toMatch(/petites silhouettes au loin, sans visage/);
+    expect(prompt.system).toMatch(/aucun texte, aucune lettre, aucun logo/);
+    // La révision partage les mêmes règles.
+    expect(buildRevisePrompt(OZONE, loadOzoneDraft(), [], CONFIG).system).toMatch(/jamais approximatif/);
   });
 
   it("impose les règles produit : texte fourni uniquement, pas de copie, fidélité de ton et de précision", () => {
