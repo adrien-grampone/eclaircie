@@ -70,7 +70,9 @@ export function sourceWithinShare(
  * - récentes (< schedule_recent_days) d'abord, puis intemporelles, puis le reste ;
  * - jamais une non-intemporelle de plus de schedule_max_age_days ;
  * - pas la même source que la veille ou le lendemain déjà programmés ;
- * - une source ne dépasse pas sa part maximale sur la fenêtre glissante ;
+ * - de préférence, une source ne dépasse pas sa part maximale sur la fenêtre
+ *   glissante ; si aucun candidat ne la respecte, on prend le meilleur candidat
+ *   restant : un jour vide est pire qu'une source répétée ;
  * - à égalité : meilleur score, puis plus récente, puis id (déterminisme).
  *
  * Renvoie null si rien n'est programmable, ou si `day` est déjà pris.
@@ -87,11 +89,13 @@ export function pickForSchedule(
     .filter((s) => Math.abs(daysBetween(s.publishDate, day)) === 1)
     .map((s) => s.sourceName);
 
-  const ranked = candidates
+  const eligible = candidates
     .map((candidate) => ({ candidate, age: storyAgeDays(candidate, day) }))
     .filter(({ candidate, age }) => candidate.evergreen || age <= config.schedule_max_age_days)
-    .filter(({ candidate }) => !neighbourSources.some((s) => sameSource(s, candidate.sourceName)))
-    .filter(({ candidate }) => sourceWithinShare(candidate.sourceName, alreadyScheduled, day, config))
+    .filter(({ candidate }) => !neighbourSources.some((s) => sameSource(s, candidate.sourceName)));
+  const withinShare = eligible.filter(({ candidate }) => sourceWithinShare(candidate.sourceName, alreadyScheduled, day, config));
+
+  const ranked = (withinShare.length > 0 ? withinShare : eligible)
     .map((entry) => ({ ...entry, tier: tierOf(entry.age, entry.candidate, config) }))
     .sort((a, b) => {
       if (a.tier !== b.tier) return a.tier - b.tier;

@@ -79,5 +79,5 @@ budget API. Relancer `supabase functions serve` après toute modification du cod
 ## Budget API
 
 Haiku 5.5 : 0,10 $ / 0,50 $ par million de tokens (entrée / sortie). Garde-fous : `max_triage_per_day`
-(200) et `max_draft_per_day` (40) ; draft entraîne verify, parfois revise + verify, et dedup.
+(400) et `max_draft_per_day` (40) ; draft entraîne verify, parfois revise + verify, et dedup.
 Les replays locaux coûtent autant que la prod : les limiter à quelques stories.

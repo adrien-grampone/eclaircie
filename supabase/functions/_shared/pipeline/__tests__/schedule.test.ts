@@ -114,7 +114,18 @@ describe("pickForSchedule — part maximale d'une source (30 % sur 14 jours)", (
     const mongabay = candidate({ id: "m", sourceName: "Mongabay", score: 0.99 });
     const other = candidate({ id: "o", sourceName: "Reporterre", score: 0.5 });
     expect(pickForSchedule([mongabay, other], already, DAY, CONFIG)?.id).toBe("o");
-    expect(pickForSchedule([mongabay], already, DAY, CONFIG)).toBeNull();
+  });
+
+  it("préfère un jour avec une source répétée à un jour vide : sans autre candidat, Mongabay passe", () => {
+    const already = scheduled(["Mongabay", "A", "Mongabay", "B", "C", "Mongabay", "D", "E", "F", "G"]);
+    const best = candidate({ id: "m1", sourceName: "Mongabay", score: 0.6 });
+    const better = candidate({ id: "m2", sourceName: "Mongabay", score: 0.9 });
+    expect(pickForSchedule([best, better], already, DAY, CONFIG)?.id).toBe("m2");
+    // La règle d'âge et celle du voisin restent strictes.
+    const old = candidate({ id: "old", sourceName: "Mongabay", sourceDate: daysAgo(45) });
+    expect(pickForSchedule([old], already, DAY, CONFIG)).toBeNull();
+    const neighbour: ScheduledStory[] = [{ publishDate: daysAgo(1), sourceName: "Mongabay" }];
+    expect(pickForSchedule([better], neighbour, DAY, CONFIG)).toBeNull();
   });
 
   it("autorise la source tant qu'elle reste sous le seuil", () => {

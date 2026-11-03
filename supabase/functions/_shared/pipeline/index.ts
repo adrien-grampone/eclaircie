@@ -28,7 +28,7 @@ export type { Decision, ProblemType, Verify, VerifyContext, VerifyDecision, Veri
 export { isStockLow, pickForSchedule, scheduleHorizon, sourceWithinShare, stockDays, storyAgeDays } from "./schedule.ts";
 export { applyEditorialRules, mainTheme } from "./editorial.ts";
 export type { EditorialOutcome } from "./editorial.ts";
-export { collectMaxAgeDays, isFreshEnough } from "./collect.ts";
+export { collectMaxAgeDays, isExpired, isFreshEnough } from "./collect.ts";
 export type { ScheduleCandidate, ScheduledStory } from "./schedule.ts";
 export { themeOfTheDay } from "./rotation.ts";
 export { planBatch, remainingBudget } from "./budget.ts";

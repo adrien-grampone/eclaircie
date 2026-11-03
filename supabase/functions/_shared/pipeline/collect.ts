@@ -15,3 +15,15 @@ export function isFreshEnough(publishedAt: string | null, maxAgeDays: number, no
   if (Number.isNaN(published)) return true;
   return now.getTime() - published <= maxAgeDays * 86_400_000;
 }
+
+/**
+ * Un article `new` sorti de sa fenêtre de collecte (selon la confiance de sa source)
+ * n'est plus trié : il passe en `expired` sans appel modèle. Sans date : jamais expiré.
+ */
+export function isExpired(
+  article: { publishedAt: string | null; trustLevel: number },
+  config: CollectConfig,
+  now: Date,
+): boolean {
+  return !isFreshEnough(article.publishedAt, collectMaxAgeDays(article.trustLevel, config), now);
+}

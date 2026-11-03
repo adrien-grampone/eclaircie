@@ -1,12 +1,15 @@
 /**
- * triage — §4.2. Prend batch_size articles `new`, demande à Claude Haiku le JSON
- * de tri, calcule le score, écrit `triaged` ou `rejected` article par article.
+ * triage — §4.2. Expire d'abord, sans appel modèle, les articles `new` sortis de leur
+ * fenêtre de collecte. Puis prend batch_size articles `new`, les plus récents d'abord
+ * (published_at desc, trust_level desc), demande à Claude Haiku le JSON de tri, calcule
+ * le score, écrit `triaged` ou `rejected` article par article.
  * Garde-fou : s'arrête quand max_triage_per_day est atteint (compté via pipeline_runs).
  */
 import { loadConfig, processedToday, recordRun, serviceClient } from "../_shared/db.ts";
 import { MODELS, askModel } from "../_shared/claude.ts";
 import { errorMessage, json, mapLimit } from "../_shared/http.ts";
 import { planBatch } from "../_shared/pipeline/budget.ts";
+import { isExpired } from "../_shared/pipeline/collect.ts";
 import { applyEditorialRules } from "../_shared/pipeline/editorial.ts";
 import {
   buildTriagePrompt,
@@ -22,7 +25,8 @@ interface ArticleRow {
   snippet: string | null;
   status: string;
   triage: { themes?: string[]; kind?: string; score?: number } | null;
-  sources: { name: string; trust_level: number } | null;
+  source_name: string;
+  trust_level: number;
 }
 
 interface ItemResult {
@@ -41,20 +45,43 @@ interface ItemResult {
  * Corps optionnel : { "retriage": "extracted" } rejoue le triage sur les articles
  * d'un statut déjà passé (pour comparer après un changement de règles). Un article
  * re-trié et accepté garde son statut ; rejeté, il passe en `rejected`.
+ * { "exclude_sources": ["ONU", "Climat"] } écarte les sources dont le nom contient
+ * l'un de ces mots (test ciblé d'un lot).
  */
 interface Options {
   retriage: string | null;
+  excludeSources: string[];
 }
 
 const STEP = "triage";
 
 async function readOptions(req: Request): Promise<Options> {
   try {
-    const body = (await req.json()) as { retriage?: unknown };
-    return { retriage: typeof body.retriage === "string" ? body.retriage : null };
+    const body = (await req.json()) as { retriage?: unknown; exclude_sources?: unknown };
+    const exclude = Array.isArray(body.exclude_sources) ? body.exclude_sources.filter((v): v is string => typeof v === "string") : [];
+    return { retriage: typeof body.retriage === "string" ? body.retriage : null, excludeSources: exclude };
   } catch {
-    return { retriage: null };
+    return { retriage: null, excludeSources: [] };
   }
+}
+
+/**
+ * Passe en `expired` les articles `new` sortis de leur fenêtre de collecte (isExpired,
+ * selon la confiance de la source). Un seul lot de 1000 par invocation, sans appel modèle.
+ */
+async function expireStale(db: ReturnType<typeof serviceClient>, config: Awaited<ReturnType<typeof loadConfig>>): Promise<number> {
+  const now = new Date();
+  const horizon = new Date(now.getTime() - config.collect_max_age_days * 86_400_000).toISOString();
+  const { data, error } = await db
+    .from("triage_queue").select("id, published_at, trust_level")
+    .eq("status", "new").lt("published_at", horizon).limit(1000);
+  if (error) throw new Error(`triage_queue : ${error.message}`);
+  const rows = (data ?? []) as { id: string; published_at: string | null; trust_level: number }[];
+  const ids = rows.filter((r) => isExpired({ publishedAt: r.published_at, trustLevel: r.trust_level }, config, now)).map((r) => r.id);
+  if (ids.length === 0) return 0;
+  const { error: updateError } = await db.from("raw_articles").update({ status: "expired" }).in("id", ids);
+  if (updateError) throw new Error(`expiration : ${updateError.message}`);
+  return ids.length;
 }
 
 Deno.serve(async (req) => {
@@ -69,24 +96,30 @@ Deno.serve(async (req) => {
       return json({ step: STEP, skipped: "budget journalier atteint", used, max: config.max_triage_per_day });
     }
 
+    const expired = options.retriage ? 0 : await expireStale(db, config);
+
     const { data: themeRows, error: themeError } = await db
       .from("themes").select("id, label").eq("active", true).order("position");
     if (themeError) throw new Error(`themes : ${themeError.message}`);
     const themes = (themeRows ?? []) as ThemeRef[];
 
     let query = db
-      .from("raw_articles")
-      .select("id, title, snippet, status, triage, sources(name, trust_level)")
+      .from("triage_queue")
+      .select("id, title, snippet, status, triage, source_name, trust_level")
       .eq("status", options.retriage ?? "new");
     // En re-triage, on ne reprend que les articles triés avec l'ancien schéma (sans `kind`).
     if (options.retriage) query = query.is("triage->kind", null);
-    const { data, error } = await query.order("fetched_at", { ascending: true }).limit(batch);
+    for (const word of options.excludeSources) query = query.not("source_name", "ilike", `%${word}%`);
+    const { data, error } = await query
+      .order("published_at", { ascending: false, nullsFirst: false })
+      .order("trust_level", { ascending: false })
+      .limit(batch);
     if (error) throw new Error(`raw_articles : ${error.message}`);
     const articles = (data ?? []) as unknown as ArticleRow[];
 
     const results = await mapLimit(articles, 5, async (article): Promise<ItemResult> => {
-      const sourceName = article.sources?.name ?? "source inconnue";
-      const trustLevel = article.sources?.trust_level ?? 1;
+      const sourceName = article.source_name;
+      const trustLevel = article.trust_level;
       const previous = options.retriage
         ? { themes: article.triage?.themes ?? null, kind: article.triage?.kind ?? null, score: article.triage?.score ?? null }
         : null;
@@ -100,7 +133,7 @@ Deno.serve(async (req) => {
         const parsed = parseTriage(reply.text);
         if (!parsed.ok) {
           await db.from("raw_articles")
-            .update({ status: "failed", reject_reason: "parse_error", triage: { raw: reply.text, error: parsed.error } })
+            .update({ status: "failed", reject_reason: "parse_error", triaged_at: new Date().toISOString(), triage: { raw: reply.text, error: parsed.error } })
             .eq("id", article.id);
           return { ...base, outcome: "failed", reason: "parse_error", score: null, themes: null, kind: null };
         }
@@ -110,7 +143,7 @@ Deno.serve(async (req) => {
         const triage = { ...ruled.triage, score, trust_level: trustLevel, model: MODELS.triage };
         const keptStatus = options.retriage ? article.status : "triaged";
         await db.from("raw_articles")
-          .update({ status: reason ? "rejected" : keptStatus, reject_reason: reason, triage })
+          .update({ status: reason ? "rejected" : keptStatus, reject_reason: reason, triage, triaged_at: new Date().toISOString() })
           .eq("id", article.id);
         return { ...base, outcome: reason ? "rejected" : "triaged", reason, score, themes: ruled.triage.themes, kind: ruled.triage.kind };
       } catch (cause) {
@@ -136,6 +169,7 @@ Deno.serve(async (req) => {
     return json({
       step: STEP,
       retriage: options.retriage,
+      expired,
       budget: { used_before: used, max: config.max_triage_per_day },
       processed: results.length,
       triaged: results.filter((r) => r.outcome === "triaged").length,

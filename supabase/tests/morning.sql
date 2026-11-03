@@ -32,8 +32,24 @@ alerts as (
 raw as (
   select 5, 'articles', status, count(*)::text from raw_articles group by status
 ),
+queue as (
+  select 6, 'file de triage', 'new en attente',
+         format('%s articles, le plus vieux publié il y a %s j (%s)',
+                count(*), coalesce(extract(day from now() - min(published_at))::int, 0),
+                coalesce(to_char(min(published_at), 'DD/MM'), 'sans date'))
+  from raw_articles where status = 'new'
+),
+triage_rate as (
+  select 7, 'triage 24h par source', s.name,
+         format('%s triés, %s acceptés (%s %%)', count(*),
+                count(*) filter (where a.status in ('triaged', 'extracted', 'drafted') or (a.status = 'failed' and a.reject_reason <> 'parse_error')),
+                round(100.0 * count(*) filter (where a.status in ('triaged', 'extracted', 'drafted') or (a.status = 'failed' and a.reject_reason <> 'parse_error')) / count(*)))
+  from raw_articles a join sources s on s.id = a.source_id
+  where a.triaged_at > now() - interval '24 hours'
+  group by s.name order by count(*) desc
+),
 stories_by_theme as (
-  select 6, 'stories par thème', t.id,
+  select 8, 'stories par thème', t.id,
          format('%s drafted, %s to_revise, %s verified, %s scheduled, %s rejected',
                 count(s.id) filter (where s.status = 'drafted'), count(s.id) filter (where s.status = 'to_revise'),
                 count(s.id) filter (where s.status = 'verified'), count(s.id) filter (where s.status = 'scheduled'),
@@ -42,7 +58,7 @@ stories_by_theme as (
   where t.active and not t.coming_soon group by t.id, t.position order by t.position
 ),
 stock as (
-  select 7, 'stock programmé', t.id,
+  select 9, 'stock programmé', t.id,
          format('%s jour(s) à partir d''aujourd''hui, prochain trou %s',
                 count(s.id) filter (where s.publish_date >= today.d),
                 coalesce((select min(g::date)::text from generate_series(today.d, today.d + 13, interval '1 day') g
@@ -53,7 +69,7 @@ stock as (
   where t.active and not t.coming_soon group by t.id, t.position, today.d order by t.position
 ),
 next_days as (
-  select 8, 'à paraître', s.publish_date::text || ' ' || s.theme_id,
+  select 10, 'à paraître', s.publish_date::text || ' ' || s.theme_id,
          s.title_main || coalesce(' ' || s.title_accent, '') || ' (' || s.source_name || ')'
   from stories s cross join today
   where s.status = 'scheduled' and s.publish_date between today.d and today.d + 2
@@ -61,7 +77,8 @@ next_days as (
 )
 select section, item, value from (
   select * from runs union all select * from run_errors union all select * from cron_state
-  union all select * from alerts union all select * from raw union all select * from stories_by_theme
+  union all select * from alerts union all select * from raw union all select * from queue
+  union all select * from triage_rate union all select * from stories_by_theme
   union all select * from stock union all select * from next_days
 ) r(sec, section, item, value)
 order by sec, item;

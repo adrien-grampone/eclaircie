@@ -1,4 +1,4 @@
-import { collectMaxAgeDays, isFreshEnough } from "../collect.ts";
+import { collectMaxAgeDays, isExpired, isFreshEnough } from "../collect.ts";
 import { CONFIG } from "./fixtures/config.ts";
 
 const NOW = new Date("2026-11-03T12:00:00Z");
@@ -22,5 +22,21 @@ describe("isFreshEnough", () => {
   it("garde un article sans date ou à date illisible", () => {
     expect(isFreshEnough(null, 7, NOW)).toBe(true);
     expect(isFreshEnough("bientôt", 7, NOW)).toBe(true);
+  });
+});
+
+describe("isExpired", () => {
+  const now = new Date("2026-11-10T12:00:00Z");
+  const at = (daysAgo: number) => new Date(now.getTime() - daysAgo * 86_400_000).toISOString();
+
+  it("expire selon la fenêtre de la source : 7 jours en confiance 1, 30 jours en confiance 3", () => {
+    expect(isExpired({ publishedAt: at(8), trustLevel: 1 }, CONFIG, now)).toBe(true);
+    expect(isExpired({ publishedAt: at(6), trustLevel: 1 }, CONFIG, now)).toBe(false);
+    expect(isExpired({ publishedAt: at(8), trustLevel: 3 }, CONFIG, now)).toBe(false);
+    expect(isExpired({ publishedAt: at(31), trustLevel: 3 }, CONFIG, now)).toBe(true);
+  });
+
+  it("n'expire jamais un article sans date", () => {
+    expect(isExpired({ publishedAt: null, trustLevel: 1 }, CONFIG, now)).toBe(false);
   });
 });
