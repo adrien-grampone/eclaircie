@@ -1,0 +1,103 @@
+import { buildTriagePrompt, isTriageAccepted, parseTriage, triageScore, type Triage } from "../triage.ts";
+import { CONFIG } from "./fixtures/config.ts";
+
+const GOOD: Triage = {
+  is_good_news: true,
+  themes: ["planete"],
+  is_fact: true,
+  is_promotional: false,
+  positivity: 0.9,
+  significance: 0.8,
+  evergreen: true,
+  reason: "Résultat mesuré par l'ONU",
+};
+
+describe("triageScore", () => {
+  it("applique la formule 0,35·p + 0,35·s + 0,30·(trust/3) depuis la config", () => {
+    expect(triageScore(GOOD, 3, CONFIG)).toBeCloseTo(0.35 * 0.9 + 0.35 * 0.8 + 0.3, 10);
+    expect(triageScore(GOOD, 1, CONFIG)).toBeCloseTo(0.35 * 0.9 + 0.35 * 0.8 + 0.1, 10);
+  });
+
+  it("suit des pondérations différentes sans rien de codé en dur", () => {
+    const custom = { triage_weights: { positivity: 1, significance: 0, trust: 0 } };
+    expect(triageScore(GOOD, 3, custom)).toBeCloseTo(0.9, 10);
+  });
+
+  it("borne un trust_level hors contrainte à [0, 3]", () => {
+    expect(triageScore(GOOD, 7, CONFIG)).toBeCloseTo(triageScore(GOOD, 3, CONFIG), 10);
+    expect(triageScore(GOOD, -2, CONFIG)).toBeCloseTo(triageScore(GOOD, 0, CONFIG), 10);
+  });
+});
+
+describe("isTriageAccepted", () => {
+  it("accepte une bonne nouvelle factuelle au-dessus du seuil", () => {
+    expect(isTriageAccepted(GOOD, 0.65, CONFIG)).toBe(true);
+    expect(isTriageAccepted(GOOD, 0.9, CONFIG)).toBe(true);
+  });
+
+  it("refuse juste sous le seuil de la config", () => {
+    expect(isTriageAccepted(GOOD, 0.6499, CONFIG)).toBe(false);
+    expect(isTriageAccepted(GOOD, 0.6499, { triage_min_score: 0.6 })).toBe(true);
+  });
+
+  it("refuse si l'un des drapeaux disqualifie", () => {
+    expect(isTriageAccepted({ ...GOOD, is_good_news: false }, 0.9, CONFIG)).toBe(false);
+    expect(isTriageAccepted({ ...GOOD, is_fact: false }, 0.9, CONFIG)).toBe(false);
+    expect(isTriageAccepted({ ...GOOD, is_promotional: true }, 0.9, CONFIG)).toBe(false);
+  });
+
+  it("refuse une nouvelle sans thème", () => {
+    expect(isTriageAccepted({ ...GOOD, themes: [] }, 0.9, CONFIG)).toBe(false);
+  });
+});
+
+describe("parseTriage", () => {
+  it("valide la sortie JSON stricte et met evergreen à false par défaut", () => {
+    const result = parseTriage(
+      '{"is_good_news":true,"themes":["science"],"is_fact":true,"is_promotional":false,"positivity":0.7,"significance":0.6,"reason":"ok"}',
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.evergreen).toBe(false);
+    expect(result.value.themes).toEqual(["science"]);
+  });
+
+  it("refuse une positivité hors de [0, 1] ou un champ manquant", () => {
+    const outOfRange = parseTriage(
+      '{"is_good_news":true,"themes":["science"],"is_fact":true,"is_promotional":false,"positivity":1.4,"significance":0.6,"reason":"ok"}',
+    );
+    expect(outOfRange.ok).toBe(false);
+    if (!outOfRange.ok) expect(outOfRange.error).toMatch(/positivity/);
+
+    const missing = parseTriage('{"is_good_news":true,"themes":["science"]}');
+    expect(missing.ok).toBe(false);
+  });
+
+  it("tolère une réponse entourée de prose ou de clôtures markdown", () => {
+    const result = parseTriage(
+      'Voici le tri :\n```json\n{"is_good_news":false,"themes":[],"is_fact":true,"is_promotional":false,"positivity":0.1,"significance":0.2,"reason":"mauvaise nouvelle"}\n```',
+    );
+    expect(result.ok).toBe(true);
+  });
+});
+
+describe("buildTriagePrompt", () => {
+  it("liste les thèmes autorisés et injecte titre, extrait et source", () => {
+    const prompt = buildTriagePrompt(
+      { title: "Titre test", snippet: "Extrait test", sourceName: "CNRS" },
+      [{ id: "science", label: "Science" }, { id: "sante", label: "Santé" }],
+    );
+    expect(prompt.system).toContain('"science" : Science');
+    expect(prompt.system).toContain('"sante" : Santé');
+    expect(prompt.system).toContain("evergreen");
+    expect(prompt.user).toContain("Source : CNRS");
+    expect(prompt.user).toContain("Titre : Titre test");
+    expect(prompt.user).toContain("Extrait : Extrait test");
+  });
+
+  it("signale l'absence d'extrait au lieu d'écrire null", () => {
+    const prompt = buildTriagePrompt({ title: "T", snippet: null, sourceName: "S" }, []);
+    expect(prompt.user).toContain("(aucun extrait)");
+    expect(prompt.user).not.toContain("null");
+  });
+});
