@@ -16,15 +16,16 @@ app/ios/
 app/android/
 app/*.tsbuildinfo
 
-# Hors app : pipeline, back-office, maquettes, captures, rapports, docs, outils racine
-supabase/
-admin/
-design/
-docs/
-reports/
-*.md
-package.json
-package-lock.json
-tsconfig.json
-vitest.config.ts
+# Hors app : pipeline, back-office, maquettes, captures, rapports, docs, outils racine.
+# Les entrées de fichiers sont ancrées à la racine (/) : sans la barre, `package.json` effacerait aussi app/package.json.
+/supabase/
+/admin/
+/design/
+/docs/
+/reports/
+/*.md
+/package.json
+/package-lock.json
+/tsconfig.json
+/vitest.config.ts
 app/src/**/*.test.ts
