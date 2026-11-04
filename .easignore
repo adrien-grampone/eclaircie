@@ -19,13 +19,14 @@ app/*.tsbuildinfo
 # Hors app : pipeline, back-office, maquettes, captures, rapports, docs, outils racine.
 # Les entrées de fichiers sont ancrées à la racine (/) : sans la barre, `package.json` effacerait aussi app/package.json.
 # supabase/ sauf le module pur du pipeline, importé par l'app via @pipeline (metro.config.js) ; sans ses tests.
+# Exceptions SANS barre finale : eas-cli copie l'arbre avec le paquet `ignore`, qui ne sait pas qu'un chemin est un dossier.
 /supabase/*
-!/supabase/functions/
+!/supabase/functions
 /supabase/functions/*
-!/supabase/functions/_shared/
+!/supabase/functions/_shared
 /supabase/functions/_shared/*
-!/supabase/functions/_shared/pipeline/
-/supabase/functions/_shared/pipeline/__tests__/
+!/supabase/functions/_shared/pipeline
+/supabase/functions/_shared/pipeline/__tests__
 /admin/
 /design/
 /docs/
