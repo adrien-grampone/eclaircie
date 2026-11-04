@@ -2,22 +2,34 @@ import { z } from "zod";
 import type { PipelineConfig } from "./config.ts";
 import type { Draft } from "./draft.ts";
 import { parseJsonWith } from "./json.ts";
-import type { Article, ParseResult, Prompt } from "./types.ts";
+import { applyEditorialRules } from "./editorial.ts";
+import type { Triage } from "./triage.ts";
+import type { Article, ParseResult, Prompt, ThemeRef } from "./types.ts";
 
 /**
  * Étape `verify` (§4.5) — un SECOND appel Sonnet, qui ne voit pas le raisonnement
  * du premier. La présence des evidences dans le texte est contrôlée en code
  * (checkEvidence), pas ici. La décision finale est prise en code (decideVerify).
  */
-export const PROBLEM_TYPES = ["fact_error", "overstatement", "missing_caveat", "translation_issue", "tone_negative"] as const;
+export const PROBLEM_TYPES = [
+  "fact_error", "overstatement", "missing_caveat", "translation_issue", "tone_negative",
+  /** Le titre ne nomme pas le sujet concret, il ne se comprend pas sans le résumé. Révision. */
+  "vague_title",
+  /** Le résultat principal n'est qu'une possibilité et l'article ne mesure rien. Rejet. */
+  "not_a_fact",
+  /** Le thème principal ne correspond pas au sujet : corrigé en code si le thème proposé est autorisé. */
+  "theme_mismatch",
+] as const;
 /** Types qui rejettent définitivement, à n'importe quelle passe. */
-export const FATAL_TYPES: readonly ProblemType[] = ["fact_error", "tone_negative"];
+export const FATAL_TYPES: readonly ProblemType[] = ["fact_error", "tone_negative", "not_a_fact"];
 export type ProblemType = (typeof PROBLEM_TYPES)[number];
 
 export const VerifyProblemSchema = z.object({
   type: z.enum(PROBLEM_TYPES),
   passage: z.string().trim().min(1),
   correction: z.string().trim().min(1),
+  /** theme_mismatch seulement : identifiant du thème proposé. */
+  theme: z.string().trim().min(1).optional(),
 });
 export type VerifyProblem = z.infer<typeof VerifyProblemSchema>;
 
@@ -46,6 +58,44 @@ export interface Decision {
   decision: VerifyDecision;
   /** Raison lisible en cas de rejet ou de révision. */
   reason: string | null;
+}
+
+/** Problèmes qu'un rédacteur peut corriger : tout sauf le thème, qui est traité en code. */
+export function revisableProblems(problems: readonly VerifyProblem[]): VerifyProblem[] {
+  return problems.filter((p) => p.type !== "theme_mismatch");
+}
+
+export type ThemeResolution =
+  | { action: "keep" }
+  | { action: "change"; theme: string }
+  | { action: "reject"; reason: string };
+
+/**
+ * Un `theme_mismatch` corrige le thème principal SANS rejet si le thème proposé existe et reste
+ * autorisé par les règles de §2 (kind, study_subject) ; sinon la story est rejetée.
+ */
+export function resolveThemeMismatch(
+  problems: readonly VerifyProblem[],
+  current: string,
+  triage: Pick<Triage, "kind" | "study_subject">,
+  themes: readonly ThemeRef[],
+): ThemeResolution {
+  const mismatch = problems.find((p) => p.type === "theme_mismatch");
+  if (!mismatch) return { action: "keep" };
+  const proposed = mismatch.theme;
+  if (!proposed || !themes.some((t) => t.id === proposed)) {
+    return { action: "reject", reason: `theme_mismatch: thème proposé absent ou inconnu (${proposed ?? "aucun"}) — ${mismatch.passage}` };
+  }
+  if (proposed === current) return { action: "keep" };
+  const ruled = applyEditorialRules({
+    is_good_news: true, themes: [proposed], kind: triage.kind, study_subject: triage.study_subject,
+    is_fact: true, is_promotional: false, is_scheduled_event: false, is_food_health_claim: false,
+    positivity: 1, significance: 1, evergreen: false, reason: "",
+  });
+  if (ruled.reason || ruled.triage.themes[0] !== proposed) {
+    return { action: "reject", reason: `theme_mismatch: ${proposed} non autorisé (${ruled.reason ?? "règle de thème"}) — ${mismatch.passage}` };
+  }
+  return { action: "change", theme: proposed };
 }
 
 function claimsCoherent(verify: Verify, draft: Pick<Draft, "claims">): boolean {
@@ -83,7 +133,9 @@ export function decideVerify(
     return { decision: "rejected", reason: `fact_error: ${notes}` };
   }
 
-  const fatal = verify.problems.filter((p) => FATAL_TYPES.includes(p.type));
+  // Le thème est traité à part (resolveThemeMismatch) : il ne compte ni pour la révision ni pour le rejet.
+  const problems = revisableProblems(verify.problems);
+  const fatal = problems.filter((p) => FATAL_TYPES.includes(p.type));
   if (fatal.length > 0) {
     return { decision: "rejected", reason: fatal.map((p) => `${p.type}: ${p.passage}`).join(" | ") };
   }
@@ -101,15 +153,16 @@ export function decideVerify(
     return { decision: "verified", reason: null };
   }
 
-  if (verify.problems.length > 0) {
-    const summary = verify.problems.map((p) => `${p.type}: ${p.passage}`).join(" | ");
+  if (problems.length > 0) {
+    const summary = problems.map((p) => `${p.type}: ${p.passage}`).join(" | ");
     if (pass >= config.verify_max_passes) {
       return { decision: "rejected", reason: `verify_failed après ${pass} passe(s): ${summary}` };
     }
     return { decision: "revise", reason: summary };
   }
 
-  if (verify.verdict !== "approve") return { decision: "rejected", reason: "verify_failed: verdict reject sans problème listé" };
+  // Un verdict reject qui ne listait qu'un theme_mismatch (traité en code) n'est pas un doute.
+  if (verify.verdict !== "approve" && verify.problems.length === 0) return { decision: "rejected", reason: "verify_failed: verdict reject sans problème listé" };
   return { decision: "verified", reason: null };
 }
 
@@ -117,6 +170,8 @@ export interface VerifyContext {
   pass: number;
   /** Problèmes relevés à la passe précédente (passe 2). */
   previousProblems: readonly VerifyProblem[];
+  /** Thème principal actuel et thèmes disponibles, pour juger la cohérence du thème. */
+  theme?: { current: string; available: readonly ThemeRef[] };
 }
 
 const FIRST_PASS: VerifyContext = { pass: 1, previousProblems: [] };
@@ -132,11 +187,13 @@ export function buildVerifyPrompt(article: Article, draft: Draft, context: Verif
     "3. Le texte n'exagère pas : « pourrait » ne devient pas « va », une étude sur la souris ne devient pas « un traitement », un objectif ne devient pas un résultat, une corrélation ne devient pas une cause.",
     "4. Si l'article contient une limite, une opposition ou une contrepartie qui change le sens de cette nouvelle, le résumé la mentionne. Un contexte général négatif absent du résumé n'est PAS un problème.",
     "5. Le résumé se lit comme une bonne nouvelle : s'il se lit globalement comme une mauvaise nouvelle, c'est un `tone_negative`.",
+    "6. « Pourrait » : si le résultat principal du titre ou du résumé n'est qu'une possibilité (« pourrait mieux dépister », « pourrait ouvrir la voie »), regarde l'article. S'il décrit un résultat MESURÉ, c'est un `overstatement` à reformuler au fait mesuré. S'il n'y a aucun résultat mesuré, c'est un `not_a_fact` : ce n'est pas une nouvelle.",
+    "7. Le thème principal (indiqué ci-dessous) doit correspondre au sujet réel de l'article : des plaquettes sanguines ne sont pas « Animaux », une étude sur la souris n'est pas « Santé ». Sinon, `theme_mismatch` avec, dans `theme`, l'identifiant du thème correct parmi la liste.",
     "",
-    "LE TITRE (title_main + title_accent) n'est jugé que sur DEUX points : il n'ajoute aucun fait absent du résumé, et il ne contredit pas le résumé. Son ton évocateur est voulu : ne signale jamais un titre pour son ton, son image ou sa chute.",
+    "LE TITRE (title_main + title_accent) est jugé sur TROIS points : il n'ajoute aucun fait absent du résumé ; il ne contredit pas le résumé ; il nomme le sujet concret et se comprend SEUL, sans le résumé (sinon `vague_title` : « une vieille idée », « un donneur », « une découverte » sont vagues). Son ton évocateur est voulu : ne signale jamais un titre pour son ton, son image ou sa chute.",
     "",
     secondPass
-      ? "SECONDE PASSE : ce brouillon est une révision. Pour chaque problème de la passe précédente, dis s'il est corrigé (`previous_problems`, même index). Parmi les problèmes nouveaux, cherche UNIQUEMENT des fact_error ou un tone_negative : ne signale aucun nouvel overstatement, missing_caveat ou translation_issue."
+      ? "SECONDE PASSE : ce brouillon est une révision. Pour chaque problème de la passe précédente, dis s'il est corrigé (`previous_problems`, même index). Parmi les problèmes nouveaux, cherche UNIQUEMENT des fact_error, not_a_fact ou tone_negative : ne signale aucun nouvel overstatement, missing_caveat, translation_issue ou vague_title."
       : "PREMIÈRE PASSE : relève tous les problèmes.",
     "",
     "TYPES DE PROBLÈMES",
@@ -146,13 +203,16 @@ export function buildVerifyPrompt(article: Article, draft: Draft, context: Verif
     "- missing_caveat : une limite, opposition ou contrepartie importante de l'article est passée sous silence.",
     "- translation_issue : traduction qui ajoute une précision ou change le sens (« beetles » → « carabes »). RAPPEL : une traduction FIDÈLE d'un mot anglais n'est JAMAIS un translation_issue (« folly » → « insensé » est correct), même si le mot français n'apparaît pas dans l'article.",
     "- tone_negative : le résumé se lit globalement comme une mauvaise nouvelle. Rejet définitif.",
+    "- vague_title : le titre ne nomme pas le sujet concret ou ne se comprend pas sans le résumé. Propose un titre qui nomme le sujet.",
+    "- not_a_fact : le résultat principal n'est qu'une possibilité et l'article ne décrit aucun résultat mesuré. Rejet définitif.",
+    "- theme_mismatch : le thème principal ne correspond pas au sujet. Indique le thème correct dans `theme` (identifiant exact de la liste).",
     "",
     "Pour chaque problème, cite le passage fautif du brouillon tel quel et propose une correction concrète. Ne signale pas deux fois le même problème. Ne signale rien qui ne soit pas un problème.",
     "",
     "Réponds UNIQUEMENT avec un objet JSON strict de la forme :",
     "{",
     '  "claims": [ { "index": 0, "supported": true, "note": "" } ],',
-    '  "problems": [ { "type": "overstatement", "passage": "…", "correction": "…" } ],',
+    '  "problems": [ { "type": "overstatement", "passage": "…", "correction": "…" }, { "type": "theme_mismatch", "passage": "…", "correction": "…", "theme": "science" } ],',
     secondPass ? '  "previous_problems": [ { "index": 0, "fixed": true, "note": "" } ],' : '  "previous_problems": [],',
     '  "verdict": "approve"',
     "}",
@@ -168,6 +228,14 @@ export function buildVerifyPrompt(article: Article, draft: Draft, context: Verif
     .map((c, i) => `${i}. CLAIM : ${c.claim}\n   EVIDENCE : ${c.evidence}`)
     .join("\n");
 
+  const themeLines = context.theme
+    ? [
+        "",
+        `THÈME PRINCIPAL ACTUEL : ${context.theme.current}`,
+        `THÈMES DISPONIBLES : ${context.theme.available.map((t) => `"${t.id}" (${t.label})`).join(", ")}`,
+      ]
+    : [];
+
   const user = [
     "ARTICLE",
     `Source : ${article.sourceName}`,
@@ -181,6 +249,7 @@ export function buildVerifyPrompt(article: Article, draft: Draft, context: Verif
     `Résumé : ${draft.summary}`,
     "Claims :",
     claims,
+    ...themeLines,
     ...(secondPass ? ["", "PROBLÈMES DE LA PASSE PRÉCÉDENTE", previous] : []),
   ].join("\n");
 

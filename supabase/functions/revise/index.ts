@@ -9,6 +9,7 @@ import { errorMessage, json, mapLimit } from "../_shared/http.ts";
 import { STORY_SELECT, draftOf, type StoryRow } from "../_shared/stories.ts";
 import { planBatch } from "../_shared/pipeline/budget.ts";
 import { buildRevisePrompt, decideDraftOutput, type ReviseOptions } from "../_shared/pipeline/draft.ts";
+import { revisableProblems } from "../_shared/pipeline/verify.ts";
 
 interface ItemResult {
   id: string;
@@ -47,7 +48,7 @@ Deno.serve(async () => {
         let options: ReviseOptions = {};
         // Tentative 1, puis une de plus par revise_length_retries si seules des longueurs dépassent.
         for (let attempt = 1; ; attempt++) {
-          const prompt = buildRevisePrompt(articleInput, draftOf(story), last.verify.problems, config, options);
+          const prompt = buildRevisePrompt(articleInput, draftOf(story), revisableProblems(last.verify.problems), config, options);
           const reply = await askModel(MODELS.draft, prompt, { maxTokens: 4096, effort: "low", thinking: true });
           if (reply.stopReason === "refusal" || reply.stopReason === "max_tokens") return reject(`revise_incomplete: ${reply.stopReason}`);
           const step = decideDraftOutput(reply.text, attempt, config, "revise");

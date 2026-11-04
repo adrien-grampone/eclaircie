@@ -94,6 +94,9 @@ describe("buildDraftPrompt", () => {
     expect(prompt.user).toContain(`Source : ${OZONE.sourceName}`);
     expect(prompt.user).toContain(`URL : ${OZONE.url}`);
     expect(prompt.user).toContain(`Titre : ${OZONE.title}`);
+    expect(prompt.system).toMatch(/Le titre se comprend SEUL, sans le résumé/);
+    expect(prompt.system).toMatch(/« une vieille idée », « un donneur »/);
+    expect(prompt.system).toMatch(/n'est qu'une possibilité \(« pourrait mieux dépister »\)/);
   });
 
   it("impose les règles du champ scene : sujet exact ou générique, peu d'éléments, silhouettes sans visage, aucun texte", () => {

@@ -1,4 +1,4 @@
-import { buildVerifyPrompt, decideVerify, parseVerify, type Verify, type VerifyProblem } from "../verify.ts";
+import { buildVerifyPrompt, decideVerify, parseVerify, resolveThemeMismatch, revisableProblems, type Verify, type VerifyProblem } from "../verify.ts";
 import { CONFIG } from "./fixtures/config.ts";
 import { OZONE, OZONE_VERIFY_JSON, loadOzoneDraft } from "./fixtures/articles.ts";
 
@@ -15,6 +15,10 @@ const caveat: VerifyProblem = { type: "missing_caveat", passage: "99 %", correct
 const translation: VerifyProblem = { type: "translation_issue", passage: "carabes", correction: "coléoptères" };
 const fact: VerifyProblem = { type: "fact_error", passage: "vers 2050", correction: "vers 2066" };
 const tone: VerifyProblem = { type: "tone_negative", passage: "(résumé entier)", correction: "la nouvelle se lit comme une perte" };
+const vague: VerifyProblem = { type: "vague_title", passage: "Une vieille idée revient.", correction: "Le Protocole de Montréal répare la couche d'ozone." };
+const notFact: VerifyProblem = { type: "not_a_fact", passage: "pourrait mieux dépister", correction: "aucun résultat mesuré dans l'article" };
+const mismatch: VerifyProblem = { type: "theme_mismatch", passage: "plaquettes sanguines", correction: "le sujet est médical", theme: "sante" };
+const THEMES = [{ id: "animaux", label: "Animaux" }, { id: "sante", label: "Santé" }, { id: "science", label: "Science" }];
 
 describe("parseVerify", () => {
   it("valide une réponse complète et met note à vide par défaut", () => {
@@ -58,12 +62,24 @@ describe("decideVerify", () => {
     expect(out.reason).toMatch(/fact_error: claim 1: l'article dit 2066/);
   });
 
-  it("demande une révision pour overstatement, missing_caveat ou translation_issue en première passe", () => {
-    for (const problem of [over, caveat, translation]) {
+  it("demande une révision pour overstatement, missing_caveat, translation_issue ou vague_title en première passe", () => {
+    for (const problem of [over, caveat, translation, vague]) {
       const out = decideVerify({ ...clean(), problems: [problem], verdict: "reject" }, draft, 1, CONFIG);
       expect(out.decision).toBe("revise");
       expect(out.reason).toContain(problem.type);
     }
+  });
+
+  it("rejette définitivement un not_a_fact (« pourrait » sans résultat mesuré)", () => {
+    const out = decideVerify({ ...clean(), problems: [notFact], verdict: "reject" }, draft, 1, CONFIG);
+    expect(out.decision).toBe("rejected");
+    expect(out.reason).toMatch(/^not_a_fact: pourrait mieux dépister/);
+  });
+
+  it("ignore un theme_mismatch dans la décision : il est traité en code, pas par le rédacteur", () => {
+    expect(decideVerify({ ...clean(), problems: [mismatch], verdict: "reject" }, draft, 1, CONFIG)).toEqual({ decision: "verified", reason: null });
+    expect(decideVerify({ ...clean(), problems: [mismatch, over], verdict: "reject" }, draft, 1, CONFIG).decision).toBe("revise");
+    expect(revisableProblems([mismatch, over, vague]).map((p) => p.type)).toEqual(["overstatement", "vague_title"]);
   });
 
   it("rejette définitivement un tone_negative, à n'importe quelle passe", () => {
@@ -116,6 +132,32 @@ describe("decideVerify", () => {
   });
 });
 
+describe("resolveThemeMismatch", () => {
+  it("sans theme_mismatch, ou si le thème proposé est déjà le courant : rien ne change", () => {
+    expect(resolveThemeMismatch([over], "animaux", { kind: "breakthrough", study_subject: "human" }, THEMES)).toEqual({ action: "keep" });
+    expect(resolveThemeMismatch([mismatch], "sante", { kind: "breakthrough", study_subject: "human" }, THEMES)).toEqual({ action: "keep" });
+  });
+
+  it("corrige le thème sans rejet quand le thème proposé est autorisé par les règles de §2", () => {
+    expect(resolveThemeMismatch([mismatch], "animaux", { kind: "breakthrough", study_subject: "human" }, THEMES)).toEqual({ action: "change", theme: "sante" });
+    const toScience = { ...mismatch, theme: "science" };
+    expect(resolveThemeMismatch([toScience], "animaux", { kind: "discovery", study_subject: "not_a_study" }, THEMES)).toEqual({ action: "change", theme: "science" });
+  });
+
+  it("rejette quand le thème proposé viole les règles : santé sur l'animal, discovery hors science", () => {
+    const animal = resolveThemeMismatch([mismatch], "animaux", { kind: "breakthrough", study_subject: "animal" }, THEMES);
+    expect(animal.action).toBe("reject");
+    if (animal.action === "reject") expect(animal.reason).toMatch(/theme_mismatch: sante non autorisé \(health_requires_human\)/);
+    const discovery = resolveThemeMismatch([mismatch], "science", { kind: "discovery", study_subject: "not_a_study" }, THEMES);
+    expect(discovery.action).toBe("reject");
+  });
+
+  it("rejette un theme_mismatch sans thème proposé ou avec un thème inconnu", () => {
+    expect(resolveThemeMismatch([{ ...mismatch, theme: undefined }], "animaux", { kind: null, study_subject: null }, THEMES).action).toBe("reject");
+    expect(resolveThemeMismatch([{ ...mismatch, theme: "cuisine" }], "animaux", { kind: null, study_subject: null }, THEMES).action).toBe("reject");
+  });
+});
+
 describe("buildVerifyPrompt", () => {
   const prompt = buildVerifyPrompt(OZONE, loadDraft());
 
@@ -131,8 +173,8 @@ describe("buildVerifyPrompt", () => {
     expect(prompt.system).not.toContain("RÈGLES ABSOLUES"); // pas les consignes du rédacteur
   });
 
-  it("décrit les cinq types de problèmes et exempte la traduction fidèle", () => {
-    for (const t of ["fact_error", "overstatement", "missing_caveat", "translation_issue", "tone_negative"]) {
+  it("décrit les huit types de problèmes et exempte la traduction fidèle", () => {
+    for (const t of ["fact_error", "overstatement", "missing_caveat", "translation_issue", "tone_negative", "vague_title", "not_a_fact", "theme_mismatch"]) {
       expect(prompt.system).toContain(`- ${t} :`);
     }
     expect(prompt.system).toMatch(/traduction FIDÈLE d'un mot anglais n'est JAMAIS un translation_issue/);
@@ -141,9 +183,12 @@ describe("buildVerifyPrompt", () => {
     expect(prompt.system).toContain('"correction": "…"');
   });
 
-  it("ne juge le titre que sur deux points et protège son ton", () => {
-    expect(prompt.system).toMatch(/LE TITRE .* DEUX points/);
+  it("juge le titre sur trois points (faits, cohérence, sujet concret) et protège son ton", () => {
+    expect(prompt.system).toMatch(/LE TITRE .* TROIS points/);
+    expect(prompt.system).toMatch(/se comprend SEUL, sans le résumé/);
     expect(prompt.system).toMatch(/ne signale jamais un titre pour son ton/);
+    expect(prompt.system).toMatch(/« Pourrait »/);
+    expect(prompt.system).toMatch(/résultat MESURÉ, c'est un `overstatement`/);
     expect(prompt.system).toMatch(/PREMIÈRE PASSE/);
     expect(prompt.user).not.toContain("PROBLÈMES DE LA PASSE PRÉCÉDENTE");
   });
@@ -151,10 +196,17 @@ describe("buildVerifyPrompt", () => {
   it("en seconde passe, demande l'état de chaque problème précédent et limite la recherche aux fact_error", () => {
     const second = buildVerifyPrompt(OZONE, loadDraft(), { pass: 2, previousProblems: [over, translation] });
     expect(second.system).toMatch(/SECONDE PASSE/);
-    expect(second.system).toMatch(/UNIQUEMENT des fact_error ou un tone_negative/);
+    expect(second.system).toMatch(/UNIQUEMENT des fact_error, not_a_fact ou tone_negative/);
     expect(second.system).toContain('"previous_problems": [ { "index": 0, "fixed": true, "note": "" } ]');
     expect(second.user).toContain("PROBLÈMES DE LA PASSE PRÉCÉDENTE");
     expect(second.user).toMatch(/0\. \[overstatement\] « se répare\. » → correction demandée : est en voie de guérison\./);
     expect(second.user).toMatch(/1\. \[translation_issue\]/);
+  });
+
+  it("indique le thème courant et la liste des thèmes quand le contexte les donne", () => {
+    const withTheme = buildVerifyPrompt(OZONE, loadDraft(), { pass: 1, previousProblems: [], theme: { current: "planete", available: THEMES } });
+    expect(withTheme.user).toContain("THÈME PRINCIPAL ACTUEL : planete");
+    expect(withTheme.user).toMatch(/"sante" \(Santé\)/);
+    expect(prompt.user).not.toContain("THÈME PRINCIPAL ACTUEL");
   });
 });

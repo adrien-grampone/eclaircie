@@ -126,6 +126,8 @@ export function draftRules(config: LengthConfig): string {
     "- verdict : \"ok\" quand tu livres un brouillon.",
     `- title_main + title_accent forment le titre en deux parties du design (title_accent est la chute, en italique). title_main : ${config.title_main_max_chars} caractères MAXIMUM ; title_accent : ${config.title_accent_max_chars} caractères MAXIMUM. Exemple : « La couche d'ozone » / « se répare. »`,
     "- Le titre est évocateur, c'est voulu ; il n'apporte aucun fait absent du résumé et ne le contredit pas.",
+    "- Le titre se comprend SEUL, sans le résumé : il nomme le sujet concret (l'espèce, le lieu, la technique, le résultat). INTERDIT : une formulation vague ou allusive (« une vieille idée », « un donneur », « une découverte », « une avancée »).",
+    "- Un résultat qui n'est qu'une possibilité (« pourrait mieux dépister ») n'est pas un résultat : si l'article mesure quelque chose, écris le fait mesuré ; s'il n'y a aucun résultat mesuré, ce n'est pas une bonne nouvelle (verdict not_good_news).",
     `- summary : 2 à 3 phrases, ${config.summary_max_chars} caractères MAXIMUM, en français, tutoiement, ton chaleureux et précis.`,
     "- claims : chaque affirmation factuelle du résumé, avec en `evidence` la phrase EXACTE de l'article qui la soutient, recopiée mot pour mot (c'est la seule chose que tu recopies ; elle sera vérifiée par recherche dans le texte).",
     "- scene : description visuelle de la scène à illustrer, en anglais, pour un illustrateur qui n'a pas lu l'article. Règles :",

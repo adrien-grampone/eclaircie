@@ -20,6 +20,14 @@ export const PipelineConfigSchema = z.object({
   }),
   /** §4.2 — score minimal pour passer le tri. */
   triage_min_score: z.number().min(0).max(1),
+  /** File de triage — fenêtre du taux d'acceptation par source, en jours. */
+  triage_source_window_days: z.number().int().positive(),
+  /** File de triage — taux supposé d'une source sans historique (a priori). */
+  triage_source_prior_rate: z.number().min(0).max(1),
+  /** File de triage — poids de cet a priori, en articles équivalents. */
+  triage_source_prior_weight: z.number().min(0),
+  /** Rapport du matin — « source à revoir » : au moins N triés sur la fenêtre et aucun accepté. */
+  triage_source_review_min: z.number().int().positive(),
   /** §4.3 — texte complet minimal, sinon `no_fulltext`. */
   extract_min_chars: z.number().int().positive(),
   /** §4.4 — longueur maximale du résumé. */

@@ -11,20 +11,22 @@ describe("selectDailyStory", () => {
   it("suit la rotation du pipeline : jour 2 après inscription → 3e thème trié", () => {
     const stories = [story("a", "science", "2026-11-03"), story("b", "planete", "2026-11-03")];
     const pick = selectDailyStory(themes, SIGNUP, "2026-11-03", stories);
-    expect(pick).toEqual({ themeId: "science", story: stories[0], stale: false });
+    expect(pick).toEqual({ themeId: "science", story: stories[0] });
     const next = [...stories, story("c", "animaux", "2026-11-04")];
     expect(selectDailyStory(themes, SIGNUP, "2026-11-04", next)?.story?.id).toBe("c");
   });
 
-  it("sans nouvelle du jour, prend la plus récente du thème et la marque stale", () => {
-    const stories = [story("old", "science", "2026-10-30"), story("older", "science", "2026-10-20")];
-    expect(selectDailyStory(themes, SIGNUP, "2026-11-03", stories)).toEqual({ themeId: "science", story: stories[0], stale: true });
+  it("sans nouvelle validée du jour pour le thème, prend le thème SUIVANT dans la rotation qui en a une", () => {
+    // Jour 2 → science ; la rotation continue : animaux, puis planete.
+    const stories = [story("p", "planete", "2026-11-03"), story("a", "animaux", "2026-11-03")];
+    expect(selectDailyStory(themes, SIGNUP, "2026-11-03", stories)).toEqual({ themeId: "animaux", story: stories[1] });
+    expect(selectDailyStory(themes, SIGNUP, "2026-11-03", [stories[0]!])).toEqual({ themeId: "planete", story: stories[0] });
   });
 
-  it("sans aucune nouvelle du thème, passe aux autres thèmes dans l'ordre trié, puis renvoie story null", () => {
-    const stories = [story("p", "planete", "2026-11-02")];
-    expect(selectDailyStory(themes, SIGNUP, "2026-11-03", stories)).toEqual({ themeId: "planete", story: stories[0], stale: true });
-    expect(selectDailyStory(themes, SIGNUP, "2026-11-03", [])).toEqual({ themeId: "science", story: null, stale: false });
+  it("n'affiche jamais une nouvelle d'un autre jour : sans nouvelle du jour, story null (« arrive bientôt »)", () => {
+    const stories = [story("old", "science", "2026-10-30"), story("p", "planete", "2026-11-02")];
+    expect(selectDailyStory(themes, SIGNUP, "2026-11-03", stories)).toEqual({ themeId: "science", story: null });
+    expect(selectDailyStory(themes, SIGNUP, "2026-11-03", [])).toEqual({ themeId: "science", story: null });
   });
 
   it("ignore une nouvelle datée dans le futur et renvoie null sans thème", () => {

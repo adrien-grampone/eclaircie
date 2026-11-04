@@ -18,12 +18,13 @@ values ('11111111-1111-1111-1111-111111111111','00000000-0000-0000-0000-00000000
 insert into sources (id, name, feed_url, trust_level) values ('aaaaaaaa-0000-0000-0000-000000000001','ONU','https://x/feed',3);
 insert into raw_articles (id, source_id, url, title, status) values
  ('bbbbbbbb-0000-0000-0000-000000000001','aaaaaaaa-0000-0000-0000-000000000001','https://x/1','t1','drafted');
-insert into stories (id, raw_article_id, theme_id, title_main, summary, claims, source_name, source_url, score, status, publish_date) values
- ('cccccccc-0000-0000-0000-000000000001','bbbbbbbb-0000-0000-0000-000000000001','planete','Publiée hier','s','[]','ONU','https://x/1',0.9,'scheduled',current_date - 1),
- ('cccccccc-0000-0000-0000-000000000002','bbbbbbbb-0000-0000-0000-000000000001','planete','Publiée aujourd''hui','s','[]','ONU','https://x/1',0.9,'scheduled',current_date),
- ('cccccccc-0000-0000-0000-000000000003','bbbbbbbb-0000-0000-0000-000000000001','planete','Demain','s','[]','ONU','https://x/1',0.9,'scheduled',current_date + 1),
- ('cccccccc-0000-0000-0000-000000000004','bbbbbbbb-0000-0000-0000-000000000001','science','Approuvée non programmée','s','[]','ONU','https://x/1',0.9,'approved',null),
- ('cccccccc-0000-0000-0000-000000000005','bbbbbbbb-0000-0000-0000-000000000001','science','Retirée','s','[]','ONU','https://x/1',0.9,'retracted',current_date - 2);
+insert into stories (id, raw_article_id, theme_id, title_main, summary, claims, source_name, source_url, score, status, publish_date, approved_at) values
+ ('cccccccc-0000-0000-0000-000000000001','bbbbbbbb-0000-0000-0000-000000000001','planete','Publiée hier','s','[]','ONU','https://x/1',0.9,'scheduled',current_date - 1, now()),
+ ('cccccccc-0000-0000-0000-000000000002','bbbbbbbb-0000-0000-0000-000000000001','planete','Publiée aujourd''hui','s','[]','ONU','https://x/1',0.9,'scheduled',current_date, now()),
+ ('cccccccc-0000-0000-0000-000000000003','bbbbbbbb-0000-0000-0000-000000000001','planete','Demain','s','[]','ONU','https://x/1',0.9,'scheduled',current_date + 1, now()),
+ ('cccccccc-0000-0000-0000-000000000004','bbbbbbbb-0000-0000-0000-000000000001','science','Approuvée non programmée','s','[]','ONU','https://x/1',0.9,'approved',null, now()),
+ ('cccccccc-0000-0000-0000-000000000005','bbbbbbbb-0000-0000-0000-000000000001','science','Retirée','s','[]','ONU','https://x/1',0.9,'retracted',current_date - 2, now()),
+ ('cccccccc-0000-0000-0000-000000000006','bbbbbbbb-0000-0000-0000-000000000001','science','Programmée NON validée','s','[]','ONU','https://x/1',0.9,'scheduled',current_date, null);
 insert into profiles (user_id, themes) values ('11111111-1111-1111-1111-111111111111', '{planete}'), ('22222222-2222-2222-2222-222222222222', '{science}');
 insert into saved_stories (user_id, story_id) values ('11111111-1111-1111-1111-111111111111','cccccccc-0000-0000-0000-000000000001'), ('22222222-2222-2222-2222-222222222222','cccccccc-0000-0000-0000-000000000001');
 
@@ -33,7 +34,8 @@ set local request.jwt.claims = '{"sub":"11111111-1111-1111-1111-111111111111","r
 
 select 'auth: themes visibles' as check, count(*) as n, null::boolean from themes
 union all select 'auth: stories visibles (attendu 2)', count(*), null from stories
-union all select 'auth: stories = publiées uniquement', count(*), bool_and(status='scheduled' and publish_date<=current_date) from stories
+union all select 'auth: stories = publiées ET validées uniquement', count(*), bool_and(status='scheduled' and approved_at is not null and publish_date<=current_date) from stories
+union all select 'auth: story programmée non validée invisible (attendu 0)', count(*), null from stories where id = 'cccccccc-0000-0000-0000-000000000006'
 union all select 'auth: profiles visibles (attendu 1, le sien)', count(*), bool_and(user_id = auth.uid()) from profiles
 union all select 'auth: saved_stories visibles (attendu 1)', count(*), bool_and(user_id = auth.uid()) from saved_stories
 union all select 'auth: sources (attendu 0)', count(*), null from sources

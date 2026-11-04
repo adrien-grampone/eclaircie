@@ -4,22 +4,21 @@ import { titleLineHeight, titleTiers } from "@/theme/tokens.ts";
 import type { Story } from "@/types.ts";
 
 /**
- * Nouvelle du jour d'un utilisateur, logique pure (spec §2) :
- * le thème du jour vient de la rotation du pipeline (même règle, même code) ;
- * la nouvelle est celle du thème publiée aujourd'hui, sinon la plus récente de ce thème,
- * sinon la plus récente des autres thèmes de l'utilisateur (dans l'ordre de rotation).
+ * Nouvelle du jour d'un utilisateur, logique pure (spec §2, rapport du 2026-11-04) :
+ * le thème du jour vient de la rotation du pipeline (même règle, même code) ; la nouvelle est
+ * celle de ce thème publiée aujourd'hui (l'app ne reçoit que des nouvelles validées). À défaut,
+ * le thème suivant de l'utilisateur dans l'ordre de rotation qui a une nouvelle validée du jour ;
+ * sinon story null : l'app affiche « Ta bonne nouvelle arrive bientôt ».
  */
 export interface DailyPick {
   themeId: string;
   story: Story | null;
-  /** true quand la nouvelle affichée n'est pas celle du jour (stock vide ce jour-là). */
-  stale: boolean;
 }
 
-function latestOf(stories: readonly Story[], themeId: string, today: string): Story | null {
+function todayOf(stories: readonly Story[], themeId: string, today: string): Story | null {
   return stories
-    .filter((s) => s.theme_id === themeId && s.publish_date <= today)
-    .sort((a, b) => b.publish_date.localeCompare(a.publish_date) || a.id.localeCompare(b.id))[0] ?? null;
+    .filter((s) => s.theme_id === themeId && s.publish_date === today)
+    .sort((a, b) => a.id.localeCompare(b.id))[0] ?? null;
 }
 
 export function selectDailyStory(
@@ -30,15 +29,15 @@ export function selectDailyStory(
 ): DailyPick | null {
   const themeId = themeOfTheDay(userThemes, dateOfTimestamp(signupAt), today);
   if (!themeId) return null;
-  const own = latestOf(stories, themeId, today);
-  if (own) return { themeId, story: own, stale: own.publish_date !== today };
   const sorted = [...new Set(userThemes)].sort();
-  for (const other of sorted) {
-    if (other === themeId) continue;
-    const story = latestOf(stories, other, today);
-    if (story) return { themeId: other, story, stale: story.publish_date !== today };
+  const start = sorted.indexOf(themeId);
+  for (let step = 0; step < sorted.length; step++) {
+    const candidate = sorted[(start + step) % sorted.length];
+    if (!candidate) continue;
+    const story = todayOf(stories, candidate, today);
+    if (story) return { themeId: candidate, story };
   }
-  return { themeId, story: null, stale: false };
+  return { themeId, story: null };
 }
 
 /** « MARDI 3 NOVEMBRE » pour une date ISO, en français, sans l'année. */

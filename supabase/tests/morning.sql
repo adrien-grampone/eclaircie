@@ -48,6 +48,15 @@ triage_rate as (
   where a.triaged_at > now() - interval '24 hours'
   group by s.name order by count(*) desc
 ),
+sources_review as (
+  select 7, 'sources à revoir (≥ seuil triés sur la fenêtre, 0 accepté — décision humaine)', y.source_name,
+         format('%s triés, 0 accepté sur %s j%s', y.triaged,
+                (select (value::text)::int from pipeline_config where key = 'triage_source_window_days'),
+                case when y.active then '' else ' (déjà inactive)' end)
+  from source_yield y
+  where y.accepted = 0 and y.triaged >= (select (value::text)::int from pipeline_config where key = 'triage_source_review_min')
+  order by y.triaged desc
+),
 stories_by_theme as (
   select 8, 'stories par thème', t.id,
          format('%s drafted, %s to_revise, %s verified, %s scheduled, %s rejected',
@@ -86,7 +95,7 @@ next_days as (
 select section, item, value from (
   select * from runs union all select * from run_errors union all select * from cron_state
   union all select * from alerts union all select * from raw union all select * from queue
-  union all select * from triage_rate union all select * from stories_by_theme
+  union all select * from triage_rate union all select * from sources_review union all select * from stories_by_theme
   union all select * from stock union all select * from images union all select * from next_days
 ) r(sec, section, item, value)
 order by sec, item;

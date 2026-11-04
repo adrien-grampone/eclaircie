@@ -16,13 +16,13 @@ export interface StoryActions {
 const NO_ACTIONS: StoryActions = { share: () => undefined, report: () => undefined };
 
 /** Contenu de la feuille crème : date, titre en deux parties, lettrine, source, actions. */
-export function StoryBody({ story, accent, stale, actions }: { story: Story; accent: string; stale: boolean; actions: StoryActions }) {
+export function StoryBody({ story, accent, actions }: { story: Story; accent: string; actions: StoryActions }) {
   const title = titleSize(story.title_main, story.title_accent);
   const sourceDate = formatSourceDate(story.source_date);
   return (
     <>
       <View style={styles.metaRow}>
-        <Text style={type.caption}>{formatDayLabel(story.publish_date)}{stale ? " · DERNIÈRE PARUE" : ""}</Text>
+        <Text style={type.caption}>{formatDayLabel(story.publish_date)}</Text>
         <Text style={type.caption}>{readingMinutes(story.summary)} MIN</Text>
       </View>
       <Text style={[styles.title, title]}>
@@ -48,11 +48,17 @@ export function StoryBody({ story, accent, stale, actions }: { story: Story; acc
   );
 }
 
+/** Aucune nouvelle validée aujourd'hui sur les thèmes de l'utilisateur. */
+export const EMPTY_COPY = {
+  title: "Ta bonne nouvelle arrive bientôt.",
+  body: (themeLabel: string) => `Celle de ${themeLabel} est encore en relecture. Reviens un peu plus tard dans la journée.`,
+} as const;
+
 export function EmptyBody({ themeLabel }: { themeLabel: string }) {
   return (
     <>
-      <Text style={[type.title, titleSize("Pas encore de nouvelle", null), { color: colors.ink }]}>Pas encore de nouvelle</Text>
-      <Text style={[type.body, { marginTop: space.m }]}>Aucune bonne nouvelle n'est encore publiée pour {themeLabel}. Reviens demain matin.</Text>
+      <Text style={[type.title, titleSize(EMPTY_COPY.title, null), { color: colors.ink }]}>{EMPTY_COPY.title}</Text>
+      <Text style={[type.body, { marginTop: space.m }]}>{EMPTY_COPY.body(themeLabel)}</Text>
     </>
   );
 }
@@ -61,7 +67,7 @@ export function EmptyBody({ themeLabel }: { themeLabel: string }) {
 export function SheetContent({ view, actions = NO_ACTIONS }: { view: DailyView; actions?: StoryActions }) {
   const { pick, theme } = view;
   return pick.story
-    ? <StoryBody story={pick.story} accent={theme.palette.accent} stale={pick.stale} actions={actions} />
+    ? <StoryBody story={pick.story} accent={theme.palette.accent} actions={actions} />
     : <EmptyBody themeLabel={theme.label} />;
 }
 

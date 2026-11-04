@@ -1,7 +1,7 @@
 /**
  * triage — §4.2. Expire d'abord, sans appel modèle, les articles `new` sortis de leur
- * fenêtre de collecte. Puis prend batch_size articles `new`, les plus récents d'abord
- * (published_at desc, trust_level desc), demande à Claude Haiku le JSON de tri, calcule
+ * fenêtre de collecte. Puis prend batch_size articles `new` dans l'ordre de la file (rendement
+ * de la source sur 7 jours, puis published_at desc), demande à Claude Haiku le JSON de tri, calcule
  * le score, écrit `triaged` ou `rejected` article par article.
  * Garde-fou : s'arrête quand max_triage_per_day est atteint (compté via pipeline_runs).
  */
@@ -10,6 +10,7 @@ import { MODELS, askModel } from "../_shared/claude.ts";
 import { errorMessage, json, mapLimit } from "../_shared/http.ts";
 import { planBatch } from "../_shared/pipeline/budget.ts";
 import { isExpired } from "../_shared/pipeline/collect.ts";
+import { orderQueue, yieldBySource, type QueueCandidate, type SourceStats } from "../_shared/pipeline/queue.ts";
 import { applyEditorialRules } from "../_shared/pipeline/editorial.ts";
 import {
   buildTriagePrompt,
@@ -56,6 +57,23 @@ interface Options {
 }
 
 const STEP = "triage";
+/** Candidats `new` lus pour construire l'ordre de la file (colonnes légères). */
+const QUEUE_SCAN = 5000;
+
+/**
+ * Identifiants des `batch` prochains articles `new` dans l'ordre de la file : rendement de la source
+ * (vue source_yield, seuils de pipeline_config) puis published_at desc. Calculé en code (orderQueue).
+ */
+async function nextInQueue(db: ReturnType<typeof serviceClient>, config: Awaited<ReturnType<typeof loadConfig>>, batch: number, excludeSources: string[]): Promise<string[]> {
+  const { data: stats, error: statsError } = await db.from("source_yield").select("source_id, triaged, accepted");
+  if (statsError) throw new Error(`source_yield : ${statsError.message}`);
+  let query = db.from("triage_queue").select("id, source_id, published_at, source_name").eq("status", "new");
+  for (const word of excludeSources) query = query.not("source_name", "ilike", `%${word}%`);
+  const { data, error } = await query.order("published_at", { ascending: false, nullsFirst: false }).limit(QUEUE_SCAN);
+  if (error) throw new Error(`triage_queue : ${error.message}`);
+  const candidates = (data ?? []) as unknown as QueueCandidate[];
+  return orderQueue(candidates, yieldBySource((stats ?? []) as SourceStats[], config), config).slice(0, batch).map((c) => c.id);
+}
 
 async function readOptions(req: Request): Promise<Options> {
   try {
@@ -105,12 +123,15 @@ Deno.serve(async (req) => {
     if (themeError) throw new Error(`themes : ${themeError.message}`);
     const themes = (themeRows ?? []) as ThemeRef[];
 
+    // File normale : ordre par rendement de la source, calculé en code sur les candidats `new`.
+    const queued = options.retriage || options.ids.length > 0 ? null : await nextInQueue(db, config, batch, options.excludeSources);
     let query = db
       .from("triage_queue")
       .select("id, title, snippet, status, triage, source_name, trust_level")
       .eq("status", options.retriage ?? "new");
     // En re-triage sans ids, on ne reprend que les articles triés avec l'ancien schéma (sans `kind`).
     if (options.ids.length > 0) query = query.in("id", options.ids);
+    else if (queued) query = query.in("id", queued);
     else if (options.retriage) query = query.is("triage->kind", null);
     for (const word of options.excludeSources) query = query.not("source_name", "ilike", `%${word}%`);
     const { data, error } = await query
@@ -118,7 +139,9 @@ Deno.serve(async (req) => {
       .order("trust_level", { ascending: false })
       .limit(batch);
     if (error) throw new Error(`raw_articles : ${error.message}`);
-    const articles = (data ?? []) as unknown as ArticleRow[];
+    const fetched = (data ?? []) as unknown as ArticleRow[];
+    // Les lignes reviennent dans l'ordre de la file quand elle a été calculée.
+    const articles = queued ? queued.map((id) => fetched.find((a) => a.id === id)).filter((a): a is ArticleRow => a !== undefined) : fetched;
 
     const results = await mapLimit(articles, 5, async (article): Promise<ItemResult> => {
       const sourceName = article.source_name;
