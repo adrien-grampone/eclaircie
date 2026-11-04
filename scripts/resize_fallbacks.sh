@@ -31,10 +31,13 @@ if (( DRY )); then
 fi
 
 # 2. Sauvegarde des originaux (dossier ignoré par git), puis vérification qu'elle est complète.
+#    Un fichier déjà sauvegardé n'est JAMAIS retéléchargé : après un passage partiel, le bucket
+#    contiendrait déjà la version réduite.
 mkdir -p "$BACKUP"
 for p in $FILES; do
   mkdir -p "$BACKUP/${p%/*}"
-  supabase storage cp "ss:///illustrations/fallback/$p" "$BACKUP/$p" --linked --experimental >/dev/null 2>&1
+  [[ -s "$BACKUP/$p" ]] && continue
+  supabase storage cp "ss:///illustrations/fallback/$p" "$BACKUP/$p" --linked --experimental 2>&1 | grep -v "new version\|recommend updating" || true
 done
 missing=0
 for p in $FILES; do
@@ -51,7 +54,9 @@ for p in $FILES; do
   before=$(magick identify -format '%wx%h' "$BACKUP/$p")
   out="$W/${p//\//_}"
   magick "$BACKUP/$p" -resize "$MAX" -quality 90 "$out"
-  supabase storage cp "$out" "ss:///illustrations/fallback/$p" --linked --experimental >/dev/null 2>&1
+  # Le CLI ne sait pas écraser un objet existant (pas d'upsert) : suppression puis envoi, erreurs visibles.
+  supabase storage rm "ss:///illustrations/fallback/$p" --linked --experimental 2>&1 | grep -v "new version\|recommend updating" || true
+  supabase storage cp "$out" "ss:///illustrations/fallback/$p" --content-type image/webp --linked --experimental 2>&1 | grep -v "new version\|recommend updating" || true
   echo "fallback/$p : $before → $(magick identify -format '%wx%h' "$out")"
 done
 rm -rf "$W"
