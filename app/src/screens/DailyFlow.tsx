@@ -11,7 +11,7 @@ import { darkGlassColor } from "@/lib/color.ts";
 import { RELEASE_CONFIG, crossedThreshold, decideRelease, progressFromDrag } from "@/lib/gesture.ts";
 import { hapticLand, hapticThreshold } from "@/lib/haptics.ts";
 import type { DailyView } from "@/lib/stories.ts";
-import { colors, space } from "@/theme/tokens.ts";
+import { colors, radius, space } from "@/theme/tokens.ts";
 import { GlassButton, ThemePill } from "@/ui/Glass.tsx";
 import { BookmarkIcon, MenuIcon } from "@/ui/Icons.tsx";
 import { PaperTexture } from "@/ui/PaperTexture.tsx";
@@ -197,7 +197,8 @@ export function DailyFlow({ view, userId, showArrival, autoDiscover = false }: P
   );
 
   const arrival = (
-    <View style={[styles.screen, { backgroundColor: accent }]}>
+    // Fond sombre : pendant le trajet, les marges de la carte découvrent un instant le bas de l'écran sous l'image.
+    <View style={[styles.screen, { backgroundColor: colors.ink }]}>
       <MotionBackdrop view={view} progress={progress} veil={veil} width={width} height={height} imageHeight={imageHeight} />
 
       <Animated.View style={[styles.header, { top: insets.top + space.xl }, headerStyle]} pointerEvents="none" shouldRasterizeIOS>
@@ -249,6 +250,7 @@ const styles = StyleSheet.create({
   header: { position: "absolute", left: space.l, right: space.l },
   topBar: { position: "absolute", left: space.l, right: space.l, flexDirection: "row", justifyContent: "space-between", alignItems: "center", zIndex: 2 },
   topActions: { flexDirection: "row", gap: space.s },
-  touch: { position: "absolute" },
+  /** Rogne le contenu d'arrivée qui glisse vers le haut, comme la carte le faisait. */
+  touch: { position: "absolute", overflow: "hidden", borderRadius: radius.sheet },
   sheetContent: { position: "absolute", left: 0, paddingHorizontal: sheetStyle.paddingHorizontal, paddingTop: sheetStyle.paddingTop },
 });

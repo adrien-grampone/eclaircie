@@ -1,15 +1,11 @@
 import { BlurView } from "expo-blur";
 import { StyleSheet, View } from "react-native";
-import Animated, { interpolate, useAnimatedStyle, type SharedValue } from "react-native-reanimated";
+import Animated, { useAnimatedStyle, type SharedValue } from "react-native-reanimated";
 import { cardPieces, cardRect, motionTransform, rectMotion, type CardGeometry, type Rect } from "@/lib/arrivalMotion.ts";
 import { GLASS_TINT, cardColor } from "@/lib/color.ts";
 import { sheetStyle } from "@/screens/DailyStory.tsx";
 import { absoluteFill, colors, glass, radius } from "@/theme/tokens.ts";
 
-/** Part du trajet au bout de laquelle la carte, d'abord un aplat translucide, devient opaque. */
-export const GLASS_SOLID_AT = 0.12;
-/** Opacité de l'aplat qui remplace le verre dès que la carte bouge (équivalent visuel du verre teinté). */
-export const FLAT_ALPHA = 0.85;
 /** Fondu verre → aplat quand le mouvement commence, et aplat → verre quand la carte revient au repos. */
 export const GLASS_SWAP_MS = 120;
 export const GLASS_BACK_MS = 200;
@@ -47,7 +43,7 @@ export function GlassCard({ geometry, progress, glassOn, blur, darkGlass }: Shar
 /**
  * Carte en MOUVEMENT, en trois pièces posées à leur taille finale et déplacées par transform :
  * calotte haute (coins arrondis, porte l'ombre de la feuille), corps, calotte basse. Couleur du verre
- * sombre au crème en OKLab, opacité de l'aplat à 1 dès GLASS_SOLID_AT. Invisible tant que le verre est là.
+ * sombre au crème en OKLab. Opaques (aucune ombre ni jointure visible à travers), invisibles tant que le verre est là.
  * `darkGlass` : couleur du verre au repos (teinte sous le flou), point de départ de la couleur.
  */
 export function CardPieces({ geometry, progress, glassOn, darkGlass }: Shared & { darkGlass: string }) {
@@ -57,7 +53,7 @@ export function CardPieces({ geometry, progress, glassOn, darkGlass }: Shared & 
       const now = cardPieces(cardRect(geometry, progress.value), radius.sheet, OVERLAP);
       return {
         backgroundColor: cardColor(darkGlass, colors.paper, progress.value),
-        opacity: (1 - glassOn.value) * interpolate(progress.value, [0, GLASS_SOLID_AT], [FLAT_ALPHA, 1], "clamp"),
+        opacity: 1 - glassOn.value,
         transform: motionTransform(rectMotion(finals[key], now[key])),
       };
     });
