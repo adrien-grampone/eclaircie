@@ -10,7 +10,13 @@ import type { Palette } from "@/theme/tokens.ts";
  */
 const BANDS = 24;
 /** Hauteur des collines (pilules très hautes dont seule la calotte dépasse). */
-const HILL = 700;
+export const HILL = 700;
+/** Position et largeur des trois collines (claire, moyenne, accent), partagées avec le splash. */
+export const HILL_SHAPES = [
+  { left: "-45%", width: "170%" },
+  { left: "-75%", width: "170%" },
+  { left: "-15%", width: "170%" },
+] as const;
 
 export interface SkyLayout {
   /** `top` en pourcentage du cadre ou en points (onboarding : calculé sous le titre). */
@@ -45,14 +51,15 @@ export function Sky({ palette, veil, layout = FULL_SKY }: { palette: Palette; ve
       ))}
       {veil}
       <View style={[styles.sun, { backgroundColor: palette.sun, top: sun.top, right: sun.right, width: sun.size, height: sun.size, borderRadius: sun.size / 2 }]} />
-      <View style={[styles.hill, { backgroundColor: palette.hill_light, left: "-45%", width: "170%", bottom: -HILL + hills[0] }]} />
-      <View style={[styles.hill, { backgroundColor: palette.hill_mid, left: "-75%", width: "170%", bottom: -HILL + hills[1] }]} />
-      <View style={[styles.hill, { backgroundColor: palette.accent, left: "-15%", width: "170%", bottom: -HILL + hills[2] }]} />
+      <View style={[styles.hill, { backgroundColor: palette.hill_light, ...HILL_SHAPES[0], bottom: -HILL + hills[0] }]} />
+      <View style={[styles.hill, { backgroundColor: palette.hill_mid, ...HILL_SHAPES[1], bottom: -HILL + hills[1] }]} />
+      <View style={[styles.hill, { backgroundColor: palette.accent, ...HILL_SHAPES[2], bottom: -HILL + hills[2] }]} />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+export const skyStyles = StyleSheet.create({
   sun: { position: "absolute" },
   hill: { position: "absolute", height: HILL, borderRadius: HILL / 2 },
 });
+const styles = skyStyles;

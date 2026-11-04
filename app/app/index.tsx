@@ -5,6 +5,7 @@ import { shouldShowArrival } from "@/lib/arrival.ts";
 import { readArrivalSeen } from "@/lib/arrivalStore.ts";
 import { bootOnce } from "@/lib/useBoot.ts";
 import { opensArrival, useLastNotificationResponse } from "@/lib/notifications.ts";
+import { settleSplash, writeSplashPalette } from "@/lib/splashStore.ts";
 import { loadDailyView, type DailyView } from "@/lib/stories.ts";
 import { DailyFlow } from "@/screens/DailyFlow.tsx";
 import { colors, space, type } from "@/theme/tokens.ts";
@@ -43,9 +44,19 @@ export default function Index() {
       .catch((cause: unknown) => setState({ status: "error", message: cause instanceof Error ? cause.message : String(cause) }));
   }, [demoOnboarding]);
 
+  const showArrival = state.status === "ready" && (state.showArrival || fromNotification || demo === "show" || demo === "auto");
+  useEffect(() => {
+    // Le splash animé attend cette décision : l'arrivée apparaît par-dessus sa dernière image, le reste en fondu.
+    if (state.status === "loading") return;
+    if (state.status === "ready" && showArrival) {
+      settleSplash({ kind: "arrival", palette: state.view.theme.palette });
+      void writeSplashPalette(state.view.theme.palette);
+    } else settleSplash({ kind: "fade" });
+  }, [state, showArrival]);
+
+  if (["loop", "hold"].includes(demoVar("splash") ?? "")) return <Redirect href="/dev/splash" />;
   if (state.status === "onboarding") return <Redirect href="/onboarding" />;
   if (state.status === "ready") {
-    const showArrival = state.showArrival || fromNotification || demo === "show" || demo === "auto";
     return <DailyFlow view={state.view} userId={state.userId} showArrival={showArrival} autoDiscover={demo === "auto"} />;
   }
   return (

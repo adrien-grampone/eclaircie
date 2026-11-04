@@ -16,6 +16,7 @@ function toHex(r: number, g: number, b: number): string {
 
 /** Mélange linéaire en RGB de deux couleurs hex : t = 0 donne `a`, t = 1 donne `b`. */
 export function mix(a: string, b: string, t: number): string {
+  "worklet";
   const [r1, g1, b1] = channels(a), [r2, g2, b2] = channels(b);
   return toHex(r1 + (r2 - r1) * t, g1 + (g2 - g1) * t, b1 + (b2 - b1) * t);
 }

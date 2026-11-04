@@ -8,6 +8,7 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { scheduleOnRN } from "react-native-worklets";
 import { readHintShown, writeArrivalSeen, writeHintShown } from "@/lib/arrivalStore.ts";
+import { SUN_DROP, SUN_ZOOM, VEIL_ACCENT, VEIL_INK } from "@/lib/arrivalBackdrop.ts";
 import { GLASS_TINT, cardColor, darkGlassColor } from "@/lib/color.ts";
 import { RELEASE_CONFIG, crossedThreshold, decideRelease, progressFromDrag } from "@/lib/gesture.ts";
 import { hapticLand, hapticThreshold } from "@/lib/haptics.ts";
@@ -33,14 +34,13 @@ const AUTO_DISCOVER_MS = 1500;
 /** Rebond de première arrivée : amplitude (part du trajet) et délai. */
 const HINT_PROGRESS = 0.07;
 const HINT_DELAY_MS = 900;
-/**
- * Ciel DESSINÉ seulement : à l'arrivée, le fond occupe tout l'écran, agrandi et décalé vers le bas pour
- * que le soleil soit bas. Pendant la transition il reprend la hauteur et l'échelle de l'écran Nouvelle :
- * le soleil monte. Avec une vraie image, le soleil en fait partie : l'image entière remonte et se
- * recadre (hauteur animée, cadrage « cover ») pendant que le voile se dissipe.
+/*
+ * Ciel DESSINÉ seulement : à l'arrivée, le fond occupe tout l'écran, agrandi et décalé vers le bas
+ * (SUN_DROP, SUN_ZOOM dans lib/arrivalBackdrop.ts) pour que le soleil soit bas. Pendant la transition il
+ * reprend la hauteur et l'échelle de l'écran Nouvelle : le soleil monte. Avec une vraie image, le soleil
+ * en fait partie : l'image entière remonte et se recadre (hauteur animée, cadrage « cover ») pendant que
+ * le voile se dissipe.
  */
-const SUN_DROP = 0.2;
-const SUN_ZOOM = 1.5;
 /** Part du trajet au bout de laquelle la carte, d'abord en verre translucide, devient opaque. */
 const GLASS_SOLID_AT = 0.12;
 /** Part du trajet au bout de laquelle le flou (et le liseré) du verre a disparu. */
@@ -56,9 +56,6 @@ const STORY_FADE = [0.3, 0.7] as const;
 const STORY_RISE = 12;
 /** Part du trajet au bout de laquelle le bas de la carte est passé sous le bord de l'écran. */
 const BOTTOM_END = 0.2;
-/** Voile sombre de l'arrivée sur le ciel dessiné (uniforme, sous le soleil) : part d'accent et part d'encre. */
-const VEIL_ACCENT = 0.5;
-const VEIL_INK = 0.2;
 
 interface Props {
   view: DailyView;

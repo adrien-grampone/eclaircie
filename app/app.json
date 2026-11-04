@@ -29,10 +29,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#FEE1C0"
+          "backgroundColor": "#0e2620"
         }
       ],
       [
@@ -44,9 +41,7 @@
     ],
     "scheme": "eclaircie",
     "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#FEE1C0"
+      "backgroundColor": "#0e2620"
     },
     "newArchEnabled": true
   }

@@ -16,6 +16,8 @@ const RAW = {
   save: process.env.EXPO_PUBLIC_DEMO_SAVE,
   /** end fait défiler une liste jusqu'au bas, open ouvre la première nouvelle de la dernière section. */
   list: process.env.EXPO_PUBLIC_DEMO_LIST,
+  /** loop rejoue le splash en boucle, hold tient sa dernière image (route dev/splash dès le démarrage) ; delay retarde seulement le départ après l'écran de chargement d'Expo Go. */
+  splash: process.env.EXPO_PUBLIC_DEMO_SPLASH,
 } as const;
 
 export type DemoKey = keyof typeof RAW;
