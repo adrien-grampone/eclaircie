@@ -12,14 +12,14 @@ on conflict (key) do nothing;
 -- Rendement par source sur la fenêtre (service_role : RLS de raw_articles et sources).
 -- « accepté » = passé le triage (triaged, extracted, drafted) ou échoué après le triage (hors parse_error).
 create view source_yield with (security_invoker = true) as
-  with window as (
+  with yield_window as (
     select (value::text)::int as days from pipeline_config where key = 'triage_source_window_days'
   )
   select s.id as source_id, s.name as source_name, s.active,
          count(a.id)::int as triaged,
          count(a.id) filter (where a.status in ('triaged', 'extracted', 'drafted') or (a.status = 'failed' and a.reject_reason <> 'parse_error'))::int as accepted
   from sources s
-  left join raw_articles a on a.source_id = s.id and a.triaged_at > now() - make_interval(days => (select days from window))
+  left join raw_articles a on a.source_id = s.id and a.triaged_at > now() - make_interval(days => (select days from yield_window))
   group by s.id, s.name, s.active;
 
 -- La file de triage expose la source pour l'ordre par rendement (calculé en code, seuils de pipeline_config).
