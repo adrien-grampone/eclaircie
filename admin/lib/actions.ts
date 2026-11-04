@@ -7,7 +7,7 @@ import { requireAdmin } from "./auth.ts";
 import { isAllowedEmail } from "./env.ts";
 import { adminClient, sessionClient } from "./supabase.ts";
 
-const PAGES = ["/images", "/review", "/stock", "/reports", "/health"];
+const PAGES = ["/images", "/review", "/approved", "/stock", "/reports", "/health"];
 
 function refresh(): void {
   for (const page of PAGES) revalidatePath(page);
@@ -47,6 +47,15 @@ export async function approveStory(form: FormData): Promise<void> {
   const id = text(form, "id", { max: 64 });
   const { error } = await adminClient().from("stories").update({ approved_at: new Date().toISOString() }).eq("id", id);
   check("validation", error);
+  refresh();
+}
+
+/** Annulation de la validation : la story revient dans « À valider » (et disparaît de l'app si elle était publiée). */
+export async function unapproveStory(form: FormData): Promise<void> {
+  await requireAdmin();
+  const id = text(form, "id", { max: 64 });
+  const { error } = await adminClient().from("stories").update({ approved_at: null }).eq("id", id);
+  check("annulation de la validation", error);
   refresh();
 }
 

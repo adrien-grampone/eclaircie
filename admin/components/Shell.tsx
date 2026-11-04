@@ -6,6 +6,7 @@ import { requireAdmin } from "@/lib/auth.ts";
 const NAV = [
   ["/images", "Images à faire"],
   ["/review", "À valider"],
+  ["/approved", "Validées"],
   ["/stock", "Stock"],
   ["/reports", "Signalements"],
   ["/health", "Santé"],

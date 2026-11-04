@@ -1,7 +1,10 @@
-import { approveStory, editStory, rejectStory, retractStory, uploadIllustration } from "@/lib/actions.ts";
+import { approveStory, rejectStory, retractStory, unapproveStory, uploadIllustration } from "@/lib/actions.ts";
+import { APPROVED_COPY, isPublished } from "@/lib/approved.ts";
+import { today } from "@/lib/queries.ts";
 import { illustrationUrl } from "@/lib/env.ts";
 import type { StoryRow, ThemeRow } from "@/lib/types.ts";
 import { CopyButton } from "./CopyButton.tsx";
+import { EditStoryForm } from "./EditStoryForm.tsx";
 import { ImageDrop } from "./ImageDrop.tsx";
 
 interface Props {
@@ -10,9 +13,12 @@ interface Props {
   prompt?: string;
   /** Afficher le formulaire d'édition et les actions de validation. */
   review?: boolean;
+  /** Page « Validées » : édition (avec avertissement si publiée) et annulation de la validation. */
+  approved?: boolean;
 }
 
-export function StoryCard({ story, theme, prompt, review = false }: Props) {
+export function StoryCard({ story, theme, prompt, review = false, approved = false }: Props) {
+  const published = isPublished(story, today());
   const statusLabel = story.status === "scheduled" && story.image_path === null ? "programmée, en attente d'image" : story.status;
   return (
     <article className="card" id={story.id}>
@@ -47,17 +53,7 @@ export function StoryCard({ story, theme, prompt, review = false }: Props) {
                   {story.claims.map((c, i) => <li key={i}><strong>{c.claim}</strong><br /><span className="meta">« {c.evidence} »</span></li>)}
                 </ul>
               </details>
-              <details>
-                <summary>Éditer le texte</summary>
-                <form action={editStory} className="stack">
-                  <input type="hidden" name="id" value={story.id} />
-                  <label>Titre <input name="title_main" defaultValue={story.title_main} required /></label>
-                  <label>Chute (italique) <input name="title_accent" defaultValue={story.title_accent ?? ""} /></label>
-                  <label>Résumé <textarea name="summary" rows={4} defaultValue={story.summary} required /></label>
-                  <label>Scène (anglais) <textarea name="scene" rows={3} defaultValue={story.scene ?? ""} required /></label>
-                  <button className="btn" type="submit">Enregistrer</button>
-                </form>
-              </details>
+              <EditStoryForm story={story} />
               <div className="actions">
                 <form action={approveStory}><input type="hidden" name="id" value={story.id} /><button className="btn primary" type="submit">Valider le texte</button></form>
                 <form action={rejectStory} className="inline">
@@ -72,6 +68,19 @@ export function StoryCard({ story, theme, prompt, review = false }: Props) {
                     <button className="btn danger" type="submit">Retirer</button>
                   </form>
                 ) : null}
+              </div>
+            </>
+          ) : null}
+          {approved ? (
+            <>
+              {published ? <p className="warn">{APPROVED_COPY.published}</p> : null}
+              <EditStoryForm story={story} />
+              <div className="actions">
+                <form action={unapproveStory} className="inline">
+                  <input type="hidden" name="id" value={story.id} />
+                  <button className="btn danger" type="submit">Annuler la validation</button>
+                  {published ? <span className="meta">{APPROVED_COPY.unapprovePublished}</span> : null}
+                </form>
               </div>
             </>
           ) : null}

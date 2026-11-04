@@ -1,5 +1,6 @@
 import { addDays, toIsoDate } from "@pipeline/dates.ts";
 import { buildIllustrationPrompt, fallbackPrefix } from "@pipeline/illustration.ts";
+import { orderApproved } from "./approved.ts";
 import { adminClient } from "./supabase.ts";
 import type { AlertRow, ReportRow, RunRow, StoryRow, ThemeRow } from "./types.ts";
 
@@ -91,6 +92,15 @@ export async function reviewQueue(): Promise<StoryRow[]> {
     .order("publish_date", { ascending: true, nullsFirst: false }).order("score", { ascending: false }).limit(100);
   if (error) fail("stories (validation)", error);
   return data as StoryRow[];
+}
+
+/** Stories dont le texte est validé (programmées ou non), hors rejetées et retirées, dans l'ordre d'affichage de la page « Validées ». */
+export async function approvedStories(): Promise<StoryRow[]> {
+  const { data, error } = await adminClient().from("stories").select(STORY_COLUMNS)
+    .in("status", ["verified", "scheduled"]).not("approved_at", "is", null)
+    .order("publish_date", { ascending: true, nullsFirst: false }).limit(200);
+  if (error) fail("stories (validées)", error);
+  return orderApproved(data as StoryRow[], today());
 }
 
 export async function loadStory(id: string): Promise<StoryRow> {
