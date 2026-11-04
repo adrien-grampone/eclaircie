@@ -140,6 +140,10 @@ un iPhone enregistré, sans passer par TestFlight ni App Store Connect. La notif
 quotidienne est locale (expo-notifications, déclencheur DAILY) : elle marche dans ce build sans
 clé APNs. Les variables `EXPO_PUBLIC_DEMO_*` sont ignorées hors `__DEV__` (`app/src/lib/demo.ts`).
 
+`expo.name` est `Eclaircie` (ASCII : le nom de la cible Xcode en dérive, et un accent cassait le build) ;
+le nom affiché sous l'icône est `ios.infoPlist.CFBundleDisplayName` = « Éclaircie ». L'archive envoyée à
+EAS est réduite par `.easignore` à la racine du dépôt (seul `app/` part, sans tests ni captures).
+
 `app/.env` est ignoré par git, donc jamais envoyé à EAS : l'URL et la clé anon Supabase se
 poussent une fois dans l'environnement EAS `preview`.
 

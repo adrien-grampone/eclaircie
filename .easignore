@@ -1,0 +1,30 @@
+# Fichiers retirés de l'archive envoyée à EAS Build (racine du dépôt git). Seul app/ sert au build ;
+# les variables d'environnement viennent de `eas env`, jamais d'un .env.
+
+# Déjà ignorés par git (sécurité)
+node_modules/
+supabase/.temp/
+supabase/.branches/
+.env
+.env.*
+*.log
+.DS_Store
+app/.expo/
+app/dist/
+app/web-build/
+app/ios/
+app/android/
+app/*.tsbuildinfo
+
+# Hors app : pipeline, back-office, maquettes, captures, rapports, docs, outils racine
+supabase/
+admin/
+design/
+docs/
+reports/
+*.md
+package.json
+package-lock.json
+tsconfig.json
+vitest.config.ts
+app/src/**/*.test.ts

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Éclaircie",
+    "name": "Eclaircie",
     "slug": "eclaircie",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,7 +9,10 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "app.eclaircie",
-      "buildNumber": "1"
+      "buildNumber": "1",
+      "infoPlist": {
+        "CFBundleDisplayName": "Éclaircie"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -43,6 +46,17 @@
     "splash": {
       "backgroundColor": "#0a1f2e"
     },
-    "newArchEnabled": true
+    "newArchEnabled": true,
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "2a57ba9a-3098-4435-9800-490a8e4141ee"
+      }
+    },
+    "owner": "adriengrampone"
   }
 }
