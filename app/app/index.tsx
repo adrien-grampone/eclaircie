@@ -49,7 +49,7 @@ export default function Index() {
     // Le splash animé attend cette décision : l'arrivée apparaît par-dessus sa dernière image, le reste en fondu.
     if (state.status === "loading") return;
     if (state.status === "ready" && showArrival) {
-      settleSplash({ kind: "arrival", palette: state.view.theme.palette });
+      settleSplash({ kind: "arrival", palette: state.view.theme.palette, image: state.view.image?.url ?? null });
       void writeSplashPalette(state.view.theme.palette);
     } else settleSplash({ kind: "fade" });
   }, [state, showArrival]);

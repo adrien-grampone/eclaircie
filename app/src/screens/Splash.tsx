@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { Image } from "expo-image";
+import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import Animated, {
   Easing, cancelAnimation, runOnUI, useAnimatedReaction, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming, type SharedValue,
@@ -7,13 +8,14 @@ import { scheduleOnRN } from "react-native-worklets";
 import { SUN_DROP, SUN_ZOOM } from "@/lib/arrivalBackdrop.ts";
 import { hapticThreshold } from "@/lib/haptics.ts";
 import {
-  BANDS, FADE_MS, HOLD_AT, NIGHT, REVEAL_MS, SPLASH_COPY, SPLASH_HILLS, SPLASH_MS, crestCrossingT, haloOpacity, haloScale, hillColor,
-  overlayOpacity, skyBand, sunGeometry, sunHideOffset, sunTranslate, sunrise, wordOpacity, wordTranslate,
+  BANDS, CROSSFADE_MS, FADE_MS, HOLD_AT, IMAGE_GRACE_MS, NIGHT, REVEAL_MS, SPLASH_COPY, SPLASH_HILLS, SPLASH_MS, crestCrossingT, haloOpacity, haloScale,
+  hillColor, overlayOpacity, revealDiameter, skyBand, sunGeometry, sunHideOffset, sunOnScreen, sunTranslate, sunrise, wordOpacity, wordTranslate,
 } from "@/lib/splash.ts";
 import type { SplashOutcome } from "@/lib/splashStore.ts";
 import { colors, type as typo, type Palette } from "@/theme/tokens.ts";
 import { PaperTexture } from "@/ui/PaperTexture.tsx";
 import { FULL_SKY, HILL, HILL_SHAPES, skyStyles } from "@/ui/Sky.tsx";
+import { Reveal } from "./splash/Reveal.tsx";
 
 interface Props {
   /** Palette visée par le lever (thème du jour s'il est connu, sinon le dernier affiché, sinon Planète). */
@@ -23,33 +25,52 @@ interface Props {
   /** Appelé à la première image ; sa promesse résolue (splash natif retiré) lance la ligne de temps. */
   onFirstFrame: () => Promise<void>;
   onDone: () => void;
+  /** Dev : ne finit jamais et fige le révélé à mi-course pour l'examiner. */
+  hold?: boolean;
 }
 
 /**
  * Splash animé, posé au-dessus de l'écran d'entrée au démarrage à froid. Tout le mouvement vit sur le
  * fil UI (une seule valeur partagée `t`, styles dérivés), aucun setState avant la fin. La dernière
  * image reprend la géométrie exacte du fond d'« Arrivée du jour » (Sky plein écran, SUN_DROP/SUN_ZOOM,
- * bandes voilées), l'écran apparaît en fondu par-dessus. Tap = saut à l'état final.
+ * bandes voilées). Si l'arrivée a une illustration, préchargée pendant le lever, elle est révélée en
+ * cercle depuis le soleil (Reveal) puis le contenu de l'arrivée apparaît en fondu ; sinon (ou image pas
+ * prête, ou « Réduire les animations ») la dernière image se fond dans l'arrivée. Tap = saut à l'état final.
  */
-export function Splash({ palette, outcome, onFirstFrame, onDone }: Props) {
+export function Splash({ palette, outcome, onFirstFrame, onDone, hold = false }: Props) {
   const { width, height } = useWindowDimensions();
   const reducedMotion = useReducedMotion();
   const t = useSharedValue(0);
   const fade = useSharedValue(1);
   const ready = useSharedValue<SplashOutcome["kind"] | null>(null);
   const finishing = useSharedValue(false);
+  /** Illustration de l'arrivée préchargée (url), prête à être révélée. */
+  const imageReady = useSharedValue(false);
+  /** Préchargement en cours : à HOLD_AT, on attend l'image jusqu'à IMAGE_GRACE_MS avant le fondu de secours. */
+  const imagePending = useSharedValue(false);
+  const reveal = useSharedValue(0);
+  const [image, setImage] = useState<{ url: string; accent: string } | null>(null);
+  const holdDemo = hold;
   const geometry = sunGeometry(height, parseFloat(FULL_SKY.sun.top as string) / 100, FULL_SKY.sun.size, SPLASH_HILLS[0]);
   const hideOffset = sunHideOffset(geometry);
   const crestT = crestCrossingT(geometry);
 
   const done = () => onDone();
+  const endGrace = () => {
+    setTimeout(() => runOnUI(() => { imagePending.value = false; tryFinish(); })(), IMAGE_GRACE_MS);
+  };
   /** Fin : l'écran apparaît (arrival) ou simple fondu (fade), seulement une fois prêt et la dernière image atteinte. */
   const tryFinish = () => {
     "worklet";
-    if (finishing.value || ready.value === null || t.value < HOLD_AT) return;
+    if (finishing.value || ready.value === null || t.value < HOLD_AT || holdDemo) return;
+    if (imagePending.value && !imageReady.value) { scheduleOnRN(endGrace); return; }
     finishing.value = true;
-    if (ready.value === "arrival" && !reducedMotion) {
-      t.value = withTiming(1, { duration: REVEAL_MS, easing: Easing.inOut(Easing.quad) }, (ok) => { if (ok) scheduleOnRN(done); });
+    if (ready.value === "arrival" && !reducedMotion && imageReady.value) {
+      reveal.value = withTiming(1, { duration: REVEAL_MS, easing: Easing.inOut(Easing.cubic) }, (ok) => {
+        if (ok) fade.value = withTiming(0, { duration: FADE_MS }, (ok2) => { if (ok2) scheduleOnRN(done); });
+      });
+    } else if (ready.value === "arrival" && !reducedMotion) {
+      t.value = withTiming(1, { duration: CROSSFADE_MS, easing: Easing.inOut(Easing.quad) }, (ok) => { if (ok) scheduleOnRN(done); });
     } else {
       fade.value = withTiming(0, { duration: FADE_MS }, (ok) => { if (ok) scheduleOnRN(done); });
     }
@@ -70,7 +91,20 @@ export function Splash({ palette, outcome, onFirstFrame, onDone }: Props) {
   useEffect(() => {
     if (!outcome) return;
     const kind = outcome.kind;
+    if (outcome.kind === "arrival" && outcome.image && !reducedMotion) {
+      // Préchargement pendant le lever : l'image n'est révélée que si elle est prête à HOLD_AT.
+      const { image: url, palette: { accent } } = outcome;
+      let cancelled = false;
+      Image.prefetch(url, "memory-disk").then((ok) => {
+        if (cancelled) return;
+        if (ok) setImage({ url, accent });
+        runOnUI(() => { imageReady.value = ok; imagePending.value = false; if (holdDemo && ok) reveal.value = 0.5; tryFinish(); })();
+      }).catch(() => runOnUI(() => { imagePending.value = false; tryFinish(); })());
+      runOnUI(() => { imagePending.value = true; ready.value = kind; tryFinish(); })();
+      return () => { cancelled = true; };
+    }
     runOnUI(() => { ready.value = kind; tryFinish(); })();
+    return undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [outcome]);
 
@@ -99,6 +133,7 @@ export function Splash({ palette, outcome, onFirstFrame, onDone }: Props) {
 
   const { sun } = FULL_SKY;
   const hills = SPLASH_HILLS;
+  const screenSun = sunOnScreen(width, height, { topShare: parseFloat(sun.top as string) / 100, rightShare: parseFloat(sun.right) / 100, size: sun.size }, SUN_DROP, SUN_ZOOM);
   const sunFrame = { top: sun.top, right: sun.right, width: sun.size, height: sun.size, borderRadius: sun.size / 2 };
   return (
     <Animated.View style={[StyleSheet.absoluteFill, styles.overlay, overlayStyle]} onLayout={firstFrame}>
@@ -115,6 +150,10 @@ export function Splash({ palette, outcome, onFirstFrame, onDone }: Props) {
         <Animated.View style={[styles.word, wordStyle]} pointerEvents="none">
           <Text style={[typo.title, styles.wordText]}>{SPLASH_COPY.word}</Text>
         </Animated.View>
+        {image ? (
+          <Reveal url={image.url} accent={image.accent} width={width} height={height} cx={screenSun.cx} cy={screenSun.cy}
+            sunRadius={screenSun.r} full={revealDiameter(screenSun.cx, screenSun.cy, width, height)} progress={reveal} />
+        ) : null}
         <PaperTexture />
       </Pressable>
     </Animated.View>

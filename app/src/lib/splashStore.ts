@@ -5,10 +5,10 @@ import type { Palette } from "@/theme/tokens.ts";
 
 /**
  * Ce que le splash doit faire quand l'écran d'entrée est prêt : `arrival` (l'écran « Arrivée du jour »
- * est dessous, sa palette est celle-ci, l'écran apparaît par-dessus la dernière image) ou `fade`
+ * est dessous, sa palette est celle-ci, son illustration `image` est révélée en cercle depuis le soleil) ou `fade`
  * (onboarding, Nouvelle directe, erreur : simple fondu). `null` tant que rien n'est prêt.
  */
-export type SplashOutcome = { kind: "arrival"; palette: Palette } | { kind: "fade" };
+export type SplashOutcome = { kind: "arrival"; palette: Palette; image: string | null } | { kind: "fade" };
 
 let outcome: SplashOutcome | null = null;
 const listeners = new Set<() => void>();

@@ -3,7 +3,7 @@ import { VEIL_ACCENT, VEIL_INK } from "./arrivalBackdrop.ts";
 import { mix } from "./color.ts";
 import {
   HOLD_AT, NIGHT, PLANETE_PALETTE, SUNRISE, WORD_OUT, arrivalBand, crestCrossingT, haloOpacity, hillColor, nightBand,
-  overlayOpacity, skyBand, sunGeometry, sunHideOffset, sunTranslate, sunrise, wordOpacity,
+  overlayOpacity, revealDiameter, revealSize, skyBand, sunGeometry, sunHideOffset, sunOnScreen, sunTranslate, sunrise, wordOpacity,
 } from "./splash.ts";
 
 const INK = "#1F1B16";
@@ -60,5 +60,23 @@ describe("séquence des textes", () => {
     expect(WORD_OUT[1]).toBeLessThanOrEqual(HOLD_AT);
     expect(overlayOpacity(HOLD_AT)).toBe(1);
     expect(overlayOpacity(1)).toBe(0);
+  });
+});
+
+describe("révélé circulaire", () => {
+  const sun = { topShare: 0.36, rightShare: 0.12, size: 150 };
+  it("place le soleil à l'écran avec le zoom et le décalage de l'arrivée", () => {
+    const { cx, cy, r } = sunOnScreen(400, 800, sun, 0.2, 1.5);
+    expect(r).toBe(112.5);
+    // Centre du soleil dans le cadre : x = 400·0,88 − 75 = 277, y = 288 + 75 = 363 ; puis zoom 1,5 autour du centre et +160.
+    expect(cx).toBeCloseTo(200 + 77 * 1.5);
+    expect(cy).toBeCloseTo(400 + (363 - 400) * 1.5 + 160);
+  });
+  it("couvre l'écran entier à la fin, et part du diamètre du soleil", () => {
+    const full = revealDiameter(300, 600, 400, 800);
+    expect(full).toBeCloseTo(2 * Math.hypot(300, 600));
+    expect(revealSize(0, 112.5, full)).toBe(225);
+    expect(revealSize(1, 112.5, full)).toBe(full);
+    expect(revealSize(2, 112.5, full)).toBe(full);
   });
 });

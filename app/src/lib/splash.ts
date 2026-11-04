@@ -17,7 +17,14 @@ export const WORD_IN = [at(500), at(700)] as const;
 export const WORD_OUT = [at(900), at(1100)] as const;
 /** Instant où l'on tient la dernière image tant que les données du jour ne sont pas là. */
 export const HOLD_AT = at(1200);
-export const REVEAL_MS = 400;
+/** Fondu de secours (image absente ou pas encore chargée) : la dernière image se fond dans l'arrivée. */
+export const CROSSFADE_MS = 400;
+/** Révélé circulaire de l'illustration depuis le soleil, puis fondu du contenu de l'arrivée. */
+export const REVEAL_MS = 550;
+/** Délai de grâce après HOLD_AT pour une illustration encore en chargement, avant le fondu de secours. */
+export const IMAGE_GRACE_MS = 600;
+/** Bord adouci du cercle : anneaux concentriques plus larges et plus transparents, du plus large au plus étroit. */
+export const SOFT_EDGE = [{ extra: 16, opacity: 0.3 }, { extra: 8, opacity: 0.55 }] as const;
 /** Fondu simple (« Réduire les animations », onboarding, écran Nouvelle direct). */
 export const FADE_MS = 300;
 
@@ -112,6 +119,25 @@ export function crestCrossingT(g: SunGeometry): number {
   const rise = clamp01(1 - (g.crest - centreAtRest) / offset);
   const u = 1 - Math.cbrt(1 - rise);
   return SUNRISE[0] + u * (SUNRISE[1] - SUNRISE[0]);
+}
+
+/** Centre et rayon du soleil du splash À L'ÉCRAN : géométrie de Sky, puis le cadre agrandi et décalé de l'arrivée. */
+export function sunOnScreen(width: number, height: number, sun: { topShare: number; rightShare: number; size: number }, drop: number, zoom: number) {
+  const cx = width * (1 - sun.rightShare) - sun.size / 2;
+  const cy = sun.topShare * height + sun.size / 2;
+  return { cx: width / 2 + (cx - width / 2) * zoom, cy: height / 2 + (cy - height / 2) * zoom + height * drop, r: (sun.size / 2) * zoom };
+}
+
+/** Diamètre du cercle qui couvre tout l'écran depuis (cx, cy) : deux fois la distance au coin le plus loin. */
+export function revealDiameter(cx: number, cy: number, width: number, height: number): number {
+  const dx = Math.max(cx, width - cx), dy = Math.max(cy, height - cy);
+  return 2 * Math.hypot(dx, dy);
+}
+
+/** Diamètre du cercle à `progress` (0 → 1) : du soleil à l'écran entier. */
+export function revealSize(progress: number, sunRadius: number, full: number): number {
+  "worklet";
+  return 2 * sunRadius + (full - 2 * sunRadius) * Math.min(1, Math.max(0, progress));
 }
 
 export function haloOpacity(t: number): number {
