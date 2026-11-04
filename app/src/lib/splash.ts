@@ -1,12 +1,11 @@
-import { VEIL_ACCENT, VEIL_INK } from "./arrivalBackdrop.ts";
 import { mix, mixOklab } from "./color.ts";
 import type { Palette } from "@/theme/tokens.ts";
 
 /**
  * Splash animé (démarrage à froid) : logique pure, en fractions `t` d'une ligne de temps de SPLASH_MS.
- * Nuit profonde, lever du soleil derrière les collines, ciel interpolé en OKLab vers la palette du
- * thème, mot « éclaircie » en fondu séquentiel, puis la dernière image coïncide avec le fond de
- * l'écran « Arrivée du jour » (ciel dessiné, voilé) et l'écran apparaît par-dessus.
+ * Nuit profonde, lever du soleil derrière la crête centrale, ciel qui passe par des étapes colorées
+ * (jamais grises), mot « éclaircie » en fondu séquentiel, puis l'illustration du jour révélée en
+ * cercle depuis le soleil.
  */
 export const SPLASH_MS = 1600;
 const at = (ms: number): number => ms / SPLASH_MS;
@@ -28,26 +27,43 @@ export const SOFT_EDGE = [{ extra: 16, opacity: 0.3 }, { extra: 8, opacity: 0.55
 /** Fondu simple (« Réduire les animations », onboarding, écran Nouvelle direct). */
 export const FADE_MS = 300;
 
-/** Nuit/aube : la couleur du haut est aussi l'aplat du splash natif (app.json). */
-export const NIGHT = { top: "#0e2620", bottom: "#1e443b" } as const;
+/** Un ciel : couleur du haut et de l'horizon (plus chaude en bas). */
+export interface SkyStage {
+  top: string;
+  horizon: string;
+}
+/** Étapes du lever : nuit profonde (vert-bleu), aube bleu-violet, rose poudré, puis la palette du thème. */
+export const NIGHT: SkyStage = { top: "#0a1f2e", horizon: "#123d44" };
+export const DAWN: SkyStage = { top: "#2a2f73", horizon: "#7a5fa8" };
+export const PINK: SkyStage = { top: "#b382b8", horizon: "#f3b3a4" };
+/** Chroma OKLab minimale de toute couleur et de tout milieu de fondu entre étapes. */
+export const CHROMA_MIN = 0.03;
 /** Silhouette des collines avant le lever. */
-export const SILHOUETTE = "#0b1d18";
+export const SILHOUETTE = "#071a1c";
 export const SPLASH_COPY = { word: "éclaircie" } as const;
 /** Palette de secours (Planète) quand le thème du jour n'est pas connu. */
 export const PLANETE_PALETTE: Palette = {
   sky_top: "#EFB98A", sky_bottom: "#F4E5CC", sun: "#EE8F48", hill_light: "#B9D3B5", hill_mid: "#6FA48A", accent: "#2F6B5E",
 };
-export const BANDS = 24;
-/**
- * Collines du splash (hauteur depuis le bas du cadre, claire/moyenne/accent) : plus hautes que celles
- * de Sky, car le cadre agrandi de l'arrivée pousse les siennes hors de l'écran. Le soleil, lui, garde
- * exactement la position de l'arrivée ; les collines n'appartiennent qu'au splash.
- */
-export const SPLASH_HILLS: [number, number, number] = [420, 350, 280];
+/** Grain papier du splash, plus présent que sur les écrans (matière gouache). */
+export const SPLASH_GRAIN = 0.14;
 export const WORD_LIFT = 10;
-export const HALO = { scale: 2.2, opacity: 0.28 } as const;
-/** Marge sous la crête pour que le soleil soit vraiment caché au départ (la calotte est plus basse à droite). */
-const HIDE_MARGIN = 0.25;
+/** Halo flou : taille (en diamètres de soleil) et opacité maximale. */
+export const HALO = { size: 3.4, opacity: 0.55, scaleFrom: 0.45 } as const;
+/** Soleil : part de la largeur de l'écran ; part du soleil qui reste derrière la crête à la fin. */
+export const SUN_WIDTH_SHARE = 0.28;
+const SUN_BEHIND_CREST = 0.3;
+/** Marge sous la crête pour que le soleil soit vraiment caché au départ. */
+const HIDE_MARGIN = 0.12;
+/**
+ * Trois plans de collines (masques PNG ondulés étirés à la largeur de l'écran) : hauteur en part de
+ * l'écran, et hauteur de la crête au centre en part du masque (mesurée à la génération).
+ */
+export const HILL_PLANES = [
+  { heightShare: 0.40, crestShare: 0.315 },
+  { heightShare: 0.31, crestShare: 0.301 },
+  { heightShare: 0.23, crestShare: 0.355 },
+] as const;
 
 function clamp01(x: number): number {
   "worklet";
@@ -66,21 +82,30 @@ export function sunrise(t: number): number {
   return 1 - (1 - u) ** 3;
 }
 
-/** Couleur finale d'une bande du ciel à l'arrivée : dégradé du thème sous le voile (accent puis encre). */
-export function arrivalBand(i: number, palette: Palette, ink: string): string {
-  "worklet";
-  return mix(mix(mix(palette.sky_top, palette.sky_bottom, i / (BANDS - 1)), palette.accent, VEIL_ACCENT), ink, VEIL_INK);
+/** Ciel final : la palette du thème, l'horizon réchauffé d'un peu de soleil. */
+export function themeStage(palette: Palette): SkyStage {
+  return { top: palette.sky_top, horizon: mix(palette.sky_bottom, palette.sun, 0.25) };
 }
 
-export function nightBand(i: number): string {
-  "worklet";
-  return mix(NIGHT.top, NIGHT.bottom, i / (BANDS - 1));
+export function skyStages(palette: Palette): SkyStage[] {
+  return [NIGHT, DAWN, PINK, themeStage(palette)];
 }
 
-/** Bande du ciel pendant le lever : de la nuit à l'arrivée, en OKLab. */
-export function skyBand(i: number, palette: Palette, ink: string, rise: number): string {
+/**
+ * Opacité de l'étape `index` (0 = nuit, toujours pleine) à l'avancement `rise` : chaque étape se fond
+ * par-dessus la précédente, l'une après l'autre, sur un tiers du lever.
+ */
+export function stageOpacity(index: number, rise: number): number {
   "worklet";
-  return mixOklab(nightBand(i), arrivalBand(i, palette, ink), rise);
+  if (index === 0) return 1;
+  return clamp01(rise * 3 - (index - 1));
+}
+
+/** Couleur effective d'un point du ciel à `rise` (pour les tests : milieu de fondu), top ou horizon. */
+export function skyColorAt(stages: readonly SkyStage[], rise: number, key: keyof SkyStage): string {
+  let color = stages[0]?.[key] ?? "#000000";
+  stages.forEach((stage, i) => { if (i > 0) color = mix(color, stage[key], stageOpacity(i, rise)); });
+  return color;
 }
 
 /** Colline : de la silhouette à sa vraie couleur, en OKLab. */
@@ -89,66 +114,49 @@ export function hillColor(final: string, rise: number): string {
   return mixOklab(SILHOUETTE, final, rise);
 }
 
-/** Géométrie du soleil dans le cadre du ciel (hauteur `height`) : haut final, taille, crête de la première colline. */
-export interface SunGeometry {
-  sunTop: number;
-  sunSize: number;
-  crest: number;
+/** Géométrie du soleil à l'écran : centré, derrière la crête de la première colline. */
+export interface SunLayout {
+  size: number;
+  cx: number;
+  /** Centre final. */
+  cy: number;
+  crestY: number;
+  /** Décalage vers le bas au départ (soleil entier sous la crête, avec marge). */
+  hideOffset: number;
 }
 
-export function sunGeometry(height: number, sunTopShare: number, sunSize: number, hillRise: number): SunGeometry {
-  return { sunTop: sunTopShare * height, sunSize, crest: height - hillRise };
+export function sunLayout(width: number, height: number): SunLayout {
+  const size = width * SUN_WIDTH_SHARE;
+  const plane = HILL_PLANES[0];
+  const planeHeight = height * plane.heightShare;
+  const crestY = height - planeHeight + planeHeight * plane.crestShare;
+  const cy = crestY - size * (0.5 - SUN_BEHIND_CREST);
+  const hideOffset = crestY + size * HIDE_MARGIN - (cy - size / 2);
+  return { size, cx: width / 2, cy, crestY, hideOffset };
 }
 
-/** Décalage vers le bas au départ : le soleil entier sous la crête, avec marge. */
-export function sunHideOffset(g: SunGeometry): number {
-  return Math.max(0, g.crest - g.sunTop + g.sunSize * HIDE_MARGIN);
-}
-
-/** translateY du soleil à `rise` : du décalage caché à sa position d'arrivée. */
+/** translateY du soleil à `rise` : du décalage caché à sa position finale. */
 export function sunTranslate(rise: number, hideOffset: number): number {
   "worklet";
   return hideOffset * (1 - rise);
 }
 
 /** Instant `t` où le centre du soleil franchit la crête (haptique), dans la fenêtre du lever. */
-export function crestCrossingT(g: SunGeometry): number {
-  const offset = sunHideOffset(g);
-  if (offset === 0) return SUNRISE[0];
-  const centreAtRest = g.sunTop + g.sunSize / 2;
-  const rise = clamp01(1 - (g.crest - centreAtRest) / offset);
+export function crestCrossingT(layout: SunLayout): number {
+  const rise = clamp01(1 - (layout.crestY - layout.cy) / layout.hideOffset);
   const u = 1 - Math.cbrt(1 - rise);
   return SUNRISE[0] + u * (SUNRISE[1] - SUNRISE[0]);
 }
 
-/** Centre et rayon du soleil du splash À L'ÉCRAN : géométrie de Sky, puis le cadre agrandi et décalé de l'arrivée. */
-export function sunOnScreen(width: number, height: number, sun: { topShare: number; rightShare: number; size: number }, drop: number, zoom: number) {
-  const cx = width * (1 - sun.rightShare) - sun.size / 2;
-  const cy = sun.topShare * height + sun.size / 2;
-  return { cx: width / 2 + (cx - width / 2) * zoom, cy: height / 2 + (cy - height / 2) * zoom + height * drop, r: (sun.size / 2) * zoom };
-}
-
-/** Diamètre du cercle qui couvre tout l'écran depuis (cx, cy) : deux fois la distance au coin le plus loin. */
-export function revealDiameter(cx: number, cy: number, width: number, height: number): number {
-  const dx = Math.max(cx, width - cx), dy = Math.max(cy, height - cy);
-  return 2 * Math.hypot(dx, dy);
-}
-
-/** Diamètre du cercle à `progress` (0 → 1) : du soleil à l'écran entier. */
-export function revealSize(progress: number, sunRadius: number, full: number): number {
-  "worklet";
-  return 2 * sunRadius + (full - 2 * sunRadius) * Math.min(1, Math.max(0, progress));
-}
-
+/** Halo : absent la nuit, grandit et s'affirme avec le lever. */
 export function haloOpacity(t: number): number {
   "worklet";
-  const r = sunrise(t);
-  return HALO.opacity * Math.sin(r * Math.PI);
+  return HALO.opacity * Math.sqrt(sunrise(t));
 }
 
 export function haloScale(t: number): number {
   "worklet";
-  return 1 + (HALO.scale - 1) * sunrise(t);
+  return HALO.scaleFrom + (1 - HALO.scaleFrom) * sunrise(t);
 }
 
 /** Le mot : fondu entrant puis sortant, sans chevaucher l'écran qui apparaît après HOLD_AT. */
@@ -166,4 +174,16 @@ export function wordTranslate(t: number): number {
 export function overlayOpacity(t: number): number {
   "worklet";
   return 1 - segment(t, [HOLD_AT, 1]);
+}
+
+/** Diamètre du cercle qui couvre tout l'écran depuis (cx, cy) : deux fois la distance au coin le plus loin. */
+export function revealDiameter(cx: number, cy: number, width: number, height: number): number {
+  const dx = Math.max(cx, width - cx), dy = Math.max(cy, height - cy);
+  return 2 * Math.hypot(dx, dy);
+}
+
+/** Diamètre du cercle à `progress` (0 → 1) : du soleil à l'écran entier. */
+export function revealSize(progress: number, sunRadius: number, full: number): number {
+  "worklet";
+  return 2 * sunRadius + (full - 2 * sunRadius) * clamp01(progress);
 }

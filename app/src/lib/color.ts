@@ -70,6 +70,18 @@ export function mixOklab(a: string, b: string, t: number): string {
   return fromOklab([la[0] + (lb[0] - la[0]) * k, la[1] + (lb[1] - la[1]) * k, la[2] + (lb[2] - la[2]) * k]);
 }
 
+/** Chroma OKLab (distance à l'axe des gris) : sous ≈ 0,03 une couleur paraît grise ou kaki. */
+export function chroma(hex: string): number {
+  const [, a, b] = toOklab(hex);
+  return Math.hypot(a, b);
+}
+
+/** Couleur hex avec une opacité, au format rgba() de React Native. */
+export function withAlpha(hex: string, alpha: number): string {
+  const [r, g, b] = channels(hex);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
 /** Saturation HSV (0 à 1) d'une couleur hex, pour vérifier qu'un mélange ne vire pas au gris. */
 export function saturation(hex: string): number {
   const c = channels(hex);

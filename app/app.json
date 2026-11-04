@@ -29,7 +29,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#0e2620"
+          "backgroundColor": "#0a1f2e"
         }
       ],
       [
@@ -41,7 +41,7 @@
     ],
     "scheme": "eclaircie",
     "splash": {
-      "backgroundColor": "#0e2620"
+      "backgroundColor": "#0a1f2e"
     },
     "newArchEnabled": true
   }

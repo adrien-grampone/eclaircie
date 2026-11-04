@@ -1,14 +1,13 @@
 import type { ReactNode } from "react";
+import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, View } from "react-native";
-import { mix } from "@/lib/color.ts";
 import type { Palette } from "@/theme/tokens.ts";
 
 /**
- * Ciel dessiné avec la palette du thème (dégradé par bandes, soleil en cercle parfait, trois
+ * Ciel dessiné avec la palette du thème (dégradé vertical, soleil en cercle parfait, trois
  * collines) : fond de secours de la Nouvelle, illustration de l'onboarding. Aucune couleur en dur.
  * `veil` (voile sombre de l'arrivée) se glisse ENTRE le ciel et le soleil : le soleil reste lumineux.
  */
-const BANDS = 24;
 /** Hauteur des collines (pilules très hautes dont seule la calotte dépasse). */
 export const HILL = 700;
 /** Position et largeur des trois collines (claire, moyenne, accent), partagées avec le splash. */
@@ -46,9 +45,7 @@ export function Sky({ palette, veil, layout = FULL_SKY }: { palette: Palette; ve
   const { sun, hills } = layout;
   return (
     <View style={StyleSheet.absoluteFill}>
-      {Array.from({ length: BANDS }, (_, i) => (
-        <View key={i} style={{ flex: 1, backgroundColor: mix(palette.sky_top, palette.sky_bottom, i / (BANDS - 1)) }} />
-      ))}
+      <LinearGradient colors={[palette.sky_top, palette.sky_bottom]} style={StyleSheet.absoluteFill} />
       {veil}
       <View style={[styles.sun, { backgroundColor: palette.sun, top: sun.top, right: sun.right, width: sun.size, height: sun.size, borderRadius: sun.size / 2 }]} />
       <View style={[styles.hill, { backgroundColor: palette.hill_light, ...HILL_SHAPES[0], bottom: -HILL + hills[0] }]} />
