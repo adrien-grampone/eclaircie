@@ -9,6 +9,14 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 MAX="1290x1720>"
+
+# Lance une commande du CLI en masquant seulement son avis de mise à jour ; échoue si ELLE échoue
+# (le code de retour du CLI est conservé, pas celui du filtre).
+cli() {
+  local out
+  out=$(supabase "$@" 2>&1) || { echo "$out" | grep -v "new version\|recommend updating" >&2; return 1; }
+  echo "$out" | grep -v "new version\|recommend updating" || true
+}
 THEMES=(animaux culture inventions planete sante science solidarite)
 BACKUP="backups/fallbacks-$(date +%F)"
 DRY=0
@@ -37,7 +45,7 @@ mkdir -p "$BACKUP"
 for p in $FILES; do
   mkdir -p "$BACKUP/${p%/*}"
   [[ -s "$BACKUP/$p" ]] && continue
-  supabase storage cp "ss:///illustrations/fallback/$p" "$BACKUP/$p" --linked --experimental 2>&1 | grep -v "new version\|recommend updating" || true
+  cli storage cp "ss:///illustrations/fallback/$p" "$BACKUP/$p" --linked --experimental
 done
 missing=0
 for p in $FILES; do
@@ -55,8 +63,9 @@ for p in $FILES; do
   out="$W/${p//\//_}"
   magick "$BACKUP/$p" -resize "$MAX" -quality 90 "$out"
   # Le CLI ne sait pas écraser un objet existant (pas d'upsert) : suppression puis envoi, erreurs visibles.
-  supabase storage rm "ss:///illustrations/fallback/$p" --linked --experimental 2>&1 | grep -v "new version\|recommend updating" || true
-  supabase storage cp "$out" "ss:///illustrations/fallback/$p" --content-type image/webp --linked --experimental 2>&1 | grep -v "new version\|recommend updating" || true
+  cli storage rm "ss:///illustrations/fallback/$p" --linked --experimental
+  cli storage cp "$out" "ss:///illustrations/fallback/$p" --content-type image/webp --linked --experimental \
+    || { echo "ÉCHEC de l'envoi de fallback/$p : l'original est dans $BACKUP/$p, relance le script" >&2; exit 1; }
   echo "fallback/$p : $before → $(magick identify -format '%wx%h' "$out")"
 done
 rm -rf "$W"
