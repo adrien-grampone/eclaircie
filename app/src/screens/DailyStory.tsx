@@ -42,6 +42,8 @@ export function DailyStoryScreen({ view, userId, onBack }: { view: DailyView; us
     // Démonstration : capture la carte au chargement pour vérifier le fichier exporté.
     if (process.env.EXPO_PUBLIC_DEMO_SHARE === "capture") setTimeout(shareCard.share, 1500);
     if (process.env.EXPO_PUBLIC_DEMO_REPORT === "show") setTimeout(() => setReporting(true), 4000);
+    // EXPO_PUBLIC_DEMO_SAVE=on : appuie sur le signet au chargement (même bascule que le bouton).
+    if (process.env.EXPO_PUBLIC_DEMO_SAVE === "on") setTimeout(bookmark.toggle, 2500);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const insets = useSafeAreaInsets();

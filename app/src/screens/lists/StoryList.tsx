@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ComponentRef, type ReactNode } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { ARCHIVE_COPY, paginate } from "@/lib/archive.ts";
 import { listFallbackFiles } from "@/lib/stories.ts";
@@ -27,14 +27,26 @@ interface Section {
   paginated?: boolean;
 }
 
-/** Liste éditoriale par sections, pagination simple sur la section marquée, tap → écran Nouvelle. */
+/**
+ * Liste éditoriale par sections, pagination simple sur la section marquée, tap → écran Nouvelle.
+ * Démonstration (simulateur sans tap) : EXPO_PUBLIC_DEMO_LIST=end fait défiler jusqu'au bas,
+ * =open ouvre la première nouvelle de la dernière section par le même gestionnaire que le tap.
+ */
 export function StoryList({ sections, themes, header }: { sections: readonly Section[]; themes: readonly Theme[]; header?: ReactNode }) {
   const router = useRouter();
   const [page, setPage] = useState(0);
   const files = useFallbackFiles(sections.flatMap((s) => s.stories.map((x) => x.theme_id)));
   const open = (story: Story) => router.push({ pathname: "/story/[id]", params: { id: story.id } });
+  const scroll = useRef<ComponentRef<typeof ScrollView>>(null);
+  useEffect(() => {
+    const demo = process.env.EXPO_PUBLIC_DEMO_LIST;
+    if (demo === "end") setTimeout(() => scroll.current?.scrollToEnd({ animated: false }), 1500);
+    const last = sections.findLast((s) => s.stories.length > 0)?.stories[0];
+    if (demo === "open" && last) setTimeout(() => open(last), 2500);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
-    <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+    <ScrollView ref={scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       {header}
       {sections.map((section) => {
         if (section.stories.length === 0) return null;
