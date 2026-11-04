@@ -3,7 +3,7 @@ import { chroma } from "./color.ts";
 import {
   CHROMA_MIN, DAWN, HILL_PLANES, HOLD_AT, NIGHT, PINK, PLANETE_PALETTE, SILHOUETTE, SUNRISE, WORD_CONTRAST_MIN, WORD_IN, WORD_OUT,
   creamWeight, crestCrossingT, haloOpacity, hillColor, overlayOpacity, revealDiameter, revealSize, skyBehindWord, skyColorAt, skyStages,
-  stageOpacity, sunLayout, sunTranslate, sunrise, wordContrast, wordDarkColor, wordOpacity,
+  stageOpacity, sunLayout, sunTranslate, sunrise, veilOpacity, wordContrast, wordDarkColor, wordOpacity,
 } from "./splash.ts";
 
 const INK = "#1F1B16", PAPER = "#F5EFE4";
@@ -96,6 +96,11 @@ describe("révélé circulaire", () => {
     expect(revealSize(0, 55, full)).toBe(110);
     expect(revealSize(1, 55, full)).toBe(full);
     expect(revealSize(2, 55, full)).toBe(full);
+  });
+  it("le voile monte avec le rayon : absent au départ, plein à la fin, encore léger à mi-course", () => {
+    expect(veilOpacity(0)).toBe(0);
+    expect(veilOpacity(1)).toBe(1);
+    expect(veilOpacity(0.5)).toBeLessThan(0.4);
   });
 });
 

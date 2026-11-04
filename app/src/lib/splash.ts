@@ -216,6 +216,15 @@ export function revealDiameter(cx: number, cy: number, width: number, height: nu
   return 2 * Math.hypot(dx, dy);
 }
 
+/**
+ * Opacité du voile sur l'illustration dans l'iris : nulle au départ (l'image apparaît franche, pas grise),
+ * pleine à la fin pour coïncider avec le voile de l'arrivée ; en accélération pour garder le début clair.
+ */
+export function veilOpacity(progress: number): number {
+  "worklet";
+  return clamp01(progress) ** 1.5;
+}
+
 /** Diamètre du cercle à `progress` (0 → 1) : du soleil à l'écran entier. */
 export function revealSize(progress: number, sunRadius: number, full: number): number {
   "worklet";

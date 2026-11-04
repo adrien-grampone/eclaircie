@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import { StyleSheet, View } from "react-native";
 import Animated, { useAnimatedStyle, type SharedValue } from "react-native-reanimated";
-import { SOFT_EDGE, revealSize } from "@/lib/splash.ts";
+import { SOFT_EDGE, revealSize, veilOpacity } from "@/lib/splash.ts";
 import { colors } from "@/theme/tokens.ts";
 import { ImageVeil } from "@/ui/Veil.tsx";
 
@@ -20,8 +20,8 @@ interface Props {
 
 /**
  * Révélé circulaire de l'illustration de l'arrivée : l'image (cadrage « cover » plein écran, sous le
- * même voile que l'arrivée) vue à travers un cercle centré sur le soleil du splash, qui grandit jusqu'à
- * couvrir l'écran. Le bord est adouci par des anneaux concentriques plus transparents (aucun masque
+ * voile de l'arrivée qui monte avec le rayon) vue à travers un cercle centré sur le soleil du splash, qui
+ * grandit jusqu'à couvrir l'écran. Le bord est adouci par des anneaux concentriques plus transparents (aucun masque
  * natif : un cercle à coins arrondis en overflow hidden, l'image décalée pour rester fixe à l'écran).
  */
 export function Reveal({ url, accent, width, height, cx, cy, sunRadius, full, progress }: Props) {
@@ -45,11 +45,14 @@ function Circle({ url, accent, width, height, cx, cy, sunRadius, full, progress,
     const size = revealSize(progress.value, sunRadius, full) + extra;
     return { left: size / 2 - cx, top: size / 2 - cy };
   });
+  const veil = useAnimatedStyle(() => ({ opacity: veilOpacity(progress.value) }));
   return (
     <Animated.View style={[styles.circle, { opacity }, circle]}>
       <Animated.View style={[styles.inner, { width, height }, inner]}>
         <Image source={{ uri: url }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" />
-        <ImageVeil accent={accent} ink={colors.ink} />
+        <Animated.View style={[StyleSheet.absoluteFill, veil]} pointerEvents="none">
+          <ImageVeil accent={accent} ink={colors.ink} />
+        </Animated.View>
       </Animated.View>
     </Animated.View>
   );
