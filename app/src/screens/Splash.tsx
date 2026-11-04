@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, useWindowDimensions } from "react-native";
+import { Image as RNImage, Pressable, StyleSheet, Text, useWindowDimensions } from "react-native";
 import Animated, {
   Easing, cancelAnimation, runOnUI, useAnimatedReaction, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming, type SharedValue,
 } from "react-native-reanimated";
@@ -19,6 +19,12 @@ import { Reveal } from "./splash/Reveal.tsx";
 
 const HALO_IMAGE = require("../../assets/splash/halo.png");
 const HILL_IMAGES = [require("../../assets/splash/hill-1.png"), require("../../assets/splash/hill-2.png"), require("../../assets/splash/hill-3.png")];
+/**
+ * Matière gouache : cartes de valeur (gris neutre ± 5 % en taches larges, crête assombrie), même forme
+ * que les masques, posées en fondu soft-light par-dessus la couleur teintée. Le grain papier vient au-dessus.
+ */
+const HILL_VALUES = [require("../../assets/splash/hill-1-value.png"), require("../../assets/splash/hill-2-value.png"), require("../../assets/splash/hill-3-value.png")];
+const SUN_VALUE = require("../../assets/splash/sun-value.png");
 
 interface Props {
   /** Palette visée par le lever (thème du jour s'il est connu, sinon le dernier affiché, sinon Planète). */
@@ -129,8 +135,10 @@ export function Splash({ palette, outcome, onFirstFrame, onDone, hold = false }:
       <Pressable style={StyleSheet.absoluteFill} onPress={skip} accessibilityRole="button" accessibilityLabel="Passer l'animation">
         {stages.map((stage, i) => <Stage key={i} index={i} top={stage.top} horizon={stage.horizon} t={t} />)}
         <Animated.Image source={HALO_IMAGE} style={[styles.halo, { width: haloSize, height: haloSize, left: sun.cx - haloSize / 2, top: sun.cy - haloSize / 2, tintColor: palette.sun }, haloStyle]} />
-        <Animated.View style={[styles.sun, { width: sun.size, height: sun.size, borderRadius: sun.size / 2, left: sun.cx - sun.size / 2, top: sun.cy - sun.size / 2, backgroundColor: palette.sun }, sunStyle]} />
-        {HILL_PLANES.map((plane, i) => <Hill key={i} source={HILL_IMAGES[i]} width={width} height={height * plane.heightShare} final={hillFinal[i] ?? palette.accent} t={t} />)}
+        <Animated.View style={[styles.sun, { width: sun.size, height: sun.size, borderRadius: sun.size / 2, left: sun.cx - sun.size / 2, top: sun.cy - sun.size / 2, backgroundColor: palette.sun }, sunStyle]}>
+          <RNImage source={SUN_VALUE} resizeMode="stretch" style={[StyleSheet.absoluteFill, styles.value]} accessible={false} />
+        </Animated.View>
+        {HILL_PLANES.map((plane, i) => <Hill key={i} source={HILL_IMAGES[i]} value={HILL_VALUES[i]} width={width} height={height * plane.heightShare} final={hillFinal[i] ?? palette.accent} t={t} />)}
         <Animated.View style={[styles.word, wordStyle]} pointerEvents="none">
           <Text style={[typo.title, styles.wordText]}>{SPLASH_COPY.word}</Text>
         </Animated.View>
@@ -154,16 +162,22 @@ function Stage({ index, top, horizon, t }: { index: number; top: string; horizon
   );
 }
 
-/** Un plan de collines : masque PNG ondulé étiré à la largeur, teinté de la silhouette à sa couleur. */
-function Hill({ source, width, height, final, t }: { source: number; width: number; height: number; final: string; t: SharedValue<number> }) {
+/** Un plan de collines : masque PNG ondulé étiré à la largeur, teinté de la silhouette à sa couleur, puis sa carte de valeur. */
+function Hill({ source, value, width, height, final, t }: { source: number; value: number; width: number; height: number; final: string; t: SharedValue<number> }) {
   const style = useAnimatedStyle(() => ({ tintColor: hillColor(final, sunrise(t.value)) }));
-  return <Animated.Image source={source} resizeMode="stretch" style={[styles.hill, { width, height }, style]} />;
+  return (
+    <>
+      <Animated.Image source={source} resizeMode="stretch" style={[styles.hill, { width, height }, style]} />
+      <RNImage source={value} resizeMode="stretch" style={[styles.hill, styles.value, { width, height }]} accessible={false} />
+    </>
+  );
 }
 
 const styles = StyleSheet.create({
   overlay: { backgroundColor: NIGHT.top, zIndex: 10 },
   halo: { position: "absolute" },
-  sun: { position: "absolute" },
+  sun: { position: "absolute", overflow: "hidden" },
+  value: { mixBlendMode: "soft-light" },
   hill: { position: "absolute", left: 0, bottom: 0 },
   word: { position: "absolute", left: 0, right: 0, top: "26%", alignItems: "center" },
   wordText: { fontSize: 44, lineHeight: 52, color: colors.paper },
