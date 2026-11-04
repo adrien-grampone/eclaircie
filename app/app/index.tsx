@@ -9,6 +9,7 @@ import { loadDailyView, type DailyView } from "@/lib/stories.ts";
 import { DailyFlow } from "@/screens/DailyFlow.tsx";
 import { colors, space, type } from "@/theme/tokens.ts";
 import { PaperTexture } from "@/ui/PaperTexture.tsx";
+import { demo as demoVar } from "@/lib/demo.ts";
 
 type State =
   | { status: "loading" }
@@ -19,12 +20,12 @@ type State =
 /**
  * Entrée : un nouvel utilisateur (sans profil) passe par l'onboarding ; sinon Arrivée du jour à la
  * première ouverture de la journée (ou depuis la notification), puis la Nouvelle du jour.
- * Démonstration : EXPO_PUBLIC_DEMO_ARRIVAL=show force l'arrivée, =auto lance aussi la transition ;
+ * Démonstration (dev seulement, voir lib/demo.ts) : EXPO_PUBLIC_DEMO_ARRIVAL=show force l'arrivée, =auto lance aussi la transition ;
  * EXPO_PUBLIC_DEMO_ONBOARDING=show|time|auto rejoue l'onboarding (`time` ouvre l'écran 2, `auto` joue le parcours seul).
  */
 export default function Index() {
-  const demo = process.env.EXPO_PUBLIC_DEMO_ARRIVAL;
-  const demoOnboarding = ["show", "time", "auto"].includes(process.env.EXPO_PUBLIC_DEMO_ONBOARDING ?? "");
+  const demo = demoVar("arrival");
+  const demoOnboarding = ["show", "time", "auto"].includes(demoVar("onboarding") ?? "");
   const [state, setState] = useState<State>({ status: "loading" });
   const fromNotification = opensArrival(useLastNotificationResponse());
   useEffect(() => {

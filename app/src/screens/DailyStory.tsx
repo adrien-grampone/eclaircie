@@ -13,6 +13,7 @@ import { SheetContent } from "./story/StoryContent.tsx";
 import { useSaved } from "./story/useSaved.ts";
 import { useShareCard } from "./story/useShareCard.tsx";
 import { ReportSheet } from "@/ui/ReportSheet.tsx";
+import { demo as demoVar } from "@/lib/demo.ts";
 
 /** Part de l'écran occupée par l'illustration avant que la feuille crème ne commence. */
 export const IMAGE_SHARE = 0.47;
@@ -40,10 +41,10 @@ export function DailyStoryScreen({ view, userId, onBack }: { view: DailyView; us
   const actions = { share: shareCard.share, report: () => setReporting(true) };
   useEffect(() => {
     // Démonstration : capture la carte au chargement pour vérifier le fichier exporté.
-    if (process.env.EXPO_PUBLIC_DEMO_SHARE === "capture") setTimeout(shareCard.share, 1500);
-    if (process.env.EXPO_PUBLIC_DEMO_REPORT === "show") setTimeout(() => setReporting(true), 4000);
+    if (demoVar("share") === "capture") setTimeout(shareCard.share, 1500);
+    if (demoVar("report") === "show") setTimeout(() => setReporting(true), 4000);
     // EXPO_PUBLIC_DEMO_SAVE=on : appuie sur le signet au chargement (même bascule que le bouton).
-    if (process.env.EXPO_PUBLIC_DEMO_SAVE === "on") setTimeout(bookmark.toggle, 2500);
+    if (demoVar("save") === "on") setTimeout(bookmark.toggle, 2500);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const insets = useSafeAreaInsets();

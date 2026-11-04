@@ -7,6 +7,7 @@ import { space } from "@/theme/tokens.ts";
 import type { Story, Theme } from "@/types.ts";
 import { MoreButton, SectionTitle } from "@/ui/ListScreen.tsx";
 import { StoryListItem } from "@/ui/StoryListItem.tsx";
+import { demo as demoVar } from "@/lib/demo.ts";
 
 /** Fichiers de secours par thème, listés une fois pour toute la liste (choix déterministe par story). */
 export function useFallbackFiles(themeIds: readonly string[]): Record<string, string[]> {
@@ -39,7 +40,7 @@ export function StoryList({ sections, themes, header }: { sections: readonly Sec
   const open = (story: Story) => router.push({ pathname: "/story/[id]", params: { id: story.id } });
   const scroll = useRef<ComponentRef<typeof ScrollView>>(null);
   useEffect(() => {
-    const demo = process.env.EXPO_PUBLIC_DEMO_LIST;
+    const demo = demoVar("list");
     if (demo === "end") setTimeout(() => scroll.current?.scrollToEnd({ animated: false }), 1500);
     const last = sections.findLast((s) => s.stories.length > 0)?.stories[0];
     if (demo === "open" && last) setTimeout(() => open(last), 2500);

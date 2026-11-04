@@ -132,3 +132,35 @@ budget API. Relancer `supabase functions serve` après toute modification du cod
 Haiku 5.5 : 0,10 $ / 0,50 $ par million de tokens (entrée / sortie). Garde-fous : `max_triage_per_day`
 (400) et `max_draft_per_day` (40) ; draft entraîne verify, parfois revise + verify, et dedup.
 Les replays locaux coûtent autant que la prod : les limiter à quelques stories.
+
+## Build iPhone (test de deux semaines)
+
+Profil EAS `preview` (`app/eas.json`) : distribution interne ad hoc, installable directement sur
+un iPhone enregistré, sans passer par TestFlight ni App Store Connect. La notification
+quotidienne est locale (expo-notifications, déclencheur DAILY) : elle marche dans ce build sans
+clé APNs. Les variables `EXPO_PUBLIC_DEMO_*` sont ignorées hors `__DEV__` (`app/src/lib/demo.ts`).
+
+`app/.env` est ignoré par git, donc jamais envoyé à EAS : l'URL et la clé anon Supabase se
+poussent une fois dans l'environnement EAS `preview`.
+
+Commandes, depuis `app/`, une seule fois :
+
+```
+eas login                                   # compte Expo (déjà connecté : eas whoami)
+eas init                                    # crée le projet EAS, écrit extra.eas.projectId dans app.json
+eas env:push --environment preview --path .env
+eas device:create                           # enregistre l'iPhone : ouvrir le lien sur l'iPhone, installer le profil
+```
+
+Puis à chaque build :
+
+```
+eas build --platform ios --profile preview
+```
+
+Au premier build, EAS demande l'identifiant Apple Developer, crée le certificat de distribution
+et le profil de provisionnement ad hoc (répondre oui aux propositions par défaut). À la fin, ouvrir
+le lien du build sur l'iPhone (ou le QR code) : Réglages → l'installation se fait comme une app.
+Pour une nouvelle version, incrémenter `ios.buildNumber` dans `app/app.json` avant le build.
+
+Si un iPhone est ajouté plus tard : `eas device:create` puis `eas build` (le profil est régénéré).

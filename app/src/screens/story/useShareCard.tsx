@@ -4,6 +4,7 @@ import { exportCard, shareCardFile } from "@/lib/share.ts";
 import { shareFileName, shareMessage } from "@/lib/shareCard.ts";
 import type { DailyView } from "@/lib/stories.ts";
 import { ShareCard } from "@/ui/ShareCard.tsx";
+import { demo as demoVar } from "@/lib/demo.ts";
 
 type Story = NonNullable<DailyView["pick"]["story"]>;
 
@@ -16,7 +17,7 @@ type Story = NonNullable<DailyView["pick"]["story"]>;
 export function useShareCard(view: DailyView, story: Story | null) {
   const ref = useRef<ComponentRef<typeof View>>(null);
   const [phase, setPhase] = useState<"idle" | "rendering" | "capturing">("idle");
-  const demo = process.env.EXPO_PUBLIC_DEMO_SHARE === "capture";
+  const demo = demoVar("share") === "capture";
 
   const share = () => {
     if (story && phase === "idle") setPhase("rendering");

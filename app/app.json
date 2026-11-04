@@ -8,7 +8,11 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "app.eclaircie"
+      "bundleIdentifier": "app.eclaircie",
+      "buildNumber": "1",
+      "infoPlist": {
+        "CFBundleDisplayName": "Éclaircie"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -29,6 +33,12 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#F5EFE4"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#F2B457"
         }
       ]
     ],

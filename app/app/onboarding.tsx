@@ -6,6 +6,7 @@ import { bootOnce, resetBoot } from "@/lib/useBoot.ts";
 import { OnboardingFlow } from "@/screens/onboarding/OnboardingFlow.tsx";
 import { colors, space, type } from "@/theme/tokens.ts";
 import { PaperTexture } from "@/ui/PaperTexture.tsx";
+import { demo as demoVar } from "@/lib/demo.ts";
 
 type State = { status: "loading" } | { status: "ready"; boot: Bootstrap } | { status: "error"; message: string };
 
@@ -21,7 +22,7 @@ export default function Onboarding() {
 
   if (state.status === "ready") {
     const { user, themes } = state.boot;
-    const demo = process.env.EXPO_PUBLIC_DEMO_ONBOARDING;
+    const demo = demoVar("onboarding");
     return <OnboardingFlow userId={user.id} themes={themes} initialStep={demo === "time" ? "time" : "themes"} autoplay={demo === "auto"} onDone={() => { resetBoot(); router.replace("/"); }} />;
   }
   return (
