@@ -13,7 +13,7 @@ interface Props {
   prompt?: string;
   /** Afficher le formulaire d'édition et les actions de validation. */
   review?: boolean;
-  /** Page « Validées » : édition (avec avertissement si publiée) et annulation de la validation. */
+  /** Page « Validées » : édition (avec avertissement si publiée), annulation de la validation, rejet. */
   approved?: boolean;
 }
 
@@ -80,6 +80,11 @@ export function StoryCard({ story, theme, prompt, review = false, approved = fal
                   <input type="hidden" name="id" value={story.id} />
                   <button className="btn danger" type="submit">Annuler la validation</button>
                   {published ? <span className="meta">{APPROVED_COPY.unapprovePublished}</span> : null}
+                </form>
+                <form action={rejectStory} className="inline">
+                  <input type="hidden" name="id" value={story.id} />
+                  <input name="reason" placeholder="raison du rejet" required />
+                  <button className="btn danger" type="submit">Rejeter</button>
                 </form>
               </div>
             </>
