@@ -157,6 +157,16 @@ describe("scheduleHorizon", () => {
     const days = scheduleHorizon(DAY, { schedule_horizon_days: 3 });
     expect(days).toEqual(["2026-11-10", "2026-11-11", "2026-11-12"]);
   });
+  it("ne contient jamais un jour passé, quel que soit l'horizon", () => {
+    for (const horizon of [1, 14, 60]) expect(scheduleHorizon(DAY, { schedule_horizon_days: horizon }).every((d) => d >= DAY)).toBe(true);
+  });
+});
+
+describe("pickForSchedule — jour déjà occupé", () => {
+  it("renvoie null pour un jour pris, même par une story retirée (publishDate occupée)", () => {
+    const retracted = [{ publishDate: DAY, sourceName: "Le Monde" }];
+    expect(pickForSchedule([candidate({ id: "r", sourceName: "Reporterre" })], retracted, DAY, CONFIG)).toBeNull();
+  });
 });
 
 describe("stockDays / isStockLow", () => {

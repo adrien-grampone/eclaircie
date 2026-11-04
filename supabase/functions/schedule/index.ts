@@ -1,7 +1,9 @@
 /**
- * schedule — §4.9. Pour chaque thème actif et chaque jour de l'horizon sans nouvelle,
+ * schedule — §4.9, toutes les heures. Pour chaque thème actif et chaque jour de l'horizon sans nouvelle,
  * programme la meilleure story au statut `schedule_input_status` (pickForSchedule,
- * décision en code). Puis mesure le stock programmé du thème et ouvre ou résout
+ * décision en code). Seules les stories sans publish_date sont candidates et seuls les jours libres
+ * d'aujourd'hui à l'horizon sont remplis : une story programmée ne l'est jamais deux fois, le passé
+ * n'est jamais touché. Puis mesure le stock programmé du thème et ouvre ou résout
  * l'alerte `stock_low` dans pipeline_alerts. Enfin, ouvre ou résout les alertes `image_missing`
  * des stories programmées à J-2 sans illustration (faites à la main dans le back-office).
  */
@@ -59,9 +61,10 @@ Deno.serve(async () => {
         evergreen: r.evergreen, score: r.score,
       }));
 
+      // Jours occupés : programmées ET retirées (le jour reste pris par la mention « retirée », §6).
       const { data: schedRows, error: schedError } = await db
         .from("stories").select("publish_date, source_name")
-        .eq("theme_id", theme.id).eq("status", "scheduled")
+        .eq("theme_id", theme.id).in("status", ["scheduled", "retracted"])
         .gte("publish_date", addDays(today, -config.schedule_source_window_days));
       if (schedError) throw new Error(`stories programmées (${theme.id}) : ${schedError.message}`);
       const scheduled: ScheduledStory[] = ((schedRows ?? []) as ScheduledRow[]).map((r) => ({

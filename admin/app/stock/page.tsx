@@ -8,7 +8,7 @@ export default async function StockPage() {
   const stock = await stockByTheme(config);
   return (
     <Shell title="Stock">
-      <p className="meta">Jours programmés par thème à partir d'aujourd'hui ; en rouge sous {config.stock_alert_days} jours. Schedule tourne à 4 h UTC.</p>
+      <p className="meta">Jours programmés par thème à partir d'aujourd'hui ; en rouge sous {config.stock_alert_days} jours. Schedule tourne toutes les heures.</p>
       <table>
         <thead><tr><th>Thème</th><th>Jours</th><th>Premier trou</th><th>Sans image</th><th>Programmées</th></tr></thead>
         <tbody>

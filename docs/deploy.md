@@ -36,7 +36,7 @@ select vault.create_secret('<clé anon ou service>', 'pipeline_functions_key');
 | pipeline-verify | `5-59/15 * * * *` | contrôle des evidences en code + relecture Haiku |
 | pipeline-revise | `10-59/15 * * * *` | corrige les problèmes relevés, puis re-verify |
 | pipeline-dedup | `*/30 * * * *` | Haiku compare aux stories du thème sur 30 jours |
-| pipeline-schedule | `0 4 * * *` | programme `publish_date` sur 14 jours, alerte de stock |
+| pipeline-schedule | `20 * * * *` | programme `publish_date` sur 14 jours (jours libres seulement, dès validation), alerte de stock |
 | pipeline-health | `30 * * * *` | ouvre/résout les alertes techniques |
 
 Chaque fonction traite `batch_size` éléments et s'arrête d'elle-même au plafond journalier
