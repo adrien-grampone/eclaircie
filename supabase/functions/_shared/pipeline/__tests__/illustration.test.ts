@@ -104,10 +104,10 @@ describe("fitImage", () => {
     expect(fit.output).toEqual({ width: 900, height: 1200 });
   });
 
-  it("réduit une grande image 3:4 sous 1792×2400 et laisse une image exacte intacte", () => {
+  it("réduit une grande image 3:4 sous 1290×1720 et laisse une image exacte intacte", () => {
     // Les sorties Gemini 3:4 (3584×4800, 896×1200) sont à moins de 1 % du format : gardées entières.
-    expect(fitImage({ width: 3584, height: 4800 }).output).toEqual({ width: 1792, height: 2400 });
-    expect(fitImage({ width: 1500, height: 2000 }).output).toEqual({ width: 1500, height: 2000 });
+    expect(fitImage({ width: 3584, height: 4800 }).output).toEqual({ width: 1284, height: 1720 });
+    expect(fitImage({ width: 1500, height: 2000 }).output).toEqual({ width: 1290, height: 1720 });
     const exact = fitImage({ width: 896, height: 1200 });
     expect(exact.crop).toEqual({ x: 0, y: 0, width: 896, height: 1200 });
     expect(exact.output).toEqual({ width: 896, height: 1200 });

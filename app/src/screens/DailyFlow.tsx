@@ -1,26 +1,25 @@
-import { BlurView } from "expo-blur";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, View, useWindowDimensions } from "react-native";
 import { GestureDetector, usePanGesture } from "react-native-gesture-handler";
-import Animated, {
-  Easing, interpolate, interpolateColor, useAnimatedStyle, useReducedMotion, useSharedValue, withSequence, withSpring, withTiming,
-} from "react-native-reanimated";
+import Animated, { Easing, interpolate, useAnimatedStyle, useReducedMotion, useSharedValue, withSequence, withSpring, withTiming } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { scheduleOnRN } from "react-native-worklets";
 import { readHintShown, writeArrivalSeen, writeHintShown } from "@/lib/arrivalStore.ts";
-import { SUN_DROP, SUN_ZOOM, VEIL_ACCENT, VEIL_INK } from "@/lib/arrivalBackdrop.ts";
-import { GLASS_TINT, cardColor, darkGlassColor } from "@/lib/color.ts";
+import { VEIL_ACCENT, VEIL_INK } from "@/lib/arrivalBackdrop.ts";
+import { cardGeometry, cardRect } from "@/lib/arrivalMotion.ts";
+import { darkGlassColor } from "@/lib/color.ts";
 import { RELEASE_CONFIG, crossedThreshold, decideRelease, progressFromDrag } from "@/lib/gesture.ts";
 import { hapticLand, hapticThreshold } from "@/lib/haptics.ts";
 import type { DailyView } from "@/lib/stories.ts";
-import { colors, glass, radius, space } from "@/theme/tokens.ts";
+import { colors, space } from "@/theme/tokens.ts";
 import { GlassButton, ThemePill } from "@/ui/Glass.tsx";
 import { BookmarkIcon, MenuIcon } from "@/ui/Icons.tsx";
 import { PaperTexture } from "@/ui/PaperTexture.tsx";
 import { ImageVeil } from "@/ui/Veil.tsx";
 import { ARRIVAL_CARD_HEIGHT, ArrivalCardContent, ArrivalHeader } from "./Arrival.tsx";
+import { CardPieces, GLASS_BACK_MS, GLASS_SWAP_MS, GlassCard } from "./arrival/MotionCard.tsx";
+import { MotionBackdrop } from "./arrival/MotionBackdrop.tsx";
 import { DailyStoryScreen, sheetLayout, sheetStyle } from "./DailyStory.tsx";
-import { Backdrop } from "./story/Backdrop.tsx";
 import { SheetContent } from "./story/StoryContent.tsx";
 
 /** Durée de la transition signature quand elle est déclenchée par un tap (bouton ou carte). */
@@ -34,17 +33,6 @@ const AUTO_DISCOVER_MS = 1500;
 /** Rebond de première arrivée : amplitude (part du trajet) et délai. */
 const HINT_PROGRESS = 0.07;
 const HINT_DELAY_MS = 900;
-/*
- * Ciel DESSINÉ seulement : à l'arrivée, le fond occupe tout l'écran, agrandi et décalé vers le bas
- * (SUN_DROP, SUN_ZOOM dans lib/arrivalBackdrop.ts) pour que le soleil soit bas. Pendant la transition il
- * reprend la hauteur et l'échelle de l'écran Nouvelle : le soleil monte. Avec une vraie image, le soleil
- * en fait partie : l'image entière remonte et se recadre (hauteur animée, cadrage « cover ») pendant que
- * le voile se dissipe.
- */
-/** Part du trajet au bout de laquelle la carte, d'abord en verre translucide, devient opaque. */
-const GLASS_SOLID_AT = 0.12;
-/** Part du trajet au bout de laquelle le flou (et le liseré) du verre a disparu. */
-const BLUR_END = 0.35;
 /**
  * Contenus, SANS chevauchement : celui de l'arrivée glisse vers le haut en s'effaçant (0 → 25 %), puis
  * la nouvelle apparaît de 30 à 70 % avec un léger glissement depuis le bas. Le court instant sur la
@@ -54,8 +42,8 @@ const ARRIVAL_FADE = [0, 0.25] as const;
 const ARRIVAL_LIFT = -48;
 const STORY_FADE = [0.3, 0.7] as const;
 const STORY_RISE = 12;
-/** Part du trajet au bout de laquelle le bas de la carte est passé sous le bord de l'écran. */
-const BOTTOM_END = 0.2;
+/** La barre du haut (pastilles en verre) n'apparaît que sur la toute fin, quand le fond ne bouge presque plus. */
+const TOP_BAR_FADE = [0.9, 1] as const;
 
 interface Props {
   view: DailyView;
@@ -69,21 +57,27 @@ interface Props {
  * textes d'accueil s'effacent, la carte en verre glisse et devient la feuille crème, puis l'écran
  * réel, défilable, prend le relais au pixel près. Pilotée au doigt (tirer la carte vers le haut),
  * au tap (bouton Découvrir ou la carte), ou en simple fondu si « Réduire les animations » est actif.
+ *
+ * Performance (120 Hz) : tout ce qui bouge le fait par transform/opacity sur le fil UI, à partir de
+ * vues posées une fois à leur taille finale (lib/arrivalMotion.ts) ; le verre (BlurView) est remplacé
+ * par un aplat dès que le mouvement commence ; aucun appel JavaScript avant la toute fin.
  */
 export function DailyFlow({ view, userId, showArrival, autoDiscover = false }: Props) {
   const [phase, setPhase] = useState<"arrival" | "fading" | "story">(showArrival ? "arrival" : "story");
+  const [blur, setBlur] = useState(true);
   const reducedMotion = useReducedMotion();
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const progress = useSharedValue(0);
   const crossed = useSharedValue(false);
   const fade = useSharedValue(1);
+  const glassOn = useSharedValue(1);
   const { imageHeight, sheetTop } = sheetLayout(height);
   const accent = view.theme.palette.accent;
   const movesSun = view.image === null;
-  const cardTop = height - insets.bottom - space.m - ARRIVAL_CARD_HEIGHT;
+  const geometry = cardGeometry({ w: width, h: height }, { insetBottom: insets.bottom, margin: space.m, cardHeight: ARRIVAL_CARD_HEIGHT, sheetTop, radius: sheetStyle.borderTopLeftRadius });
   /** Trajet de la carte vers le haut, du repos à la position de la feuille. */
-  const travel = cardTop - sheetTop;
+  const travel = geometry.rest.y - geometry.final.y;
 
   const finish = () => {
     hapticLand();
@@ -94,18 +88,33 @@ export function DailyFlow({ view, userId, showArrival, autoDiscover = false }: P
     "worklet";
     if (done) scheduleOnRN(finish);
   };
+  /** Le verre laisse place à l'aplat (fondu court dans le temps, puis le BlurView est démonté). */
+  const beginMotion = () => {
+    if (!blur) return;
+    glassOn.value = withTiming(0, { duration: GLASS_SWAP_MS }, (done) => { if (done) scheduleOnRN(setBlur, false); });
+  };
+  /** Carte revenue au repos : le vrai verre revient en fondu. */
+  const restoreGlass = () => {
+    setBlur(true);
+    glassOn.value = withTiming(1, { duration: GLASS_BACK_MS });
+  };
   const discover = () => {
     if (reducedMotion) {
       setPhase("fading");
       fade.value = withTiming(0, { duration: FADE_MS }, (done) => { if (done) scheduleOnRN(finish); });
       return;
     }
+    beginMotion();
     progress.value = withTiming(1, { duration: DURATION_MS, easing: Easing.inOut(Easing.cubic) }, onDone);
   };
 
   const pan = usePanGesture({
     enabled: !reducedMotion,
     activeOffsetY: [-8, 8],
+    onActivate: () => {
+      "worklet";
+      scheduleOnRN(beginMotion);
+    },
     onUpdate: (e) => {
       "worklet";
       const next = progressFromDrag(e.translationY, travel);
@@ -121,7 +130,7 @@ export function DailyFlow({ view, userId, showArrival, autoDiscover = false }: P
       if (decideRelease(progress.value, e.velocityY, RELEASE_CONFIG) === "complete") {
         progress.value = withSpring(1, { ...SPRING, velocity: -e.velocityY / travel }, onDone);
       } else {
-        progress.value = withSpring(0, SPRING);
+        progress.value = withSpring(0, SPRING, (done) => { if (done) scheduleOnRN(restoreGlass); });
       }
     },
   });
@@ -133,7 +142,7 @@ export function DailyFlow({ view, userId, showArrival, autoDiscover = false }: P
       return () => clearTimeout(timer);
     }
     if (reducedMotion) return;
-    // Toute première arrivée : un léger rebond de la carte suggère le geste, une seule fois.
+    // Toute première arrivée : un léger rebond de la carte suggère le geste, une seule fois (le verre reste).
     let cancelled = false;
     void readHintShown().then((shown) => {
       if (shown || cancelled) return;
@@ -150,50 +159,32 @@ export function DailyFlow({ view, userId, showArrival, autoDiscover = false }: P
   }, [autoDiscover, phase, reducedMotion]);
 
   const darkGlass = darkGlassColor(accent, colors.ink, VEIL_INK);
-  const screenStyle = useAnimatedStyle(() => ({ backgroundColor: interpolateColor(progress.value, [0, 1], [accent, colors.paper]) }));
-  const backdropStyle = useAnimatedStyle(() => ({
-    height: interpolate(progress.value, [0, 1], [height, imageHeight]),
-    transform: movesSun
-      ? [
-          { translateY: interpolate(progress.value, [0, 1], [height * SUN_DROP, 0]) },
-          { scale: interpolate(progress.value, [0, 1], [SUN_ZOOM, 1]) },
-        ]
-      : [],
-  }));
   const darkenStyle = useAnimatedStyle(() => ({ opacity: interpolate(progress.value, [0, 0.85], [1, 0], "clamp") }));
   const headerStyle = useAnimatedStyle(() => ({
     opacity: interpolate(progress.value, [0, 0.3], [1, 0], "clamp"),
     transform: [{ translateY: interpolate(progress.value, [0, 0.4], [0, -40], "clamp") }],
   }));
-  // Dès que la carte bouge, son bas passe sous le bord de l'écran : aucune bande visible sous la feuille.
-  const cardStyle = useAnimatedStyle(() => ({
-    top: interpolate(progress.value, [0, 1], [cardTop, sheetTop]),
-    bottom: interpolate(progress.value, [0, BOTTOM_END], [insets.bottom + space.m, -radius.sheet], "clamp"),
-    left: interpolate(progress.value, [0, 1], [space.m, 0]),
-    width: interpolate(progress.value, [0, 1], [width - 2 * space.m, width]),
-  }));
-  // La carte ne passe jamais par la transparence : teinte du verre au repos, vite opaque, puis du verre
-  // sombre au crème en OKLab (cardColor), l'essentiel du changement dans le premier quart du trajet.
-  const fillStyle = useAnimatedStyle(() => ({
-    backgroundColor: cardColor(darkGlass, colors.paper, progress.value),
-    opacity: interpolate(progress.value, [0, GLASS_SOLID_AT], [GLASS_TINT.alpha, 1], "clamp"),
-  }));
-  const blurStyle = useAnimatedStyle(() => ({ opacity: interpolate(progress.value, [0, BLUR_END], [1, 0], "clamp") }));
+  // Zone de touche et contenu d'arrivée : taille du repos, suivent le haut de la carte.
+  const followStyle = useAnimatedStyle(() => ({ transform: [{ translateY: cardRect(geometry, progress.value).y - geometry.rest.y }] }));
   const arrivalContentStyle = useAnimatedStyle(() => ({
     opacity: interpolate(progress.value, ARRIVAL_FADE, [1, 0], "clamp"),
     transform: [{ translateY: interpolate(progress.value, ARRIVAL_FADE, [0, ARRIVAL_LIFT], "clamp") }],
   }));
-  const storyContentStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(progress.value, STORY_FADE, [0, 1], "clamp"),
-    transform: [{ translateY: interpolate(progress.value, STORY_FADE, [STORY_RISE, 0], "clamp") }],
-  }));
-  const topBarStyle = useAnimatedStyle(() => ({ opacity: interpolate(progress.value, [0.75, 1], [0, 1], "clamp") }));
+  // Contenu de la nouvelle posé dès le départ à sa taille finale (la lettrine se mesure une fois), déplacé avec la carte.
+  const storyContentStyle = useAnimatedStyle(() => {
+    const rect = cardRect(geometry, progress.value);
+    return {
+      opacity: interpolate(progress.value, STORY_FADE, [0, 1], "clamp"),
+      transform: [{ translateX: rect.x }, { translateY: rect.y - geometry.final.y + interpolate(progress.value, STORY_FADE, [STORY_RISE, 0], "clamp") }],
+    };
+  });
+  const topBarStyle = useAnimatedStyle(() => ({ opacity: interpolate(progress.value, TOP_BAR_FADE, [0, 1], "clamp") }));
   const fadeStyle = useAnimatedStyle(() => ({ opacity: fade.value }));
 
   if (phase === "story") return <DailyStoryScreen view={view} userId={userId} />;
 
   // Voile sombre qui se dissipe (« le jour se lève ») : uniforme et sous le soleil du ciel dessiné,
-  // en dégradé vertical (plus sombre en haut) sur une vraie image.
+  // en dégradé vertical (plus sombre en haut) sur une vraie image. Un seul calque plein écran, opacité seule.
   const veil = (
     <Animated.View style={[StyleSheet.absoluteFill, darkenStyle]} pointerEvents="none">
       {movesSun ? (
@@ -206,12 +197,10 @@ export function DailyFlow({ view, userId, showArrival, autoDiscover = false }: P
   );
 
   const arrival = (
-    <Animated.View style={[styles.screen, screenStyle]}>
-      <Animated.View style={[styles.backdrop, backdropStyle]}>
-        <Backdrop view={view} veil={veil} />
-      </Animated.View>
+    <View style={[styles.screen, { backgroundColor: accent }]}>
+      <MotionBackdrop view={view} progress={progress} veil={veil} width={width} height={height} imageHeight={imageHeight} />
 
-      <Animated.View style={[styles.header, { top: insets.top + space.xl }, headerStyle]} pointerEvents="none">
+      <Animated.View style={[styles.header, { top: insets.top + space.xl }, headerStyle]} pointerEvents="none" shouldRasterizeIOS>
         <ArrivalHeader today={view.today} />
       </Animated.View>
 
@@ -223,26 +212,24 @@ export function DailyFlow({ view, userId, showArrival, autoDiscover = false }: P
         </View>
       </Animated.View>
 
+      <CardPieces geometry={geometry} progress={progress} glassOn={glassOn} darkGlass={darkGlass} />
+      <GlassCard geometry={geometry} progress={progress} glassOn={glassOn} blur={blur} darkGlass={darkGlass} />
+
+      <Animated.View style={[styles.sheetContent, { top: geometry.final.y, width, height: height - geometry.final.y }, storyContentStyle]} pointerEvents="none" shouldRasterizeIOS>
+        <SheetContent view={view} />
+      </Animated.View>
+
       <GestureDetector gesture={pan}>
-        <Animated.View style={[styles.cardShadow, cardStyle]}>
-          <Pressable style={styles.card} onPress={discover} accessibilityRole="button" accessibilityLabel="Découvrir la nouvelle du jour" accessibilityHint="Ou tire la carte vers le haut">
-            <Animated.View style={[StyleSheet.absoluteFill, styles.glassLayer, blurStyle]}>
-              <BlurView intensity={glass.intensity} tint="dark" style={StyleSheet.absoluteFill} />
-            </Animated.View>
-            <Animated.View style={[StyleSheet.absoluteFill, fillStyle]} />
-            <Animated.View style={[styles.arrivalContent, arrivalContentStyle]}>
+        <Animated.View style={[styles.touch, { left: geometry.rest.x, top: geometry.rest.y, width: geometry.rest.w, height: geometry.rest.h }, followStyle]}>
+          <Pressable style={styles.fill} onPress={discover} accessibilityRole="button" accessibilityLabel="Découvrir la nouvelle du jour" accessibilityHint="Ou tire la carte vers le haut">
+            <Animated.View style={[styles.fill, arrivalContentStyle]} shouldRasterizeIOS>
               <ArrivalCardContent view={view} onDiscover={discover} />
-            </Animated.View>
-            {/* Le contenu de la nouvelle est posé dès le départ à sa largeur finale (celle de l'écran), simplement
-                découvert par la carte qui s'élargit : la lettrine se mesure une fois, à la bonne largeur. */}
-            <Animated.View style={[styles.sheetContent, { width, height: height - sheetTop }, storyContentStyle]} pointerEvents="none">
-              <SheetContent view={view} />
             </Animated.View>
           </Pressable>
         </Animated.View>
       </GestureDetector>
       <PaperTexture />
-    </Animated.View>
+    </View>
   );
 
   if (phase === "fading") {
@@ -258,14 +245,10 @@ export function DailyFlow({ view, userId, showArrival, autoDiscover = false }: P
 
 const styles = StyleSheet.create({
   screen: { flex: 1 },
-  backdrop: { position: "absolute", left: 0, right: 0, top: 0, overflow: "hidden" },
+  fill: { flex: 1 },
   header: { position: "absolute", left: space.l, right: space.l },
   topBar: { position: "absolute", left: space.l, right: space.l, flexDirection: "row", justifyContent: "space-between", alignItems: "center", zIndex: 2 },
   topActions: { flexDirection: "row", gap: space.s },
-  cardShadow: { position: "absolute", shadowColor: sheetStyle.shadowColor, shadowOffset: sheetStyle.shadowOffset, shadowOpacity: sheetStyle.shadowOpacity, shadowRadius: sheetStyle.shadowRadius },
-  card: { flex: 1, borderRadius: radius.sheet, overflow: "hidden" },
-  glassLayer: { borderRadius: radius.sheet, borderWidth: 1, borderColor: glass.border, overflow: "hidden" },
-  /** Le contenu de la carte garde sa hauteur de repos, ancré en haut, pendant que la carte s'étire vers le bas. */
-  arrivalContent: { position: "absolute", top: 0, left: 0, right: 0, height: ARRIVAL_CARD_HEIGHT },
-  sheetContent: { position: "absolute", top: 0, left: 0, paddingHorizontal: sheetStyle.paddingHorizontal, paddingTop: sheetStyle.paddingTop },
+  touch: { position: "absolute" },
+  sheetContent: { position: "absolute", left: 0, paddingHorizontal: sheetStyle.paddingHorizontal, paddingTop: sheetStyle.paddingTop },
 });

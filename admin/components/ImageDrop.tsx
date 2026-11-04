@@ -18,7 +18,7 @@ async function loadBitmap(file: File): Promise<ImageBitmap> {
   return await createImageBitmap(file);
 }
 
-/** Recadrage centré 3:4, réduction sous 1792×2400, conversion WebP : tout se passe dans le navigateur. */
+/** Recadrage centré 3:4, réduction sous 1290×1720 (largeur d'un écran iPhone à 3×, rien de plus à décoder), conversion WebP : tout se passe dans le navigateur. */
 async function toWebp(file: File): Promise<{ blob: Blob; width: number; height: number }> {
   const bitmap = await loadBitmap(file);
   const fit = fitImage({ width: bitmap.width, height: bitmap.height }, ILLUSTRATION_ASPECT, ILLUSTRATION_MAX_SIZE);

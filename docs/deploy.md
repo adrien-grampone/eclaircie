@@ -83,7 +83,7 @@ npm run dev                    # http://localhost:3000
 - Auth Supabase : connexion par lien magique (OTP email). Dans Authentication → URL Configuration →
   Redirect URLs, ajouter `http://localhost:3000/auth/callback`. Tout compte hors `ADMIN_EMAILS` est
   refusé par `admin/proxy.ts`, même connecté.
-- Dépôt d'image : recadrage 3:4, réduction sous 1792×2400 et conversion WebP se font dans le
+- Dépôt d'image : recadrage 3:4, réduction sous 1290×1720 (largeur d'un écran iPhone à 3×, rien de plus à décoder) et conversion WebP se font dans le
   navigateur (canvas, `fitImage`), puis la Server Action écrit `<story_id>.webp` dans le bucket avec
   la clé service_role et remplit `image_path`. Le navigateur n'écrit jamais dans le bucket : la seule
   policy de `storage.objects` est la lecture publique, toute écriture avec la clé anon est refusée.

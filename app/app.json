@@ -11,7 +11,9 @@
       "bundleIdentifier": "app.eclaircie",
       "buildNumber": "1",
       "infoPlist": {
-        "CFBundleDisplayName": "Éclaircie"
+        "CFBundleDisplayName": "Éclaircie",
+        "ITSAppUsesNonExemptEncryption": false,
+        "CADisableMinimumFrameDurationOnPhone": true
       }
     },
     "android": {

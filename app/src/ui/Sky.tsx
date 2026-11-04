@@ -1,46 +1,17 @@
 import type { ReactNode } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, View } from "react-native";
+import { FULL_SKY, HILL, HILL_SHAPES, type SkyLayout } from "@/lib/skyLayout.ts";
 import type { Palette } from "@/theme/tokens.ts";
+
+export { BANNER_SUN, FULL_SKY, HILL, HILL_SHAPES, bannerSky, type SkyLayout } from "@/lib/skyLayout.ts";
 
 /**
  * Ciel dessiné avec la palette du thème (dégradé vertical, soleil en cercle parfait, trois
  * collines) : fond de secours de la Nouvelle, illustration de l'onboarding. Aucune couleur en dur.
  * `veil` (voile sombre de l'arrivée) se glisse ENTRE le ciel et le soleil : le soleil reste lumineux.
+ * La disposition (lib/skyLayout.ts) est aussi celle que la transition d'arrivée anime par transform.
  */
-/** Hauteur des collines (pilules très hautes dont seule la calotte dépasse). */
-export const HILL = 700;
-/** Position et largeur des trois collines (claire, moyenne, accent), partagées avec le splash. */
-export const HILL_SHAPES = [
-  { left: "-45%", width: "170%" },
-  { left: "-75%", width: "170%" },
-  { left: "-15%", width: "170%" },
-] as const;
-
-export interface SkyLayout {
-  /** `top` en pourcentage du cadre ou en points (onboarding : calculé sous le titre). */
-  sun: { top: `${number}%` | number; right: `${number}%`; size: number };
-  /** Hauteur à laquelle chaque colline (claire, moyenne, accent) dépasse du bas. */
-  hills: [number, number, number];
-}
-
-/** Plein écran (Nouvelle du jour, Arrivée). */
-export const FULL_SKY: SkyLayout = { sun: { top: "36%", right: "12%", size: 150 }, hills: [190, 125, 70] };
-/** Taille du soleil du bandeau d'onboarding et écart entre ses collines. */
-export const BANNER_SUN = 120;
-const BANNER_HILL_GAP = 26;
-
-/**
- * Bandeau de l'onboarding (maquette 01) : le soleil se place SOUS la zone du titre, à droite, et les
- * collines commencent au tiers du soleil pour qu'il se couche derrière elles, quelle que soit la hauteur.
- */
-export function bannerSky(bannerHeight: number, titleBottom: number): SkyLayout {
-  const sunTop = titleBottom;
-  const hillTop = Math.min(bannerHeight - 3 * BANNER_HILL_GAP, sunTop + BANNER_SUN * 0.35);
-  const rise = Math.max(3 * BANNER_HILL_GAP, bannerHeight - hillTop);
-  return { sun: { top: sunTop, right: "7%", size: BANNER_SUN }, hills: [rise, rise - BANNER_HILL_GAP, rise - 2 * BANNER_HILL_GAP] };
-}
-
 export function Sky({ palette, veil, layout = FULL_SKY }: { palette: Palette; veil?: ReactNode; layout?: SkyLayout }) {
   const { sun, hills } = layout;
   return (

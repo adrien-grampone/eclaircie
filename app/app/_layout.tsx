@@ -8,6 +8,7 @@ import { configureNotifications } from "@/lib/notifications.ts";
 import { readSplashPalette, useSplashOutcome } from "@/lib/splashStore.ts";
 import { Splash } from "@/screens/Splash.tsx";
 import { useAppFonts } from "@/theme/fonts.ts";
+import { FpsOverlay } from "@/ui/FpsOverlay.tsx";
 import { colors, type Palette } from "@/theme/tokens.ts";
 
 void SplashScreen.preventAutoHideAsync();
@@ -38,6 +39,7 @@ export default function RootLayout() {
       {splash === "shown" ? (
         <Splash palette={palette} outcome={outcome} onFirstFrame={hideNativeSplash} onDone={() => setSplash("done")} />
       ) : null}
+      {__DEV__ ? <FpsOverlay /> : null}
     </GestureHandlerRootView>
   );
 }

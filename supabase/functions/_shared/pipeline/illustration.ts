@@ -19,7 +19,7 @@ export const ILLUSTRATION_STYLE_PROMPT = [
 
 /** Format cible des illustrations, portrait 3:4 (app Gemini, mode Pro). */
 export const ILLUSTRATION_ASPECT = { width: 3, height: 4 } as const;
-export const ILLUSTRATION_MAX_SIZE = { width: 1792, height: 2400 } as const;
+export const ILLUSTRATION_MAX_SIZE = { width: 1290, height: 1720 } as const;
 const ASPECT_TOLERANCE = 0.01;
 
 function clean(text: string): string {
