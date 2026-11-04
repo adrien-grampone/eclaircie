@@ -63,7 +63,7 @@ for p in $FILES; do
   out="$W/${p//\//_}"
   magick "$BACKUP/$p" -resize "$MAX" -quality 90 "$out"
   # Le CLI ne sait pas écraser un objet existant (pas d'upsert) : suppression puis envoi, erreurs visibles.
-  cli storage rm "ss:///illustrations/fallback/$p" --linked --experimental
+  cli storage rm "ss:///illustrations/fallback/$p" --yes --linked --experimental
   cli storage cp "$out" "ss:///illustrations/fallback/$p" --content-type image/webp --linked --experimental \
     || { echo "ÉCHEC de l'envoi de fallback/$p : l'original est dans $BACKUP/$p, relance le script" >&2; exit 1; }
   echo "fallback/$p : $before → $(magick identify -format '%wx%h' "$out")"
