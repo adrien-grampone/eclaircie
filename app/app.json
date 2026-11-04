@@ -9,14 +9,11 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "app.eclaircie",
-      "buildNumber": "1",
-      "infoPlist": {
-        "CFBundleDisplayName": "Éclaircie"
-      }
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#FEE1C0",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -32,7 +29,10 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#F5EFE4"
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#FEE1C0"
         }
       ],
       [
@@ -44,7 +44,9 @@
     ],
     "scheme": "eclaircie",
     "splash": {
-      "backgroundColor": "#F5EFE4"
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FEE1C0"
     },
     "newArchEnabled": true
   }
