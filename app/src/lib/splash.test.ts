@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { chroma } from "./color.ts";
 import {
-  CHROMA_MIN, DAWN, HOLD_AT, NIGHT, PINK, PLANETE_PALETTE, SILHOUETTE, SUNRISE, WORD_OUT, crestCrossingT, haloOpacity, hillColor,
-  overlayOpacity, revealDiameter, revealSize, skyColorAt, skyStages, stageOpacity, sunLayout, sunTranslate, sunrise, wordOpacity,
+  CHROMA_MIN, DAWN, HILL_PLANES, HOLD_AT, NIGHT, PINK, PLANETE_PALETTE, SILHOUETTE, SUNRISE, WORD_CONTRAST_MIN, WORD_IN, WORD_OUT,
+  creamWeight, crestCrossingT, haloOpacity, hillColor, overlayOpacity, revealDiameter, revealSize, skyBehindWord, skyColorAt, skyStages,
+  stageOpacity, sunLayout, sunTranslate, sunrise, wordContrast, wordDarkColor, wordOpacity,
 } from "./splash.ts";
+
+const INK = "#1F1B16", PAPER = "#F5EFE4";
 
 describe("sunrise", () => {
   it("est nul avant la fenêtre, plein après, croissant et adouci en sortie", () => {
@@ -58,6 +61,10 @@ describe("soleil centré derrière la crête", () => {
     expect(sunTranslate(1, layout.hideOffset)).toBe(0);
     expect(layout.crestY - layout.cy).toBeCloseTo(layout.size * 0.2);
   });
+  it("se cache derrière le plan le plus haut au centre, pas forcément le premier", () => {
+    const tops = HILL_PLANES.map((p) => 852 - 852 * p.heightShare * (1 - p.crestShare));
+    expect(layout.crestY).toBeCloseTo(Math.min(...tops));
+  });
   it("franchit la crête pendant le lever, halo absent la nuit", () => {
     const t = crestCrossingT(layout);
     expect(t).toBeGreaterThan(SUNRISE[0]);
@@ -89,5 +96,24 @@ describe("révélé circulaire", () => {
     expect(revealSize(0, 55, full)).toBe(110);
     expect(revealSize(1, 55, full)).toBe(full);
     expect(revealSize(2, 55, full)).toBe(full);
+  });
+});
+
+describe("contraste du mot", () => {
+  const stages = skyStages(PLANETE_PALETTE);
+  const dark = wordDarkColor(PLANETE_PALETTE, INK);
+  it("à chaque instant où le mot est visible, la variante retenue contraste à au moins 3:1 contre le ciel", () => {
+    for (let i = 0; i <= 40; i++) {
+      const t = WORD_IN[0] + ((WORD_OUT[1] - WORD_IN[0]) * i) / 40;
+      const sky = skyBehindWord(stages, sunrise(t));
+      expect(wordContrast(sky, dark, PAPER), `t=${t.toFixed(3)} ciel ${sky}`).toBeGreaterThanOrEqual(WORD_CONTRAST_MIN);
+    }
+  });
+  it("choisit la crème sur un ciel sombre et le sombre sur un ciel clair, avec un fondu entre les deux", () => {
+    expect(creamWeight(NIGHT.top, dark, PAPER)).toBe(1);
+    expect(creamWeight(PLANETE_PALETTE.sky_bottom, dark, PAPER)).toBe(0);
+    const w = creamWeight("#868686", dark, PAPER);
+    expect(w).toBeGreaterThan(0);
+    expect(w).toBeLessThan(1);
   });
 });

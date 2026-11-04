@@ -1,4 +1,4 @@
-import { mix, mixOklab } from "./color.ts";
+import { contrastRatio, mix, mixOklab } from "./color.ts";
 import type { Palette } from "@/theme/tokens.ts";
 
 /**
@@ -56,14 +56,22 @@ const SUN_BEHIND_CREST = 0.3;
 /** Marge sous la crête pour que le soleil soit vraiment caché au départ. */
 const HIDE_MARGIN = 0.12;
 /**
- * Trois plans de collines (masques PNG ondulés étirés à la largeur de l'écran) : hauteur en part de
- * l'écran, et hauteur de la crête au centre en part du masque (mesurée à la génération).
+ * Trois plans de collines (masques PNG ondulés étirés à la largeur de l'écran, design/splash/make_masks.py) :
+ * l'arrière monte depuis la gauche, le médian depuis la droite, l'avant est plus bas et plus large ; le
+ * soleil se lève dans le creux. Hauteur en part de l'écran, et hauteur du bord au centre en part du masque
+ * depuis le haut (imprimée par le script).
  */
 export const HILL_PLANES = [
-  { heightShare: 0.40, crestShare: 0.315 },
-  { heightShare: 0.31, crestShare: 0.301 },
-  { heightShare: 0.23, crestShare: 0.355 },
+  { heightShare: 0.40, crestShare: 0.515 },
+  { heightShare: 0.36, crestShare: 0.585 },
+  { heightShare: 0.23, crestShare: 0.621 },
 ] as const;
+/** Hauteur du mot (part de l'écran), pour lire la couleur du ciel derrière lui. */
+export const WORD_Y_SHARE = 0.26;
+/** Contraste minimal du mot contre le ciel, à chaque instant où il est visible. */
+export const WORD_CONTRAST_MIN = 3;
+/** Ombre très douce du mot crème. */
+export const WORD_SHADOW = { color: "rgba(20,20,40,0.28)", radius: 8 } as const;
 
 function clamp01(x: number): number {
   "worklet";
@@ -101,11 +109,38 @@ export function stageOpacity(index: number, rise: number): number {
   return clamp01(rise * 3 - (index - 1));
 }
 
-/** Couleur effective d'un point du ciel à `rise` (pour les tests : milieu de fondu), top ou horizon. */
+/** Couleur effective d'un point du ciel à `rise`, top ou horizon (fondus empilés, en sRGB comme à l'écran). */
 export function skyColorAt(stages: readonly SkyStage[], rise: number, key: keyof SkyStage): string {
+  "worklet";
   let color = stages[0]?.[key] ?? "#000000";
-  stages.forEach((stage, i) => { if (i > 0) color = mix(color, stage[key], stageOpacity(i, rise)); });
+  for (let i = 1; i < stages.length; i++) color = mix(color, stages[i]?.[key] ?? color, stageOpacity(i, rise));
   return color;
+}
+
+/** Ciel derrière le mot à l'avancement `rise`. */
+export function skyBehindWord(stages: readonly SkyStage[], rise: number): string {
+  "worklet";
+  return mix(skyColorAt(stages, rise, "top"), skyColorAt(stages, rise, "horizon"), WORD_Y_SHARE);
+}
+
+/** Variante sombre du mot : l'accent du thème, assombri d'encre. */
+export function wordDarkColor(palette: Palette, ink: string): string {
+  return mixOklab(palette.accent, ink, 0.5);
+}
+
+/**
+ * Part de la variante crème (0 → sombre, 1 → crème) selon celle qui contraste le mieux avec le ciel du
+ * moment, avec une courte zone de fondu pour ne jamais sauter d'une couleur à l'autre.
+ */
+export function creamWeight(sky: string, dark: string, cream: string): number {
+  "worklet";
+  const diff = contrastRatio(cream, sky) - contrastRatio(dark, sky);
+  return Math.min(1, Math.max(0, 0.5 + diff * 2));
+}
+
+/** Meilleur contraste disponible contre le ciel à cet instant (tests). */
+export function wordContrast(sky: string, dark: string, cream: string): number {
+  return Math.max(contrastRatio(cream, sky), contrastRatio(dark, sky));
 }
 
 /** Colline : de la silhouette à sa vraie couleur, en OKLab. */
@@ -127,9 +162,8 @@ export interface SunLayout {
 
 export function sunLayout(width: number, height: number): SunLayout {
   const size = width * SUN_WIDTH_SHARE;
-  const plane = HILL_PLANES[0];
-  const planeHeight = height * plane.heightShare;
-  const crestY = height - planeHeight + planeHeight * plane.crestShare;
+  // La crête qui cache le soleil : le bord le plus haut des trois plans au centre de l'écran.
+  const crestY = Math.min(...HILL_PLANES.map((plane) => height - height * plane.heightShare * (1 - plane.crestShare)));
   const cy = crestY - size * (0.5 - SUN_BEHIND_CREST);
   const hideOffset = crestY + size * HIDE_MARGIN - (cy - size / 2);
   return { size, cx: width / 2, cy, crestY, hideOffset };

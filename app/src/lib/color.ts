@@ -70,6 +70,20 @@ export function mixOklab(a: string, b: string, t: number): string {
   return fromOklab([la[0] + (lb[0] - la[0]) * k, la[1] + (lb[1] - la[1]) * k, la[2] + (lb[2] - la[2]) * k]);
 }
 
+/** Luminance relative (WCAG) d'une couleur hex. */
+function luminance(hex: string): number {
+  "worklet";
+  const [r, g, b] = channels(hex).map(srgbToLinear);
+  return 0.2126 * (r ?? 0) + 0.7152 * (g ?? 0) + 0.0722 * (b ?? 0);
+}
+
+/** Ratio de contraste WCAG (1 à 21) entre deux couleurs hex. */
+export function contrastRatio(a: string, b: string): number {
+  "worklet";
+  const la = luminance(a), lb = luminance(b);
+  return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+}
+
 /** Chroma OKLab (distance à l'axe des gris) : sous ≈ 0,03 une couleur paraît grise ou kaki. */
 export function chroma(hex: string): number {
   const [, a, b] = toOklab(hex);

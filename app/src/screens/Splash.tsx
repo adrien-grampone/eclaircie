@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { Image as RNImage, Pressable, StyleSheet, Text, useWindowDimensions } from "react-native";
+import { Image as RNImage, Pressable, StyleSheet, useWindowDimensions } from "react-native";
 import Animated, {
   Easing, cancelAnimation, runOnUI, useAnimatedReaction, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming, type SharedValue,
 } from "react-native-reanimated";
@@ -9,8 +9,8 @@ import { scheduleOnRN } from "react-native-worklets";
 import { hapticThreshold } from "@/lib/haptics.ts";
 import {
   CROSSFADE_MS, FADE_MS, HALO, HILL_PLANES, HOLD_AT, IMAGE_GRACE_MS, NIGHT, REVEAL_MS, SPLASH_COPY, SPLASH_GRAIN, SPLASH_MS,
-  crestCrossingT, haloOpacity, haloScale, hillColor, overlayOpacity, revealDiameter, skyStages, stageOpacity, sunLayout, sunTranslate,
-  sunrise, wordOpacity, wordTranslate,
+  WORD_SHADOW, creamWeight, crestCrossingT, haloOpacity, haloScale, hillColor, overlayOpacity, revealDiameter, skyBehindWord, skyStages,
+  stageOpacity, sunLayout, sunTranslate, sunrise, wordDarkColor, wordOpacity, wordTranslate,
 } from "@/lib/splash.ts";
 import type { SplashOutcome } from "@/lib/splashStore.ts";
 import { colors, type as typo, type Palette } from "@/theme/tokens.ts";
@@ -126,8 +126,12 @@ export function Splash({ palette, outcome, onFirstFrame, onDone, hold = false }:
     opacity: haloOpacity(t.value),
     transform: [{ translateY: sunTranslate(sunrise(t.value), sun.hideOffset) }, { scale: haloScale(t.value) }],
   }));
-  const wordStyle = useAnimatedStyle(() => ({ opacity: wordOpacity(t.value), transform: [{ translateY: wordTranslate(t.value) }] }));
   const stages = skyStages(palette);
+  const wordDark = wordDarkColor(palette, colors.ink);
+  // Le mot existe en deux variantes (accent foncé, crème ombrée) fondues selon celle qui contraste le mieux avec le ciel du moment.
+  const wordStyle = useAnimatedStyle(() => ({ opacity: wordOpacity(t.value), transform: [{ translateY: wordTranslate(t.value) }] }));
+  const creamStyle = useAnimatedStyle(() => ({ opacity: creamWeight(skyBehindWord(stages, sunrise(t.value)), wordDark, colors.paper) }));
+  const darkStyle = useAnimatedStyle(() => ({ opacity: 1 - creamWeight(skyBehindWord(stages, sunrise(t.value)), wordDark, colors.paper) }));
   const hillFinal = [palette.hill_light, palette.hill_mid, palette.accent];
   const haloSize = sun.size * HALO.size;
   return (
@@ -140,7 +144,8 @@ export function Splash({ palette, outcome, onFirstFrame, onDone, hold = false }:
         </Animated.View>
         {HILL_PLANES.map((plane, i) => <Hill key={i} source={HILL_IMAGES[i]} value={HILL_VALUES[i]} width={width} height={height * plane.heightShare} final={hillFinal[i] ?? palette.accent} t={t} />)}
         <Animated.View style={[styles.word, wordStyle]} pointerEvents="none">
-          <Text style={[typo.title, styles.wordText]}>{SPLASH_COPY.word}</Text>
+          <Animated.Text style={[typo.title, styles.wordText, { color: wordDark }, darkStyle]}>{SPLASH_COPY.word}</Animated.Text>
+          <Animated.Text style={[typo.title, styles.wordText, styles.wordCream, creamStyle]}>{SPLASH_COPY.word}</Animated.Text>
         </Animated.View>
         {image ? (
           <Reveal url={image.url} accent={image.accent} width={width} height={height} cx={sun.cx} cy={sun.cy}
@@ -180,5 +185,6 @@ const styles = StyleSheet.create({
   value: { mixBlendMode: "soft-light" },
   hill: { position: "absolute", left: 0, bottom: 0 },
   word: { position: "absolute", left: 0, right: 0, top: "26%", alignItems: "center" },
-  wordText: { fontSize: 44, lineHeight: 52, color: colors.paper },
+  wordText: { fontSize: 44, lineHeight: 52 },
+  wordCream: { position: "absolute", color: colors.paper, textShadowColor: WORD_SHADOW.color, textShadowRadius: WORD_SHADOW.radius, textShadowOffset: { width: 0, height: 2 } },
 });
