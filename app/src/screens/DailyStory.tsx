@@ -5,10 +5,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { DailyView } from "@/lib/stories.ts";
 import { colors, radius, space } from "@/theme/tokens.ts";
 import { GlassButton, ThemePill } from "@/ui/Glass.tsx";
-import { BookmarkIcon, MenuIcon } from "@/ui/Icons.tsx";
+import { BackIcon, BookmarkFilledIcon, BookmarkIcon, MenuIcon } from "@/ui/Icons.tsx";
+import { MenuSheet } from "@/ui/MenuSheet.tsx";
 import { PaperTexture } from "@/ui/PaperTexture.tsx";
 import { Backdrop } from "./story/Backdrop.tsx";
 import { SheetContent } from "./story/StoryContent.tsx";
+import { useSaved } from "./story/useSaved.ts";
 import { useShareCard } from "./story/useShareCard.tsx";
 import { ReportSheet } from "@/ui/ReportSheet.tsx";
 
@@ -27,9 +29,12 @@ export function sheetLayout(height: number): { imageHeight: number; sheetTop: nu
  * Nouvelle du jour. Tout ce qui dépend du défilement passe par le fil UI (useAnimatedScrollHandler) :
  * aucun setState pendant le scroll. La texture papier est une seule image posée au-dessus de tout.
  */
-export function DailyStoryScreen({ view, userId }: { view: DailyView; userId: string }) {
+/** `onBack` : écran ouvert depuis les Archives ou les Gardées (bouton retour à la place du menu). */
+export function DailyStoryScreen({ view, userId, onBack }: { view: DailyView; userId: string; onBack?: () => void }) {
   const { height } = useWindowDimensions();
   const story = view.pick.story;
+  const bookmark = useSaved(userId, story?.id ?? null);
+  const [menu, setMenu] = useState(false);
   const shareCard = useShareCard(view, story);
   const [reporting, setReporting] = useState(false);
   const actions = { share: shareCard.share, report: () => setReporting(true) };
@@ -53,10 +58,17 @@ export function DailyStoryScreen({ view, userId }: { view: DailyView; userId: st
         <Backdrop view={view} />
       </Animated.View>
       <View style={[styles.topBar, { top: insets.top + space.s }]}>
-        <ThemePill label={view.theme.label} accent={view.theme.palette.accent} />
         <View style={styles.topActions}>
-          <GlassButton label="Garder"><BookmarkIcon color={colors.ink} /></GlassButton>
-          <GlassButton label="Menu"><MenuIcon color={colors.ink} /></GlassButton>
+          {onBack ? <GlassButton label="Retour" onPress={onBack}><BackIcon color={colors.ink} /></GlassButton> : null}
+          <ThemePill label={view.theme.label} accent={view.theme.palette.accent} />
+        </View>
+        <View style={styles.topActions}>
+          {story ? (
+            <GlassButton label={bookmark.saved ? "Ne plus garder" : "Garder"} onPress={bookmark.toggle}>
+              {bookmark.saved ? <BookmarkFilledIcon color={colors.ink} /> : <BookmarkIcon color={colors.ink} />}
+            </GlassButton>
+          ) : null}
+          {onBack ? null : <GlassButton label="Menu" onPress={() => setMenu(true)}><MenuIcon color={colors.ink} /></GlassButton>}
         </View>
       </View>
       <Animated.ScrollView style={styles.scroll} contentContainerStyle={{ paddingTop: sheetTop }} showsVerticalScrollIndicator={false}
@@ -67,6 +79,7 @@ export function DailyStoryScreen({ view, userId }: { view: DailyView; userId: st
       </Animated.ScrollView>
       <PaperTexture />
       {story ? <ReportSheet visible={reporting} userId={userId} storyId={story.id} onClose={() => setReporting(false)} /> : null}
+      <MenuSheet visible={menu} onClose={() => setMenu(false)} />
     </View>
   );
 }

@@ -21,9 +21,11 @@ export interface Story {
   source_date: string | null;
   image_path: string | null;
   publish_date: string;
+  /** `scheduled` (publiée) ou `retracted` (retirée après vérification : l'app n'affiche que ce statut). */
+  status: "scheduled" | "retracted";
 }
 
-export const STORY_COLUMNS = "id, theme_id, title_main, title_accent, summary, source_name, source_url, source_date, image_path, publish_date";
+export const STORY_COLUMNS = "id, theme_id, title_main, title_accent, summary, source_name, source_url, source_date, image_path, publish_date, status";
 
 export interface Profile {
   user_id: string;

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { shouldShowArrival } from "@/lib/arrival.ts";
 import { readArrivalSeen } from "@/lib/arrivalStore.ts";
-import { bootstrap } from "@/lib/bootstrap.ts";
+import { bootOnce } from "@/lib/useBoot.ts";
 import { opensArrival, useLastNotificationResponse } from "@/lib/notifications.ts";
 import { loadDailyView, type DailyView } from "@/lib/stories.ts";
 import { DailyFlow } from "@/screens/DailyFlow.tsx";
@@ -32,7 +32,7 @@ export default function Index() {
       setState({ status: "onboarding" });
       return;
     }
-    bootstrap()
+    bootOnce()
       .then(async ({ user, themes, profile }) => {
         if (!profile) return { status: "onboarding" } as const;
         const [view, seen] = await Promise.all([loadDailyView(profile, themes), readArrivalSeen()]);

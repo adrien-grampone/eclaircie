@@ -2,7 +2,7 @@ import { formatDayLabel, formatSourceDate, readingMinutes, selectDailyStory, spl
 import type { Story } from "../../types.ts";
 
 const story = (id: string, theme_id: string, publish_date: string): Story => ({
-  id, theme_id, publish_date, title_main: "T", title_accent: null, summary: "S", source_name: "src", source_url: "https://x", source_date: null, image_path: null,
+  id, theme_id, publish_date, title_main: "T", title_accent: null, summary: "S", source_name: "src", source_url: "https://x", source_date: null, image_path: null, status: "scheduled",
 });
 const SIGNUP = "2026-11-01T09:30:00+00:00";
 

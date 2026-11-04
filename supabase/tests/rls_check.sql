@@ -33,8 +33,9 @@ set local role authenticated;
 set local request.jwt.claims = '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated","is_anonymous":true}';
 
 select 'auth: themes visibles' as check, count(*) as n, null::boolean from themes
-union all select 'auth: stories visibles (attendu 2)', count(*), null from stories
-union all select 'auth: stories = publiées ET validées uniquement', count(*), bool_and(status='scheduled' and approved_at is not null and publish_date<=current_date) from stories
+union all select 'auth: stories visibles (attendu 3 : hier, aujourd''hui, retirée)', count(*), null from stories
+union all select 'auth: stories = publiées ET (validées ou retirées)', count(*), bool_and(publish_date<=current_date and ((status='scheduled' and approved_at is not null) or status='retracted')) from stories
+union all select 'auth: story retirée visible (attendu 1)', count(*), null from stories where status = 'retracted'
 union all select 'auth: story programmée non validée invisible (attendu 0)', count(*), null from stories where id = 'cccccccc-0000-0000-0000-000000000006'
 union all select 'auth: profiles visibles (attendu 1, le sien)', count(*), bool_and(user_id = auth.uid()) from profiles
 union all select 'auth: saved_stories visibles (attendu 1)', count(*), bool_and(user_id = auth.uid()) from saved_stories

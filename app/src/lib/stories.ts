@@ -18,7 +18,7 @@ const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? "";
 export async function loadDailyView(profile: Profile, themes: readonly Theme[]): Promise<DailyView> {
   const today = toIsoDate(new Date());
   const { data, error } = await supabase.from("stories").select(STORY_COLUMNS)
-    .in("theme_id", profile.themes).lte("publish_date", today)
+    .in("theme_id", profile.themes).eq("status", "scheduled").lte("publish_date", today)
     .order("publish_date", { ascending: false }).limit(60);
   if (error) throw new Error(`stories : ${error.message}`);
   const pick = selectDailyStory(profile.themes, profile.created_at, today, data as Story[]);
@@ -33,7 +33,7 @@ export async function loadDailyView(profile: Profile, themes: readonly Theme[]):
   return { pick, theme, image, today };
 }
 
-async function listFallbackFiles(themeId: string): Promise<string[]> {
+export async function listFallbackFiles(themeId: string): Promise<string[]> {
   const folder = fallbackPrefix(themeId).slice(0, -1);
   const { data, error } = await supabase.storage.from("illustrations").list(folder, { limit: 100 });
   if (error) return [];

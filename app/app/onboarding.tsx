@@ -1,7 +1,8 @@
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-import { bootstrap, type Bootstrap } from "@/lib/bootstrap.ts";
+import type { Bootstrap } from "@/lib/bootstrap.ts";
+import { bootOnce, resetBoot } from "@/lib/useBoot.ts";
 import { OnboardingFlow } from "@/screens/onboarding/OnboardingFlow.tsx";
 import { colors, space, type } from "@/theme/tokens.ts";
 import { PaperTexture } from "@/ui/PaperTexture.tsx";
@@ -13,7 +14,7 @@ export default function Onboarding() {
   const router = useRouter();
   const [state, setState] = useState<State>({ status: "loading" });
   useEffect(() => {
-    bootstrap()
+    bootOnce()
       .then((boot) => setState({ status: "ready", boot }))
       .catch((cause: unknown) => setState({ status: "error", message: cause instanceof Error ? cause.message : String(cause) }));
   }, []);
@@ -21,7 +22,7 @@ export default function Onboarding() {
   if (state.status === "ready") {
     const { user, themes } = state.boot;
     const demo = process.env.EXPO_PUBLIC_DEMO_ONBOARDING;
-    return <OnboardingFlow userId={user.id} themes={themes} initialStep={demo === "time" ? "time" : "themes"} autoplay={demo === "auto"} onDone={() => router.replace("/")} />;
+    return <OnboardingFlow userId={user.id} themes={themes} initialStep={demo === "time" ? "time" : "themes"} autoplay={demo === "auto"} onDone={() => { resetBoot(); router.replace("/"); }} />;
   }
   return (
     <View style={styles.center}>

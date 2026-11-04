@@ -12,15 +12,17 @@ interface Props {
   palette: Palette;
   onToggle: (theme: Theme) => void;
   onContinue: () => void;
+  /** Réglages : libellé du bouton à la place de « Continuer · N thèmes ». */
+  ctaLabel?: string;
 }
 
 /** Écran 1 : promesse, liste numérotée des thèmes (« bientôt » non sélectionnable), bouton Continuer. */
-export function ThemesStep({ themes, selected, palette, onToggle, onContinue }: Props) {
+export function ThemesStep({ themes, selected, palette, onToggle, onContinue, ctaLabel }: Props) {
   const [before, strong, after] = ONBOARDING_COPY.promise;
   return (
     <OnboardingFrame
       palette={palette} caption={ONBOARDING_COPY.welcome} titleMain={ONBOARDING_COPY.titleMain} titleAccent={ONBOARDING_COPY.titleAccent}
-      cta={continueLabel(selected.length)} ctaDisabled={selected.length === 0} onCta={onContinue}>
+      cta={selected.length === 0 || !ctaLabel ? continueLabel(selected.length) : ctaLabel} ctaDisabled={selected.length === 0} onCta={onContinue}>
       <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
         <Text style={[type.body, styles.promise]}>{before}<Text style={styles.strong}>{strong}</Text>{after}</Text>
         {themes.map((theme, index) => (

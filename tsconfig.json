@@ -35,6 +35,8 @@
     "app/src/lib/daily.ts",
     "app/src/lib/illustration.ts",
     "app/src/lib/onboarding.ts",
+    "app/src/lib/archive.ts",
+    "app/src/lib/settings.ts",
     "app/src/lib/report.ts",
     "app/src/lib/shareCard.ts",
     "app/src/lib/__tests__/**/*.ts",

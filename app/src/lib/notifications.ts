@@ -51,3 +51,12 @@ export function opensArrival(response: Notifications.NotificationResponse | null
 }
 
 export const useLastNotificationResponse = Notifications.useLastNotificationResponse;
+
+/** État actuel de l'autorisation, sans rien demander (Réglages). */
+export async function notificationPermissionGranted(): Promise<boolean> {
+  try {
+    return (await Notifications.getPermissionsAsync()).granted;
+  } catch {
+    return false;
+  }
+}
