@@ -102,7 +102,8 @@ struct StoryBackground: View {
         #if canImport(WidgetKit) && os(iOS)
         if #available(iOS 18.0, *) {
             // Mode « teinté » d'iOS 18 : l'illustration reste en couleurs, lisible sous la teinte.
-            image.resizable().aspectRatio(aspect, contentMode: .fill).widgetAccentedRenderingMode(.fullColor)
+            // `resizable` est un modificateur d'Image, `widgetAccentedRenderingMode` rend une View : cet ordre précis.
+            image.resizable().widgetAccentedRenderingMode(.fullColor).aspectRatio(aspect, contentMode: .fill)
         } else {
             image.resizable().aspectRatio(aspect, contentMode: .fill)
         }

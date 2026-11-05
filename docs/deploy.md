@@ -168,3 +168,23 @@ le lien du build sur l'iPhone (ou le QR code) : Réglages → l'installation se 
 Pour une nouvelle version, incrémenter `ios.buildNumber` dans `app/app.json` avant le build.
 
 Si un iPhone est ajouté plus tard : `eas device:create` puis `eas build` (le profil est régénéré).
+
+## Widget iOS (écran d'accueil et écran verrouillé)
+
+Cible SwiftUI `app/targets/widget/` générée par `@bacons/apple-targets` au prebuild (`app.eclaircie.widget`,
+App Group `group.app.eclaircie`, iOS 17). Trois formats : petit, moyen, rectangulaire verrouillé. Tap → `eclaircie://story/<id>`.
+
+- Données : à chaque ouverture, l'app écrit dans l'App Group (module local `app/modules/widget-bridge`, clé `eclaircie.widget`) la
+  nouvelle du jour, le profil et l'illustration réduite à 600 px (même module), puis
+  `reloadWidget`. Le matin (7 h 05 Europe/Paris), le widget appelle seul la RPC publique `daily_stories` avec la
+  clé anon, applique la même rotation que l'app, télécharge et réduit l'illustration. Réseau en échec : dernière
+  nouvelle connue. Aucune nouvelle : « Ta bonne nouvelle arrive demain matin » sur une illustration de secours.
+- RPC : `supabase/migrations/20261105100000_daily_stories_rpc.sql` ; test `supabase/tests/daily_stories_check.sql`
+  (stack locale, transaction annulée) : `docker exec -i supabase_db_eclaircie psql -U postgres -d postgres < supabase/tests/daily_stories_check.sql`.
+- Captures sans Xcode : `design/widget/snapshot.sh` compile les vues avec ImageRenderer sur macOS
+  (3 thèmes × 3 formats × clair/sombre) dans `design/widget/out/`. Le mode teinté d'iOS 18 ne se simule pas.
+- Vérification native : `cd app && npx expo prebuild --platform ios --clean`, build Xcode ou
+  `xcodebuild -workspace ios/Eclaircie.xcworkspace -scheme Eclaircie -sdk iphonesimulator ...`, puis `rm -rf ios && git checkout package.json`.
+  Expo Go n'affiche pas les widgets.
+- EAS : au premier build après l'ajout, répondre oui à l'enregistrement du bundle identifier `app.eclaircie.widget`,
+  de son profil de provisionnement et de l'App Group sur les deux identifiants. `eas.json` ne change pas.

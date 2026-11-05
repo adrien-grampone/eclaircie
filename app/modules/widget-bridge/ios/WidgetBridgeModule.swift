@@ -1,12 +1,23 @@
 import ExpoModulesCore
 import ImageIO
 import UniformTypeIdentifiers
+import WidgetKit
 
-/// Dépose dans le conteneur de l'App Group l'illustration du jour, réduite (côté max `maxSide`, JPEG),
-/// pour le widget : les widgets ont ~30 Mo de mémoire, jamais une image pleine taille.
-public class WidgetImageModule: Module {
+/// Pont app → widget : charge utile dans les UserDefaults de l'App Group, illustration du jour réduite
+/// (côté max `maxSide`, JPEG : les widgets ont ~30 Mo de mémoire) dans le conteneur partagé, rechargement.
+public class WidgetBridgeModule: Module {
   public func definition() -> ModuleDefinition {
-    Name("WidgetImage")
+    Name("WidgetBridge")
+
+    /// Écrit la charge utile JSON lue par le widget (WidgetStore.swift).
+    Function("writePayload") { (key: String, json: String, appGroup: String) in
+      UserDefaults(suiteName: appGroup)?.set(json, forKey: key)
+    }
+
+    /// Demande à iOS de recalculer la timeline du widget.
+    Function("reload") { (kind: String) in
+      WidgetCenter.shared.reloadTimelines(ofKind: kind)
+    }
 
     /// Renvoie le chemin du fichier écrit, ou lève si le conteneur ou l'image sont indisponibles.
     AsyncFunction("store") { (sourcePath: String, appGroup: String, maxSide: Int) throws -> String in
