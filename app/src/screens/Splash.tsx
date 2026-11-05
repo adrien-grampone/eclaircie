@@ -1,11 +1,12 @@
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Image as RNImage, Pressable, StyleSheet, useWindowDimensions } from "react-native";
 import Animated, {
   Easing, cancelAnimation, runOnUI, useAnimatedReaction, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming, type SharedValue,
 } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
+import { SPLASH_HOLD_MAX_MS } from "@/lib/deepLink.ts";
 import { hapticThreshold } from "@/lib/haptics.ts";
 import {
   CROSSFADE_MS, FADE_MS, HALO, HILL_PLANES, HOLD_AT, IMAGE_GRACE_MS, NIGHT, REVEAL_MS, SPLASH_COPY, SPLASH_GRAIN, SPLASH_MS,
@@ -34,6 +35,8 @@ interface Props {
   /** Appelé à la première image ; sa promesse résolue (splash natif retiré) lance la ligne de temps. */
   onFirstFrame: () => Promise<void>;
   onDone: () => void;
+  /** Dernière image tenue plus de SPLASH_HOLD_MAX_MS sans issue signalée : l'appelant force le fondu. */
+  onHoldTimeout?: () => void;
   /** Dev : ne finit jamais et fige le révélé à mi-course pour l'examiner. */
   hold?: boolean;
 }
@@ -47,7 +50,7 @@ interface Props {
  * sinon (image pas prête, ou « Réduire les animations ») la dernière image se fond dans l'arrivée.
  * Tap = saut à l'état final.
  */
-export function Splash({ palette, outcome, onFirstFrame, onDone, hold = false }: Props) {
+export function Splash({ palette, outcome, onFirstFrame, onDone, onHoldTimeout, hold = false }: Props) {
   const { width, height } = useWindowDimensions();
   const reducedMotion = useReducedMotion();
   const t = useSharedValue(0);
@@ -63,6 +66,13 @@ export function Splash({ palette, outcome, onFirstFrame, onDone, hold = false }:
   const crestT = crestCrossingT(sun);
 
   const done = () => onDone();
+  const outcomeRef = useRef(outcome);
+  outcomeRef.current = outcome;
+  /** Garde-fou absolu : armé quand la dernière image est atteinte, quelle que soit la route dessous. */
+  const armHoldTimer = () => {
+    if (hold) return;
+    setTimeout(() => { if (!outcomeRef.current) onHoldTimeout?.(); }, SPLASH_HOLD_MAX_MS);
+  };
   const endGrace = () => { setTimeout(() => runOnUI(() => { imagePending.value = false; tryFinish(); })(), IMAGE_GRACE_MS); };
   /** Fin : révélé (image prête), fondu croisé (arrival sans image) ou simple fondu, une fois prêt et la dernière image atteinte. */
   const tryFinish = () => {
@@ -84,8 +94,8 @@ export function Splash({ palette, outcome, onFirstFrame, onDone, hold = false }:
     runOnUI(() => {
       if (started.value) return;
       started.value = true;
-      if (reducedMotion) { t.value = HOLD_AT; tryFinish(); return; }
-      t.value = withTiming(HOLD_AT, { duration: SPLASH_MS * HOLD_AT, easing: Easing.linear }, (ok) => { if (ok) tryFinish(); });
+      if (reducedMotion) { t.value = HOLD_AT; tryFinish(); scheduleOnRN(armHoldTimer); return; }
+      t.value = withTiming(HOLD_AT, { duration: SPLASH_MS * HOLD_AT, easing: Easing.linear }, (ok) => { if (ok) { tryFinish(); scheduleOnRN(armHoldTimer); } });
     })();
   };
   const firstFrame = () => { onFirstFrame().then(start, start); };

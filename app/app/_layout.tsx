@@ -1,11 +1,11 @@
-import { Stack } from "expo-router";
+import { Stack, usePathname } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { demo as demoVar } from "@/lib/demo.ts";
 import { configureNotifications } from "@/lib/notifications.ts";
-import { readSplashPalette, useSplashOutcome } from "@/lib/splashStore.ts";
+import { readSplashPalette, settleSplash, useSplashOutcome } from "@/lib/splashStore.ts";
 import { Splash } from "@/screens/Splash.tsx";
 import { useAppFonts } from "@/theme/fonts.ts";
 import { FpsOverlay } from "@/ui/FpsOverlay.tsx";
@@ -30,6 +30,12 @@ export default function RootLayout() {
   const [palette, setPalette] = useState<Palette | null>(null);
   const [splash, setSplash] = useState<"shown" | "done">("shown");
   const outcome = useSplashOutcome();
+  const pathname = usePathname();
+  /** Garde-fou : une route qui n'a pas signalé son issue ne bloque jamais l'app sur le splash. */
+  const forceSplashEnd = () => {
+    if (__DEV__) console.warn(`splash : aucune issue signalée par la route « ${pathname} », fondu forcé`);
+    settleSplash({ kind: "fade" });
+  };
   useEffect(() => { void readSplashPalette().then(setPalette); }, []);
   if (!fontsLoaded || !palette) return null;
   return (
@@ -37,7 +43,7 @@ export default function RootLayout() {
       <StatusBar style={splash === "shown" ? "light" : "dark"} />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.paper } }} />
       {splash === "shown" ? (
-        <Splash palette={palette} outcome={outcome} onFirstFrame={hideNativeSplash} onDone={() => setSplash("done")} />
+        <Splash palette={palette} outcome={outcome} onFirstFrame={hideNativeSplash} onDone={() => setSplash("done")} onHoldTimeout={forceSplashEnd} />
       ) : null}
       {__DEV__ ? <FpsOverlay /> : null}
     </GestureHandlerRootView>
