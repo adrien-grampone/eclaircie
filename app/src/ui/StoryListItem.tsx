@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { ARCHIVE_COPY, isRetracted } from "@/lib/archive.ts";
+import { frenchTypography } from "@/lib/typography.ts";
 import { formatDayLabel } from "@/lib/daily.ts";
 import { hapticTap } from "@/lib/haptics.ts";
 import { colors, fonts, space, type } from "@/theme/tokens.ts";
@@ -30,8 +31,8 @@ export const StoryListItem = memo(function StoryListItem({ story, theme, fallbac
         {retracted
           ? <Text style={styles.retracted}>{ARCHIVE_COPY.retracted}</Text>
           : <Text style={styles.title}>
-              <Text style={[type.title, styles.titleText]}>{story.title_main}</Text>
-              {story.title_accent ? <Text style={[type.titleAccent, styles.titleText, { color: theme.palette.accent }]}>{` ${story.title_accent}`}</Text> : null}
+              <Text style={[type.title, styles.titleText]}>{frenchTypography(story.title_main)}</Text>
+              {story.title_accent ? <Text style={[type.titleAccent, styles.titleText, { color: theme.palette.accent }]}>{` ${frenchTypography(story.title_accent)}`}</Text> : null}
             </Text>}
       </View>
       <Thumb story={story} palette={theme.palette} fallbackFiles={fallbackFiles} dimmed={retracted} />

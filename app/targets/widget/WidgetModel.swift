@@ -61,6 +61,24 @@ func sourceLabel(_ name: String) -> String {
     return media.isEmpty ? name.trimmingCharacters(in: .whitespaces) : media
 }
 
+/// Typographie française à l'affichage, même règle que `frenchTypography` dans l'app : fine insécable
+/// (U+202F) dans les groupes de chiffres, avant ; ? ! » et après « ; insécable (U+00A0) avant : et les unités.
+func frenchTypography(_ text: String) -> String {
+    let thin = "\u{202F}", nbsp = "\u{00A0}", sp = "[ \u{00A0}\u{202F}]"
+    var t = text
+    func sub(_ pattern: String, _ template: String, repeat count: Int = 1) {
+        guard let re = try? NSRegularExpression(pattern: pattern) else { return }
+        for _ in 0..<count { t = re.stringByReplacingMatches(in: t, range: NSRange(t.startIndex..., in: t), withTemplate: template) }
+    }
+    sub("(\\d)\(sp)(?=\\d{3}(?!\\d))", "$1\(thin)", repeat: 2)
+    sub("(\\S)\(sp)*([;?!»])", "$1\(thin)$2")
+    sub("(«)\(sp)*", "$1\(thin)")
+    sub("(\\S)\(sp)*:(?![/\\d])", "$1\(nbsp):")
+    sub("(\\d)\(sp)(°C|°F|km/h|km|kg|cm|mm|mg|ha|min|ms|Mo|Go|ko|kW|MW|m|g|h|s|L|l|W)(?![\\p{L}\\d])", "$1\(nbsp)$2")
+    sub("(\\d)\(sp)?(%|°|€)", "$1\(nbsp)$2")
+    return t
+}
+
 // MARK: - Mode « teinté » d'iOS 18
 
 /// Illustration gardée en pleine couleur quand iOS teinte le widget (sinon elle deviendrait monochrome).

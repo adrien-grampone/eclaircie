@@ -126,7 +126,7 @@ enum WidgetStore {
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else { throw URLError(.badServerResponse) }
         return try JSONDecoder().decode([RpcRow].self, from: data).map { row in
-            WidgetStory(id: row.id, themeId: row.theme_id, themeLabel: row.theme_label, titleMain: row.title_main, titleAccent: row.title_accent,
+            WidgetStory(id: row.id, themeId: row.theme_id, themeLabel: row.theme_label, titleMain: frenchTypography(row.title_main), titleAccent: row.title_accent.map(frenchTypography),
                         source: row.source_name.map(sourceLabel), palette: row.palette, imagePath: nil, remoteImagePath: row.image_path)
         }
     }

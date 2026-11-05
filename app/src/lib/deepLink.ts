@@ -26,9 +26,28 @@ export function resolveStoryOpen(id: string | undefined, result: { story: unknow
   return result.story ? { kind: "story" } : { kind: "redirect", href: "/" };
 }
 
-/** Retour depuis l'écran Nouvelle : l'écran précédent s'il existe (Archives, Gardées), sinon l'Arrivée du jour. */
-export function backHref(canGoBack: boolean): "back" | "/" {
-  return canGoBack ? "back" : "/";
+/** Entrée de la pile de navigation (nom de route Expo Router, id de nouvelle s'il y en a un). */
+export interface RouteEntry {
+  name: string;
+  id?: string | undefined;
+}
+const STORY_ROUTE = "story/[id]";
+
+/** Vrai si la pile se termine par deux fois la même nouvelle (lien traité deux fois) : l'entrée du dessus est de trop. */
+export function duplicateOnTop(routes: readonly RouteEntry[]): boolean {
+  const top = routes[routes.length - 1];
+  const below = routes[routes.length - 2];
+  return !!top && !!below && top.name === STORY_ROUTE && below.name === STORY_ROUTE && top.id === below.id;
+}
+
+/**
+ * Retour depuis l'écran Nouvelle : l'écran précédent s'il en existe un différent (Archives, Gardées,
+ * Arrivée), sinon l'Arrivée du jour par remplacement (démarrage à froid par le widget : jamais un doublon).
+ */
+export function backHref(routes: readonly RouteEntry[]): "back" | "/" {
+  const top = routes[routes.length - 1];
+  const previous = routes.slice(0, -1).reverse().find((r) => !(r.name === STORY_ROUTE && r.id === top?.id));
+  return previous ? "back" : "/";
 }
 
 /** Le splash ne tient jamais sa dernière image plus longtemps que ceci, quelle que soit la route. */

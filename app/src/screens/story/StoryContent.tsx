@@ -1,6 +1,7 @@
 import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
 import { formatDayLabel, formatSourceDate, readingMinutes, sourceLabel, titleSize } from "@/lib/daily.ts";
 import { hapticTap } from "@/lib/haptics.ts";
+import { frenchTypography } from "@/lib/typography.ts";
 import type { DailyView } from "@/lib/stories.ts";
 import { colors, radius, sizes, space, type } from "@/theme/tokens.ts";
 import { DropCapParagraph } from "@/ui/DropCapParagraph.tsx";
@@ -26,11 +27,11 @@ export function StoryBody({ story, accent, actions }: { story: Story; accent: st
         <Text style={type.caption}>{readingMinutes(story.summary)} MIN</Text>
       </View>
       <Text style={[styles.title, title]}>
-        <Text style={[type.title, title, { color: colors.ink }]}>{story.title_main}</Text>
-        {story.title_accent ? <Text style={[type.titleAccent, title, { color: accent }]}>{` ${story.title_accent}`}</Text> : null}
+        <Text style={[type.title, title, { color: colors.ink }]}>{frenchTypography(story.title_main)}</Text>
+        {story.title_accent ? <Text style={[type.titleAccent, title, { color: accent }]}>{` ${frenchTypography(story.title_accent)}`}</Text> : null}
       </Text>
-      <DropCapParagraph text={story.summary} accent={accent} cacheKey={story.id} />
-      <Text style={styles.source}>Source — {sourceLabel(story.source_name)}{sourceDate ? `, ${sourceDate}` : ""}</Text>
+      <DropCapParagraph text={frenchTypography(story.summary)} accent={accent} cacheKey={story.id} />
+      <Text style={styles.source}>{frenchTypography(`Source — ${sourceLabel(story.source_name)}${sourceDate ? `, ${sourceDate}` : ""}`)}</Text>
       <View style={styles.buttons}>
         <Pressable style={[styles.button, styles.buttonFilled]} accessibilityRole="button" onPressIn={hapticTap} onPress={actions.share}>
           <ShareIcon color={colors.paper} />

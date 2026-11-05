@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SPLASH_HOLD_MAX_MS, backHref, isStoryId, resolveStoryOpen, splashHoldAction, splashPlays, storyIdFromUrl } from "./deepLink.ts";
+import { SPLASH_HOLD_MAX_MS, backHref, duplicateOnTop, isStoryId, resolveStoryOpen, splashHoldAction, splashPlays, storyIdFromUrl } from "./deepLink.ts";
 
 const ID = "1f4e4b94-1a86-49b2-9982-64f681732348";
 
@@ -31,9 +31,20 @@ describe("resolveStoryOpen : jamais un écran vide", () => {
   it("erreur réseau → message, pas de redirection silencieuse", () => {
     expect(resolveStoryOpen(ID, { error: "nouvelle : timeout" })).toEqual({ kind: "error", message: "nouvelle : timeout" });
   });
-  it("retour : écran précédent s'il existe (Archives), sinon l'Arrivée (démarrage à froid par le widget)", () => {
-    expect(backHref(true)).toBe("back");
-    expect(backHref(false)).toBe("/");
+  it("retour : écran précédent s'il existe (Archives, Arrivée), sinon l'Arrivée par remplacement", () => {
+    expect(backHref([{ name: "archives" }, { name: "story/[id]", id: ID }])).toBe("back");
+    expect(backHref([{ name: "index" }, { name: "story/[id]", id: ID }])).toBe("back");
+    expect(backHref([{ name: "story/[id]", id: ID }])).toBe("/");
+    expect(backHref([])).toBe("/");
+  });
+  it("lien traité deux fois : la pile ne garde qu'une entrée, le retour ne ramène jamais au même article", () => {
+    const twice = [{ name: "story/[id]", id: ID }, { name: "story/[id]", id: ID }];
+    expect(duplicateOnTop(twice)).toBe(true);
+    expect(backHref(twice)).toBe("/");
+    expect(duplicateOnTop([{ name: "index" }, { name: "story/[id]", id: ID }])).toBe(false);
+    expect(duplicateOnTop([{ name: "story/[id]", id: "autre" }, { name: "story/[id]", id: ID }])).toBe(false);
+    // Retap du widget sur l'article déjà affiché, app ouverte : même règle.
+    expect(duplicateOnTop([{ name: "index" }, { name: "story/[id]", id: ID }, { name: "story/[id]", id: ID }])).toBe(true);
   });
 });
 

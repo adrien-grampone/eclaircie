@@ -1,5 +1,6 @@
 import { dateOfTimestamp } from "@pipeline/dates.ts";
 import { sourceLabel } from "./daily.ts";
+import { frenchTypography } from "./typography.ts";
 import type { DailyView } from "./stories.ts";
 import type { Profile, Theme } from "@/types.ts";
 
@@ -64,8 +65,8 @@ export function buildWidgetPayload(args: {
           id: story.id,
           themeId: story.theme_id,
           themeLabel: view.theme.label,
-          titleMain: story.title_main,
-          titleAccent: story.title_accent,
+          titleMain: frenchTypography(story.title_main),
+          titleAccent: story.title_accent ? frenchTypography(story.title_accent) : null,
           source: sourceLabel(story.source_name),
           palette: view.theme.palette,
           imagePath: args.imagePath,

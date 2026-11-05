@@ -1,7 +1,7 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { loadStory } from "@/lib/archiveStore.ts";
-import { backHref, isStoryId, resolveStoryOpen } from "@/lib/deepLink.ts";
+import { backHref, duplicateOnTop, isStoryId, resolveStoryOpen, type RouteEntry } from "@/lib/deepLink.ts";
 import { settleSplash } from "@/lib/splashStore.ts";
 import type { DailyView } from "@/lib/stories.ts";
 import { storyView } from "@/lib/storyView.ts";
@@ -21,9 +21,18 @@ export default function StoryRoute() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const boot = useBoot();
+  const navigation = useNavigation();
+  /** Pile de l'écran (nom de route + id) : lue à la demande, jamais pendant le rendu. */
+  const stack = (): RouteEntry[] =>
+    (navigation.getState()?.routes ?? []).map((r) => ({ name: r.name, id: (r.params as { id?: string } | undefined)?.id }));
   const [state, setState] = useState<State>({ status: "loading" });
   const themes = boot.status === "ready" ? boot.boot.themes : null;
-  useEffect(() => { settleSplash({ kind: "fade" }); }, []);
+  useEffect(() => {
+    settleSplash({ kind: "fade" });
+    // Lien livré deux fois (lancement + événement url) : l'entrée du dessus est un doublon, on la retire.
+    if (duplicateOnTop(stack())) router.back();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   useEffect(() => {
     if (!isStoryId(id)) { router.replace("/"); return; }
     if (!themes) return;
@@ -39,7 +48,7 @@ export default function StoryRoute() {
     // router est stable.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [themes, id]);
-  const onBack = () => { backHref(router.canGoBack()) === "back" ? router.back() : router.replace("/"); };
+  const onBack = () => { backHref(stack()) === "back" ? router.back() : router.replace("/"); };
   if (boot.status === "error") return <ListScreen title="Nouvelle"><ErrorState message={boot.message} /></ListScreen>;
   if (state.status === "error") return <ListScreen title="Nouvelle"><ErrorState message={state.message} /></ListScreen>;
   if (boot.status !== "ready" || state.status !== "ready") return <ListScreen title="Nouvelle"><Loading /></ListScreen>;
