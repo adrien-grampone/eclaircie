@@ -19,7 +19,8 @@
         "com.apple.security.application-groups": [
           "group.app.eclaircie"
         ]
-      }
+      },
+      "appleTeamId": "235BSHABLB"
     },
     "android": {
       "adaptiveIcon": {
