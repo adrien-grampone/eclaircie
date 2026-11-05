@@ -10,6 +10,3 @@ export function navLog(event: string, data?: unknown): void {
   fetch(TARGET, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ms: Date.now() - startedAt, event, data }) })
     .catch(() => undefined);
 }
-
-/** Instrumentation seulement : délai (ms) après lequel l'écran Nouvelle déclenche lui-même son retour, pour un simulateur sans fenêtre. */
-export const NAV_LOG_AUTO_BACK_MS = TARGET ? Number(process.env.EXPO_PUBLIC_NAV_LOG_AUTO_BACK_MS ?? 0) : 0;

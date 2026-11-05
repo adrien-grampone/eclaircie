@@ -42,6 +42,13 @@ export default function RootLayout() {
   // Journal de navigation (builds Release instrumentés) : URL de lancement, événements url, pile.
   const rootState = useRootNavigationState();
   useEffect(() => {
+    // Démarrage (un identifiant par vie de l'app : un second « démarrage » trahit un relancement) et erreurs JS.
+    navLog("démarrage", { session: Math.random().toString(36).slice(2, 8) });
+    const previous = ErrorUtils.getGlobalHandler();
+    ErrorUtils.setGlobalHandler((error: unknown, isFatal?: boolean) => {
+      navLog("erreur JS", { fatal: isFatal ?? false, message: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack?.slice(0, 600) : undefined });
+      previous(error, isFatal);
+    });
     void Linking.getInitialURL().then((url) => navLog("Linking.getInitialURL", url));
     const sub = Linking.addEventListener("url", (e) => navLog("Linking url event", e.url));
     return () => sub.remove();
