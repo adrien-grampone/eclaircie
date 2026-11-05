@@ -1,5 +1,5 @@
 // Banc de capture macOS des vues du widget (SwiftUI + ImageRenderer), hors WidgetKit : mêmes fichiers
-// Swift que la cible (targets/widget/WidgetModel.swift, WidgetViews.swift), données d'exemple.
+// Swift que la cible, données réelles (palettes des 7 thèmes, titre le plus long de chaque thème).
 // Usage : design/widget/snapshot.sh  →  PNG dans design/widget/out/
 import AppKit
 import SwiftUI
@@ -8,19 +8,22 @@ let args = CommandLine.arguments
 let assetsDir = args[1]
 let outDir = args[2]
 let bundle = Bundle(path: assetsDir)!
-WidgetFonts.register(bundle: bundle)
-try? FileManager.default.createDirectory(atPath: outDir, withIntermediateDirectories: true)
 
 func palette(_ a: String, _ st: String, _ sb: String, _ sun: String, _ hl: String, _ hm: String) -> WidgetPalette {
     WidgetPalette(accent: a, skyTop: st, skyBottom: sb, sun: sun, hillLight: hl, hillMid: hm)
 }
-let samples: [(String, WidgetStory)] = [
-    ("animaux", WidgetStory(id: "a", themeId: "animaux", themeLabel: "Animaux", titleMain: "Pour les chiens,", titleAccent: "des plaquettes gardées trois semaines.", source: "Phys.org",
-        palette: palette("#7A4E14", "#F2C08E", "#F8E6CC", "#FFF1DA", "#E3B07A", "#C08040"), imagePath: nil, remoteImagePath: nil)),
-    ("science", WidgetStory(id: "s", themeId: "science", themeLabel: "Science", titleMain: "Les cinq « lettres » de la vie", titleAccent: "ont été trouvées dans un astéroïde.", source: "Science Daily",
-        palette: palette("#2F5D50", "#CFE3D6", "#F1F5EC", "#F4C27A", "#BFD9C8", "#7FAE96"), imagePath: nil, remoteImagePath: nil)),
-    ("culture", WidgetStory.waiting(themeId: "culture", themeLabel: "Culture",
-        palette: palette("#5E2D60", "#DDB8E0", "#F5E6F3", "#F09A4E", "#D9B5DB", "#AD70AF"))),
+func story(_ theme: String, _ label: String, _ p: WidgetPalette, _ main: String, _ accent: String?, _ source: String?) -> WidgetStory {
+    WidgetStory(id: theme, themeId: theme, themeLabel: label, titleMain: main, titleAccent: accent, source: source, palette: p, imagePath: nil, remoteImagePath: nil)
+}
+/// Palettes et titres tels qu'en base (2026-11-05), source déjà réduite au média.
+let samples: [WidgetStory] = [
+    story("planete", "Planète", palette("#2F6B5E", "#EFB98A", "#F4E5CC", "#EE8F48", "#B9D3B5", "#6FA48A"), "Les « polluants éternels »", "cèdent à plus basse chaleur.", "Phys.org"),
+    story("animaux", "Animaux", palette("#7A4E14", "#F2C08E", "#F8E6CC", "#FFF1DA", "#E3B07A", "#C08040"), "Pour les chiens,", "des plaquettes gardées trois semaines.", "Phys.org"),
+    story("science", "Science", palette("#3E3880", "#B9B2EC", "#ECE6F6", "#F6B877", "#B3ADE6", "#7F77CF"), "Les cinq « lettres » de la vie", "ont été trouvées dans un astéroïde.", "Science Daily"),
+    story("sante", "Santé", palette("#8E3535", "#F1B9B0", "#FAE6DF", "#FFF2E4", "#EDB0A6", "#D27A70"), "Test HPV et IA :", "un dépistage plus efficace.", "Medical Xpress"),
+    story("solidarite", "Solidarité", palette("#6B4F00", "#F3CF73", "#FBEFCB", "#EB8440", "#EDCF77", "#D2A22B"), "Un donneur de sang rare", "fait le tour de l'Australie.", "Good News Network"),
+    story("inventions", "Inventions", palette("#24506F", "#A9CBE6", "#E6F0F7", "#F6B877", "#B5D0E6", "#6E9CC4"), "Des bactéries calculent", "plusieurs pistes à la fois.", "TechXplore"),
+    WidgetStory.waiting(themeId: "culture", themeLabel: "Culture", palette: palette("#5E2D60", "#DDB8E0", "#F5E6F3", "#F09A4E", "#D9B5DB", "#AD70AF")),
 ]
 
 /// Gabarits iPhone 6,7" : petit 170×170, moyen 364×170, rectangulaire verrouillé ≈ 172×76.
@@ -37,11 +40,13 @@ func render<V: View>(_ view: V, size: CGSize, name: String) {
 
 @MainActor
 func main() {
-    for (theme, story) in samples {
+    WidgetFonts.register(bundle: bundle)
+    try? FileManager.default.createDirectory(atPath: outDir, withIntermediateDirectories: true)
+    for story in samples {
         for (layout, label, size) in sizes {
             for dark in [false, true] {
                 let scheme: ColorScheme = dark ? .dark : .light
-                let name = "\(theme)-\(label)-\(dark ? "dark" : "light")"
+                let name = "\(story.themeId)-\(label)-\(dark ? "dark" : "light")"
                 if layout == .accessory {
                     // Écran verrouillé : texte vibrant (blanc) sur le fond d'écran ; simulé par un fond uni assombri.
                     let view = ZStack {

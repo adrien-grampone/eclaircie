@@ -13,14 +13,39 @@ private struct Metrics {
     let pill: CGFloat
     static func of(_ layout: WidgetLayout) -> Metrics {
         switch layout {
-        case .small: return Metrics(title: 15, titleLines: 3, source: 11, pill: 9.5)
+        case .small: return Metrics(title: 15, titleLines: 4, source: 11, pill: 9.5)
         case .medium: return Metrics(title: 18, titleLines: 3, source: 12, pill: 10)
-        case .accessory: return Metrics(title: 14, titleLines: 2, source: 11, pill: 10)
+        case .accessory: return Metrics(title: 13, titleLines: 3, source: 11, pill: 9)
         }
     }
 }
 
+/// Variantes d'un titre, de la plus fidèle à la plus courte : taille pleine, réduite (jusqu'à `minScale`),
+/// puis coupée mot par mot (accent d'abord, puis principal) avec « … » après un mot entier. Jamais une coupe
+/// au milieu d'un mot.
+struct TitleCandidate: Hashable {
+    let main: String
+    let accent: String?
+    let scale: CGFloat
+}
+
+func titleCandidates(main: String, accent: String?, minScale: CGFloat = 0.8) -> [TitleCandidate] {
+    var out = [TitleCandidate(main: main, accent: accent, scale: 1), TitleCandidate(main: main, accent: accent, scale: 0.9),
+               TitleCandidate(main: main, accent: accent, scale: minScale)]
+    var mainWords = main.split(separator: " ").map(String.init)
+    var accentWords = (accent ?? "").split(separator: " ").map(String.init)
+    let ellipsis = "…"
+    while mainWords.count + accentWords.count > 2, out.count < 14 {
+        if !accentWords.isEmpty { accentWords.removeLast() } else { mainWords.removeLast() }
+        let cutMain = accentWords.isEmpty ? mainWords.joined(separator: " ") + ellipsis : mainWords.joined(separator: " ")
+        let cutAccent = accentWords.isEmpty ? nil : accentWords.joined(separator: " ") + ellipsis
+        out.append(TitleCandidate(main: cutMain, accent: cutAccent, scale: minScale))
+    }
+    return out
+}
+
 /// Titre en deux parties : principale en Fraunces semi-gras, accent en Fraunces italique, même corps.
+/// `ViewThatFits` retient la première variante qui tient dans `lines` lignes et la hauteur disponible.
 struct StoryTitle: View {
     let story: WidgetStory
     let size: CGFloat
@@ -28,12 +53,19 @@ struct StoryTitle: View {
     let color: Color
 
     var body: some View {
-        (Text(story.titleMain).font(.custom(WidgetFonts.title, size: size))
-            + Text(story.titleAccent.map { " \($0)" } ?? "").font(.custom(WidgetFonts.titleAccent, size: size)))
+        ViewThatFits(in: .vertical) {
+            ForEach(titleCandidates(main: story.titleMain, accent: story.titleAccent), id: \.self) { c in
+                titleText(c.main, c.accent, size * c.scale)
+            }
+        }
+    }
+
+    private func titleText(_ main: String, _ accent: String?, _ pt: CGFloat) -> some View {
+        (Text(main).font(.custom(WidgetFonts.title, size: pt))
+            + Text(accent.map { " \($0)" } ?? "").font(.custom(WidgetFonts.titleAccent, size: pt)))
             .foregroundStyle(color)
-            .lineSpacing(size * 0.12)
+            .lineSpacing(pt * 0.12)
             .lineLimit(lines)
-            .truncationMode(.tail)
             .multilineTextAlignment(.leading)
             .fixedSize(horizontal: false, vertical: true)
     }
@@ -68,9 +100,9 @@ struct StoryBackground: View {
     var focus: CGFloat = 0.6
     private let aspect: CGFloat = 3.0 / 4.0
     /// Début du voile (part de la hauteur) : juste au-dessus du titre.
-    static let veilStart: CGFloat = 0.38
+    static let veilStart: CGFloat = 0.34
     /// Courbe du voile : < 2 pour monter plus vite sous la première ligne du titre.
-    static let veilPower: Double = 1.2
+    static let veilPower: Double = 1.15
 
     var body: some View {
         let veil = mixHex(story.palette.accent, WidgetTokens.ink, WidgetTokens.veilInk)
@@ -80,9 +112,12 @@ struct StoryBackground: View {
             ZStack(alignment: .top) {
                 Color(hex: story.palette.skyBottom)
                 if let image = illustrationImage(for: story, bundle: bundle) {
+                    // L'image (plus haute que le cadre) ne dicte jamais la taille de la pile : cadre fixe + clip.
                     accentedFullColor(image.resizable()).aspectRatio(aspect, contentMode: .fill)
                         .frame(width: w, height: h)
                         .offset(y: min(0, max(geo.size.height - h, geo.size.height / 2 - h * focus)))
+                        .frame(width: geo.size.width, height: geo.size.height, alignment: .top)
+                        .clipped()
                 }
                 // Courbe douce (quadratique) sur la moitié basse : aucune cassure visible, aucun aplat.
                 LinearGradient(stops: (0...8).map { i in
@@ -115,6 +150,12 @@ struct StoryContent: View {
             Spacer(minLength: 6)
             StoryTitle(story: story, size: m.title, lines: m.titleLines, color: cream)
                 .shadow(color: Color.black.opacity(0.4), radius: 3, x: 0, y: 1)
+                // Halo flou de la couleur du voile, derrière le bloc de titre seulement : lisible sur une
+                // illustration claire sans ternir le haut de l'image.
+                .background {
+                    Rectangle().fill(mixHex(story.palette.accent, WidgetTokens.ink, WidgetTokens.veilInk).opacity(0.5))
+                        .blur(radius: 18).padding(.horizontal, -18).padding(.vertical, -14).accentGroup()
+                }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
     }
@@ -130,7 +171,7 @@ struct AccessoryContent: View {
             Text(story.themeLabel.uppercased())
                 .font(.custom(WidgetFonts.bodyBold, size: m.pill))
                 .tracking(1.2)
-                .opacity(0.75)
+                .opacity(0.55)
             StoryTitle(story: story, size: m.title, lines: m.titleLines, color: .primary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)

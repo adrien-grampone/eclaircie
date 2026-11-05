@@ -91,7 +91,7 @@ struct MediumContent: View {
             VStack(alignment: .leading, spacing: 0) {
                 ThemePill(label: story.themeLabel, accent: story.palette.accent, size: 10)
                 Spacer(minLength: 6)
-                StoryTitle(story: story, size: 17, lines: 3, color: ink)
+                StoryTitle(story: story, size: 17, lines: 4, color: ink)
                 if let source = story.source, !story.isWaiting {
                     Text(source)
                         .font(.custom(WidgetFonts.titleAccent, size: 12))
