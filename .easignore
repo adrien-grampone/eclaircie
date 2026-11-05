@@ -1,6 +1,11 @@
 # Fichiers retirés de l'archive envoyée à EAS Build (racine du dépôt git). Seul app/ sert au build ;
 # les variables d'environnement viennent de `eas env`, jamais d'un .env.
 
+# Le clone superficiel garde un .git contenant tous les objets de HEAD (captures, maquettes : ~60 Mo) :
+# eas-cli ne le retire que s'il est listé ici.
+.git
+# Fichiers hors git (dès qu'un .easignore existe, les .gitignore ne sont plus lus)
+/backups/
 # Déjà ignorés par git (sécurité)
 node_modules/
 supabase/.temp/

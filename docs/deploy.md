@@ -142,7 +142,7 @@ clé APNs. Les variables `EXPO_PUBLIC_DEMO_*` sont ignorées hors `__DEV__` (`ap
 
 `expo.name` est `Eclaircie` (ASCII : le nom de la cible Xcode en dérive, et un accent cassait le build) ;
 le nom affiché sous l'icône est `ios.infoPlist.CFBundleDisplayName` = « Éclaircie ». L'archive envoyée à
-EAS est réduite par `.easignore` à la racine du dépôt : `app/` et le module pur du pipeline (`supabase/functions/_shared/pipeline/`, importé via `@pipeline`), sans tests ni captures.
+EAS est réduite par `.easignore` à la racine du dépôt : `app/` et le module pur du pipeline (`supabase/functions/_shared/pipeline/`, importé via `@pipeline`), sans tests ni captures. Deux pièges : le `.git` du clone superficiel (tous les objets de HEAD, ~60 Mo) n'est retiré que s'il est listé dans `.easignore`, et dès que ce fichier existe les `.gitignore` ne sont plus lus (les dossiers hors git comme `backups/` doivent y figurer). Archive attendue : ~7 Mo.
 
 `app/.env` est ignoré par git, donc jamais envoyé à EAS : l'URL et la clé anon Supabase se
 poussent une fois dans l'environnement EAS `preview`.
