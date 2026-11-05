@@ -12,13 +12,6 @@
     },
     "production": {
       "autoIncrement": true
-    },
-    "preview-navlog": {
-      "extends": "preview",
-      "environment": "preview",
-      "env": {
-        "EXPO_PUBLIC_NAV_LOG_URL": "http://192.168.1.41:8099"
-      }
     }
   },
   "submit": {

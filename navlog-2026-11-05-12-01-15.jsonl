@@ -1,0 +1,8 @@
+{"ms":10,"event":"native-intent","data":{"path":"eclaircie://story/0a674fde-ae67-45c8-9f52-8a9ad7e3f9df","initial":true,"suivi":"eclaircie://story/0a674fde-ae67-45c8-9f52-8a9ad7e3f9df"}}
+{"ms":14,"event":"pile","data":{"pathname":"/story/0a674fde-ae67-45c8-9f52-8a9ad7e3f9df","routes":["story/[id]:0a674fde"]}}
+{"ms":15,"event":"Linking.getInitialURL","data":"eclaircie://story/0a674fde-ae67-45c8-9f52-8a9ad7e3f9df"}
+{"ms":40,"event":"story : montage","data":{"id":"0a674fde-ae67-45c8-9f52-8a9ad7e3f9df","stack":[{"name":"story/[id]","id":"0a674fde-ae67-45c8-9f52-8a9ad7e3f9df"}]}}
+{"ms":11,"event":"native-intent","data":{"path":"eclaircie://story/0a674fde-ae67-45c8-9f52-8a9ad7e3f9df","initial":true,"suivi":"eclaircie://story/0a674fde-ae67-45c8-9f52-8a9ad7e3f9df"}}
+{"ms":37,"event":"story : montage","data":{"id":"0a674fde-ae67-45c8-9f52-8a9ad7e3f9df","stack":[{"name":"story/[id]","id":"0a674fde-ae67-45c8-9f52-8a9ad7e3f9df"}]}}
+{"ms":15,"event":"pile","data":{"pathname":"/story/0a674fde-ae67-45c8-9f52-8a9ad7e3f9df","routes":["story/[id]:0a674fde"]}}
+{"ms":15,"event":"Linking.getInitialURL","data":"eclaircie://story/0a674fde-ae67-45c8-9f52-8a9ad7e3f9df"}

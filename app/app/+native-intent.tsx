@@ -1,5 +1,4 @@
 import { INITIAL_LAUNCH_GATE, gateSystemPath, type LaunchGate } from "@/lib/deepLink.ts";
-import { navLog } from "@/lib/navLog.ts";
 
 let gate: LaunchGate = INITIAL_LAUNCH_GATE;
 const startedAt = Date.now();
@@ -12,6 +11,5 @@ const startedAt = Date.now();
 export function redirectSystemPath({ path, initial }: { path: string; initial: boolean }): string | null {
   const result = gateSystemPath(gate, { path, initial, atMs: Date.now() - startedAt });
   gate = result.gate;
-  navLog("native-intent", { path, initial, suivi: result.path });
   return result.path;
 }
