@@ -2,6 +2,7 @@ import { Redirect } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { shouldShowArrival } from "@/lib/arrival.ts";
+import { syncWidget } from "@/lib/widget.ts";
 import { readArrivalSeen } from "@/lib/arrivalStore.ts";
 import { bootOnce } from "@/lib/useBoot.ts";
 import { opensArrival, useLastNotificationResponse } from "@/lib/notifications.ts";
@@ -38,6 +39,8 @@ export default function Index() {
       .then(async ({ user, themes, profile }) => {
         if (!profile) return { status: "onboarding" } as const;
         const [view, seen] = await Promise.all([loadDailyView(profile, themes), readArrivalSeen()]);
+        // Widget iOS : nouvelle du jour, illustration réduite et profil déposés dans l'App Group, sans bloquer l'écran.
+        void syncWidget(profile, themes, view);
         return { status: "ready", view, userId: user.id, showArrival: shouldShowArrival(seen, view.today) } as const;
       })
       .then(setState)

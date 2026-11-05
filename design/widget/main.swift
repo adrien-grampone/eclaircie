@@ -16,9 +16,9 @@ func palette(_ a: String, _ st: String, _ sb: String, _ sun: String, _ hl: Strin
 }
 let samples: [(String, WidgetStory)] = [
     ("animaux", WidgetStory(id: "a", themeId: "animaux", themeLabel: "Animaux", titleMain: "Pour les chiens,", titleAccent: "des plaquettes gardées trois semaines.", source: "Phys.org — Biology",
-        palette: palette("#7A4E14", "#F2C08E", "#F8E6CC", "#FFF1DA", "#E3B07A", "#C08040"), imagePath: nil)),
+        palette: palette("#7A4E14", "#F2C08E", "#F8E6CC", "#FFF1DA", "#E3B07A", "#C08040"), imagePath: nil, remoteImagePath: nil)),
     ("science", WidgetStory(id: "s", themeId: "science", themeLabel: "Science", titleMain: "Les cinq « lettres » de la vie", titleAccent: "ont été trouvées dans un astéroïde.", source: "Science Daily",
-        palette: palette("#2F5D50", "#CFE3D6", "#F1F5EC", "#F4C27A", "#BFD9C8", "#7FAE96"), imagePath: nil)),
+        palette: palette("#2F5D50", "#CFE3D6", "#F1F5EC", "#F4C27A", "#BFD9C8", "#7FAE96"), imagePath: nil, remoteImagePath: nil)),
     ("culture", WidgetStory.waiting(themeId: "culture", themeLabel: "Culture",
         palette: palette("#5E2D60", "#DDB8E0", "#F5E6F3", "#F09A4E", "#D9B5DB", "#AD70AF"))),
 ]

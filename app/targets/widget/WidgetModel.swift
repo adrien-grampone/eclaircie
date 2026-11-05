@@ -1,6 +1,8 @@
 import CoreText
 import Foundation
+import ImageIO
 import SwiftUI
+import UniformTypeIdentifiers
 
 /// Palette du thème du jour, telle que stockée dans `themes.palette` (hex 6 chiffres).
 struct WidgetPalette: Codable, Equatable {
@@ -31,10 +33,12 @@ struct WidgetStory: Codable, Equatable {
     var source: String?
     var palette: WidgetPalette
     var imagePath: String?
+    /// Chemin dans le bucket `illustrations` (image_path), pour que le widget la télécharge lui-même.
+    var remoteImagePath: String?
 
     /// Aucune nouvelle validée pour aujourd'hui : promesse sur une illustration de secours du thème.
     static func waiting(themeId: String, themeLabel: String, palette: WidgetPalette) -> WidgetStory {
-        WidgetStory(id: nil, themeId: themeId, themeLabel: themeLabel, titleMain: "Ta bonne nouvelle", titleAccent: "arrive demain matin.", source: nil, palette: palette, imagePath: nil)
+        WidgetStory(id: nil, themeId: themeId, themeLabel: themeLabel, titleMain: "Ta bonne nouvelle", titleAccent: "arrive demain matin.", source: nil, palette: palette, imagePath: nil, remoteImagePath: nil)
     }
 
     var isWaiting: Bool { id == nil }
@@ -128,11 +132,45 @@ extension Image {
     }
 }
 
-/// Illustration d'une nouvelle : son fichier local, sinon l'illustration de secours embarquée du thème.
+/// Même hachage FNV-1a que `pickFallbackImage` du pipeline : l'app et le widget choisissent la même image.
+func fnv1a(_ text: String) -> UInt32 {
+    var hash: UInt32 = 2_166_136_261
+    for unit in text.utf16 {
+        hash ^= UInt32(unit)
+        hash = hash &* 16_777_619
+    }
+    return hash
+}
+
+/// Illustration de secours embarquée d'un thème (fichiers `fallback__<thème>__<nom>.webp`, mêmes noms que le
+/// bucket) : choix déterministe par la graine (id de la nouvelle, ou thème pour la promesse du lendemain).
+func fallbackImageURL(themeId: String, seed: String, bundle: Bundle = .main) -> URL? {
+    let prefix = "fallback__\(themeId)__"
+    let urls = ((bundle.urls(forResourcesWithExtension: "webp", subdirectory: nil) ?? [])
+        + (bundle.urls(forResourcesWithExtension: "webp", subdirectory: "assets") ?? []))
+        .filter { $0.lastPathComponent.hasPrefix(prefix) }
+        .sorted { $0.lastPathComponent < $1.lastPathComponent }
+    guard !urls.isEmpty else { return nil }
+    return urls[Int(fnv1a(seed) % UInt32(urls.count))]
+}
+
+/// Illustration d'une nouvelle : son fichier local (App Group), sinon l'illustration de secours embarquée.
 func illustrationImage(for story: WidgetStory, bundle: Bundle = .main) -> Image? {
     if let path = story.imagePath, let image = Image(platformFile: path) { return image }
-    guard let url = resourceURL("fallback-\(story.themeId)", "webp", bundle: bundle) else { return nil }
+    guard let url = fallbackImageURL(themeId: story.themeId, seed: story.id ?? story.themeId, bundle: bundle) else { return nil }
     return Image(platformFile: url.path)
+}
+
+/// Réduction d'une image (données brutes) à `maxSide` points de côté, en JPEG, via ImageIO : peu de mémoire.
+func downsampledJPEG(_ data: Data, maxSide: Int, quality: CGFloat = 0.85) -> Data? {
+    let options: [CFString: Any] = [kCGImageSourceCreateThumbnailFromImageAlways: true, kCGImageSourceThumbnailMaxPixelSize: maxSide,
+                                    kCGImageSourceCreateThumbnailWithTransform: true, kCGImageSourceShouldCacheImmediately: true]
+    guard let source = CGImageSourceCreateWithData(data as CFData, nil),
+          let cg = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else { return nil }
+    let out = NSMutableData()
+    guard let dest = CGImageDestinationCreateWithData(out, "public.jpeg" as CFString, 1, nil) else { return nil }
+    CGImageDestinationAddImage(dest, cg, [kCGImageDestinationLossyCompressionQuality: quality] as CFDictionary)
+    return CGImageDestinationFinalize(dest) ? out as Data : nil
 }
 
 func paperGrainImage(bundle: Bundle = .main) -> Image? {
