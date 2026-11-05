@@ -1,4 +1,6 @@
-import { Stack, usePathname } from "expo-router";
+import { Stack, usePathname, useRootNavigationState } from "expo-router";
+import { Linking } from "react-native";
+import { navLog } from "@/lib/navLog.ts";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
@@ -37,6 +39,17 @@ export default function RootLayout() {
     settleSplash({ kind: "fade" });
   };
   useEffect(() => { void readSplashPalette().then(setPalette); }, []);
+  // Journal de navigation (builds Release instrumentés) : URL de lancement, événements url, pile.
+  const rootState = useRootNavigationState();
+  useEffect(() => {
+    void Linking.getInitialURL().then((url) => navLog("Linking.getInitialURL", url));
+    const sub = Linking.addEventListener("url", (e) => navLog("Linking url event", e.url));
+    return () => sub.remove();
+  }, []);
+  useEffect(() => {
+    const stack = (rootState?.routes?.[0] as { state?: { routes?: { name: string; params?: { id?: string } }[] } } | undefined)?.state?.routes;
+    navLog("pile", { pathname, routes: stack?.map((r) => `${r.name}${r.params?.id ? `:${r.params.id.slice(0, 8)}` : ""}`) });
+  }, [rootState, pathname]);
   if (!fontsLoaded || !palette) return null;
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

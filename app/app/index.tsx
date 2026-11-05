@@ -2,6 +2,7 @@ import { Redirect } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { shouldShowArrival } from "@/lib/arrival.ts";
+import { navLog } from "@/lib/navLog.ts";
 import { syncWidget } from "@/lib/widget.ts";
 import { readArrivalSeen } from "@/lib/arrivalStore.ts";
 import { bootOnce } from "@/lib/useBoot.ts";
@@ -48,6 +49,7 @@ export default function Index() {
   }, [demoOnboarding]);
 
   const showArrival = state.status === "ready" && (state.showArrival || fromNotification || demo === "show" || demo === "auto");
+  useEffect(() => { navLog("index : montage"); return () => navLog("index : démontage"); }, []);
   useEffect(() => {
     // Le splash animé attend cette décision : l'arrivée apparaît par-dessus sa dernière image, le reste en fondu.
     if (state.status === "loading") return;

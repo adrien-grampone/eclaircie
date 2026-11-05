@@ -63,3 +63,31 @@ export function splashHoldAction(holdElapsedMs: number, outcome: SplashOutcome |
 export function splashPlays(coldStart: boolean): boolean {
   return coldStart;
 }
+
+/* ---------- URL de lancement : consommée une seule fois ---------- */
+
+/** Fenêtre pendant laquelle une relivraison de l'URL de lancement (événement url) est ignorée. */
+export const LAUNCH_URL_REPLAY_MS = 5000;
+
+export interface LaunchGate {
+  /** URL de lancement déjà consommée, avec l'instant de sa consommation. */
+  consumed: { path: string; atMs: number } | null;
+}
+
+export const INITIAL_LAUNCH_GATE: LaunchGate = { consumed: null };
+
+/**
+ * Porte d'entrée des URL système (expo-router `redirectSystemPath`) : l'URL de lancement n'est suivie
+ * qu'une fois par vie de l'app. Relue plus tard (iOS la garde toute la vie de l'app), elle mène à
+ * l'Arrivée du jour ; rejouée en événement url juste après le lancement, elle est ignorée (null).
+ * Les autres liens (retap du widget plus tard, notification) passent tels quels.
+ */
+export function gateSystemPath(gate: LaunchGate, incoming: { path: string; initial: boolean; atMs: number }): { gate: LaunchGate; path: string | null } {
+  const { path, initial, atMs } = incoming;
+  if (initial) {
+    if (gate.consumed) return { gate, path: "/" };
+    return { gate: { consumed: { path, atMs } }, path };
+  }
+  if (gate.consumed && gate.consumed.path === path && atMs - gate.consumed.atMs < LAUNCH_URL_REPLAY_MS) return { gate, path: null };
+  return { gate, path };
+}

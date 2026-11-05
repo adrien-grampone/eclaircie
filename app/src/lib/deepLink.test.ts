@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SPLASH_HOLD_MAX_MS, backHref, duplicateOnTop, isStoryId, resolveStoryOpen, splashHoldAction, splashPlays, storyIdFromUrl } from "./deepLink.ts";
+import { INITIAL_LAUNCH_GATE, LAUNCH_URL_REPLAY_MS, SPLASH_HOLD_MAX_MS, backHref, duplicateOnTop, gateSystemPath, isStoryId, resolveStoryOpen, splashHoldAction, splashPlays, storyIdFromUrl } from "./deepLink.ts";
 
 const ID = "1f4e4b94-1a86-49b2-9982-64f681732348";
 
@@ -60,5 +60,29 @@ describe("garde-fou du splash", () => {
   it("app déjà ouverte en arrière-plan + tap widget : aucun splash, navigation directe", () => {
     expect(splashPlays(true)).toBe(true);
     expect(splashPlays(false)).toBe(false);
+  });
+});
+
+describe("URL de lancement consommée une seule fois", () => {
+  const url = `eclaircie://story/${ID}`;
+  it("démarrage à froid par le widget : suivie la première fois, l'Arrivée ensuite", () => {
+    const first = gateSystemPath(INITIAL_LAUNCH_GATE, { path: url, initial: true, atMs: 0 });
+    expect(first.path).toBe(url);
+    const again = gateSystemPath(first.gate, { path: url, initial: true, atMs: 4000 });
+    expect(again.path).toBe("/");
+    expect(gateSystemPath(first.gate, { path: url, initial: true, atMs: 60_000 }).path).toBe("/");
+  });
+  it("relivraison de la même URL en événement url juste après le lancement : ignorée", () => {
+    const first = gateSystemPath(INITIAL_LAUNCH_GATE, { path: url, initial: true, atMs: 0 });
+    expect(gateSystemPath(first.gate, { path: url, initial: false, atMs: 300 }).path).toBeNull();
+    expect(gateSystemPath(first.gate, { path: url, initial: false, atMs: LAUNCH_URL_REPLAY_MS - 1 }).path).toBeNull();
+  });
+  it("retap du widget app ouverte, plus tard : suivi (la route évite elle-même le doublon)", () => {
+    const first = gateSystemPath(INITIAL_LAUNCH_GATE, { path: url, initial: true, atMs: 0 });
+    expect(gateSystemPath(first.gate, { path: url, initial: false, atMs: LAUNCH_URL_REPLAY_MS + 1 }).path).toBe(url);
+    expect(gateSystemPath(first.gate, { path: "eclaircie://story/autre", initial: false, atMs: 100 }).path).toBe("eclaircie://story/autre");
+  });
+  it("ouverture normale par l'icône : aucune URL, rien à consommer", () => {
+    expect(gateSystemPath(INITIAL_LAUNCH_GATE, { path: "eclaircie://archives", initial: false, atMs: 0 }).path).toBe("eclaircie://archives");
   });
 });
