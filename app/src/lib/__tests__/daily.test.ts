@@ -1,4 +1,5 @@
-import { formatDayLabel, formatSourceDate, readingMinutes, selectDailyStory, splitMeasuredLines, titleSize } from "../daily.ts";
+import { describe, expect, it } from "vitest";
+import { formatDayLabel, formatSourceDate, readingMinutes, selectDailyStory, sourceLabel, splitMeasuredLines, titleSize } from "../daily.ts";
 import type { Story } from "../../types.ts";
 
 const story = (id: string, theme_id: string, publish_date: string): Story => ({
@@ -64,5 +65,17 @@ describe("splitMeasuredLines", () => {
     expect(splitMeasuredLines(lines)).toEqual({ beside: "râce à l'abandon mondial des gaz CFC, le trou se", rest: "résorbe peu à peu. Selon l'ONU." });
     expect(splitMeasuredLines(lines.slice(0, 1))).toEqual({ beside: "râce à l'abandon mondial", rest: "" });
     expect(splitMeasuredLines([])).toEqual({ beside: "", rest: "" });
+  });
+});
+
+describe("sourceLabel", () => {
+  it("garde le média seul, sans la rubrique accolée après un tiret ou une barre", () => {
+    expect(sourceLabel("Phys.org — Biology")).toBe("Phys.org");
+    expect(sourceLabel("Franceinfo — Culture")).toBe("Franceinfo");
+    expect(sourceLabel("Medical Xpress")).toBe("Medical Xpress");
+    expect(sourceLabel("Good News Network")).toBe("Good News Network");
+    expect(sourceLabel("Le Monde | Planète")).toBe("Le Monde");
+    expect(sourceLabel("Phys.org – Earth")).toBe("Phys.org");
+    expect(sourceLabel("Jean-Michel Actu")).toBe("Jean-Michel Actu");
   });
 });

@@ -1,4 +1,5 @@
 import { dateOfTimestamp } from "@pipeline/dates.ts";
+import { sourceLabel } from "./daily.ts";
 import type { DailyView } from "./stories.ts";
 import type { Profile, Theme } from "@/types.ts";
 
@@ -65,7 +66,7 @@ export function buildWidgetPayload(args: {
           themeLabel: view.theme.label,
           titleMain: story.title_main,
           titleAccent: story.title_accent,
-          source: story.source_name,
+          source: sourceLabel(story.source_name),
           palette: view.theme.palette,
           imagePath: args.imagePath,
           remoteImagePath: story.image_path,

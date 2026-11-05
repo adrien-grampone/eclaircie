@@ -3,6 +3,9 @@ import Foundation
 import ImageIO
 import SwiftUI
 import UniformTypeIdentifiers
+#if canImport(WidgetKit)
+import WidgetKit
+#endif
 
 /// Palette du thème du jour, telle que stockée dans `themes.palette` (hex 6 chiffres).
 struct WidgetPalette: Codable, Equatable {
@@ -50,6 +53,43 @@ struct WidgetStory: Codable, Equatable {
     }
 }
 
+/// Nom du média seul, sans la rubrique accolée après un tiret ou une barre (« Phys.org — Biology » → « Phys.org »).
+/// Même règle que `sourceLabel` dans l'app.
+func sourceLabel(_ name: String) -> String {
+    let parts = name.components(separatedBy: CharacterSet(charactersIn: "—–|"))
+    let media = (parts.first ?? name).trimmingCharacters(in: .whitespaces)
+    return media.isEmpty ? name.trimmingCharacters(in: .whitespaces) : media
+}
+
+// MARK: - Mode « teinté » d'iOS 18
+
+/// Illustration gardée en pleine couleur quand iOS teinte le widget (sinon elle deviendrait monochrome).
+@ViewBuilder
+func accentedFullColor(_ image: Image) -> some View {
+    #if canImport(WidgetKit) && os(iOS)
+    if #available(iOS 18.0, *) {
+        image.widgetAccentedRenderingMode(.fullColor)
+    } else {
+        image
+    }
+    #else
+    image
+    #endif
+}
+
+extension View {
+    /// Groupe « accent » du mode teinté : la vue prend la couleur de teinte, le texte (groupe par défaut,
+    /// blanc) reste lisible dessus. Sans effet en rendu normal.
+    @ViewBuilder
+    func accentGroup() -> some View {
+        #if canImport(WidgetKit)
+        self.widgetAccentable()
+        #else
+        self
+        #endif
+    }
+}
+
 // MARK: - Couleurs
 
 extension Color {
@@ -80,7 +120,7 @@ enum WidgetTokens {
     static let ink = "#1F1B16"
     /// Voile : part d'encre mélangée à l'accent, opacité maximale en bas.
     static let veilInk = 0.55
-    static let veilMax = 0.74
+    static let veilMax = 0.8
     static let grainOpacity = 0.10
 }
 

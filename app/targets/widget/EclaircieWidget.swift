@@ -87,9 +87,13 @@ struct EclaircieWidgetView: View {
                 .widgetAccentable()
                 .containerBackground(for: .widget) { Color.clear }
                 .widgetURL(entry.story.deepLink)
+        case .systemMedium:
+            MediumContent(story: entry.story)
+                .containerBackground(for: .widget) { MediumBackground(story: entry.story) }
+                .widgetURL(entry.story.deepLink)
         default:
-            StoryContent(story: entry.story, layout: family == .systemMedium ? .medium : .small)
-                .containerBackground(for: .widget) { StoryBackground(story: entry.story, focus: family == .systemMedium ? 0.5 : 0.6) }
+            StoryContent(story: entry.story, layout: .small)
+                .containerBackground(for: .widget) { StoryBackground(story: entry.story) }
                 .widgetURL(entry.story.deepLink)
         }
     }

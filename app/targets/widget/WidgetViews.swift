@@ -55,19 +55,22 @@ struct ThemePill: View {
         }
         .padding(.horizontal, size * 0.9)
         .padding(.vertical, size * 0.5)
-        .background(Color(hex: WidgetTokens.paper).opacity(0.88), in: Capsule())
+        .background { Capsule().fill(Color(hex: WidgetTokens.paper).opacity(0.88)).accentGroup() }
     }
 }
 
-/// Fond des formats illustrés : illustration bord à bord, voile dégradé doux (accent assombri, jamais
-/// un aplat noir), grain papier en multiply. Posé comme `containerBackground` du widget.
-/// L'illustration (3:4) remplit la largeur ; `focus` est la part de sa hauteur placée au centre du cadre,
-/// pour garder soleil et collines dans un cadre carré ou paysage.
+/// Fond du petit format : illustration bord à bord à pleine saturation, voile court seulement en bas
+/// (sous le texte, accent assombri, jamais un aplat noir), grain papier en multiply. `focus` : part de la
+/// hauteur de l'illustration (3:4) placée au centre du cadre, pour garder soleil et collines.
 struct StoryBackground: View {
     let story: WidgetStory
     var bundle: Bundle = .main
     var focus: CGFloat = 0.6
     private let aspect: CGFloat = 3.0 / 4.0
+    /// Début du voile (part de la hauteur) : juste au-dessus du titre.
+    static let veilStart: CGFloat = 0.38
+    /// Courbe du voile : < 2 pour monter plus vite sous la première ligne du titre.
+    static let veilPower: Double = 1.2
 
     var body: some View {
         let veil = mixHex(story.palette.accent, WidgetTokens.ink, WidgetTokens.veilInk)
@@ -77,15 +80,16 @@ struct StoryBackground: View {
             ZStack(alignment: .top) {
                 Color(hex: story.palette.skyBottom)
                 if let image = illustrationImage(for: story, bundle: bundle) {
-                    illustration(image)
+                    accentedFullColor(image.resizable()).aspectRatio(aspect, contentMode: .fill)
                         .frame(width: w, height: h)
                         .offset(y: min(0, max(geo.size.height - h, geo.size.height / 2 - h * focus)))
                 }
-                // Courbe douce (quadratique) : aucune cassure visible, jamais un aplat.
+                // Courbe douce (quadratique) sur la moitié basse : aucune cassure visible, aucun aplat.
                 LinearGradient(stops: (0...8).map { i in
                     let t = CGFloat(i) / 8
-                    return .init(color: veil.opacity(WidgetTokens.veilMax * Double(t * t)), location: 0.22 + 0.78 * t)
+                    return .init(color: veil.opacity(WidgetTokens.veilMax * pow(Double(t), Self.veilPower)), location: Self.veilStart + (1 - Self.veilStart) * t)
                 }, startPoint: .top, endPoint: .bottom)
+                .accentGroup()
                 if let grain = paperGrainImage(bundle: bundle) {
                     grain.resizable().aspectRatio(contentMode: .fill)
                         .frame(width: geo.size.width, height: geo.size.height)
@@ -96,25 +100,9 @@ struct StoryBackground: View {
             .clipped()
         }
     }
-
-    @ViewBuilder
-    private func illustration(_ image: Image) -> some View {
-        #if canImport(WidgetKit) && os(iOS)
-        if #available(iOS 18.0, *) {
-            // Mode « teinté » d'iOS 18 : l'illustration reste en couleurs, lisible sous la teinte.
-            // `resizable` est un modificateur d'Image, `widgetAccentedRenderingMode` rend une View : cet ordre précis.
-            image.resizable().widgetAccentedRenderingMode(.fullColor).aspectRatio(aspect, contentMode: .fill)
-        } else {
-            image.resizable().aspectRatio(aspect, contentMode: .fill)
-        }
-        #else
-        image.resizable().aspectRatio(aspect, contentMode: .fill)
-        #endif
-    }
 }
 
-/// Contenu des formats illustrés (sur `StoryBackground`) : pastille en haut, titre héros en bas,
-/// source en plus sur le format moyen.
+/// Contenu du petit format (sur `StoryBackground`) : pastille en haut, titre héros en bas.
 struct StoryContent: View {
     let story: WidgetStory
     let layout: WidgetLayout
@@ -126,14 +114,7 @@ struct StoryContent: View {
             ThemePill(label: story.themeLabel, accent: story.palette.accent, size: m.pill)
             Spacer(minLength: 6)
             StoryTitle(story: story, size: m.title, lines: m.titleLines, color: cream)
-                .shadow(color: Color.black.opacity(0.22), radius: 2, x: 0, y: 1)
-            if layout == .medium, let source = story.source, !story.isWaiting {
-                Text("Source — \(source)")
-                    .font(.custom(WidgetFonts.titleAccent, size: m.source))
-                    .foregroundStyle(cream.opacity(0.82))
-                    .lineLimit(1)
-                    .padding(.top, 5)
-            }
+                .shadow(color: Color.black.opacity(0.4), radius: 3, x: 0, y: 1)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
     }

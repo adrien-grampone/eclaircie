@@ -1,5 +1,5 @@
 import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
-import { formatDayLabel, formatSourceDate, readingMinutes, titleSize } from "@/lib/daily.ts";
+import { formatDayLabel, formatSourceDate, readingMinutes, sourceLabel, titleSize } from "@/lib/daily.ts";
 import { hapticTap } from "@/lib/haptics.ts";
 import type { DailyView } from "@/lib/stories.ts";
 import { colors, radius, sizes, space, type } from "@/theme/tokens.ts";
@@ -30,7 +30,7 @@ export function StoryBody({ story, accent, actions }: { story: Story; accent: st
         {story.title_accent ? <Text style={[type.titleAccent, title, { color: accent }]}>{` ${story.title_accent}`}</Text> : null}
       </Text>
       <DropCapParagraph text={story.summary} accent={accent} cacheKey={story.id} />
-      <Text style={styles.source}>Source — {story.source_name}{sourceDate ? `, ${sourceDate}` : ""}</Text>
+      <Text style={styles.source}>Source — {sourceLabel(story.source_name)}{sourceDate ? `, ${sourceDate}` : ""}</Text>
       <View style={styles.buttons}>
         <Pressable style={[styles.button, styles.buttonFilled]} accessibilityRole="button" onPressIn={hapticTap} onPress={actions.share}>
           <ShareIcon color={colors.paper} />

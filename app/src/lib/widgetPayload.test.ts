@@ -10,7 +10,7 @@ const themes: Theme[] = [
   { id: "culture", label: "Culture", position: 7, palette, active: true, coming_soon: false, palette_words: "" },
 ] as unknown as Theme[];
 const profile: Profile = { user_id: "u", themes: ["science", "animaux", "science"], notify_time: "07:30", timezone: "Europe/Paris", created_at: "2026-10-30T23:30:00+02:00" };
-const story = { id: "s1", theme_id: "animaux", title_main: "Pour les chiens,", title_accent: "des plaquettes.", summary: "x", source_name: "Phys.org", source_url: "https://x", source_date: null, image_path: "s1.webp", publish_date: "2026-11-05", status: "scheduled" } as unknown as Story;
+const story = { id: "s1", theme_id: "animaux", title_main: "Pour les chiens,", title_accent: "des plaquettes.", summary: "x", source_name: "Phys.org — Biology", source_url: "https://x", source_date: null, image_path: "s1.webp", publish_date: "2026-11-05", status: "scheduled" } as unknown as Story;
 const base = { supabaseUrl: "https://p.supabase.co", anonKey: "anon", profile, themes };
 
 describe("buildWidgetPayload", () => {

@@ -1,4 +1,4 @@
-import { formatSourceDate } from "./daily.ts";
+import { formatSourceDate, sourceLabel } from "./daily.ts";
 
 /**
  * Carte story à partager (spec §8, maquette 04) : logique pure. 390×693 points, exportée à l'échelle
@@ -57,7 +57,7 @@ export function shareCardContent(story: ShareStory, themeLabel: string): ShareCa
     themeLabel,
     titleMain: story.title_main,
     titleAccent: story.title_accent,
-    source: `Source — ${story.source_name}${date ? `, ${date}` : ""}`,
+    source: `Source — ${sourceLabel(story.source_name)}${date ? `, ${date}` : ""}`,
     tagline: SHARE_COPY.tagline,
     titleFontSize: shareTitleSize(story.title_main, story.title_accent),
   };

@@ -8,3 +8,4 @@ supabase/.branches/
 /backups/
 /design/widget/out/
 /design/widget/.snapshot
+/design/widget/out-v1/

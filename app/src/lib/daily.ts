@@ -48,6 +48,15 @@ export function formatDayLabel(isoDate: string, locale = "fr-FR"): string {
     .format(date).toUpperCase();
 }
 
+/**
+ * Nom du média seul, sans la rubrique que certains flux accolent après un tiret ou une barre
+ * (« Phys.org — Biology » → « Phys.org », « Franceinfo — Culture » → « Franceinfo »).
+ */
+export function sourceLabel(sourceName: string): string {
+  const [media] = sourceName.split(/\s+[—–|]\s+/);
+  return (media ?? sourceName).trim() || sourceName.trim();
+}
+
 /** « janvier 2023 » pour la date de la source ; vide sans date. */
 export function formatSourceDate(isoDate: string | null, locale = "fr-FR"): string {
   if (!isoDate) return "";
