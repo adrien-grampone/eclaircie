@@ -80,6 +80,14 @@ struct EclaircieWidgetView: View {
     @Environment(\.widgetFamily) private var family
     let entry: StoryEntry
 
+    /// Aplat papier du conteneur en rendu normal. En mode teinté, iOS ne supprime pas le containerBackground :
+    /// il le repeint d'une couleur unie (texte clair invisible dessus). On ne lui donne alors rien : fond système sombre.
+    private var paperBackground: some View {
+        RenderingModeReader { accented in
+            if accented { Color.clear } else { Color(hex: entry.story.palette.skyBottom) }
+        }
+    }
+
     var body: some View {
         switch family {
         case .accessoryRectangular:
@@ -89,11 +97,11 @@ struct EclaircieWidgetView: View {
                 .widgetURL(entry.story.deepLink)
         case .systemMedium:
             MediumWidgetBody(story: entry.story)
-                .containerBackground(for: .widget) { Color(hex: entry.story.palette.skyBottom) }
+                .containerBackground(for: .widget) { paperBackground }
                 .widgetURL(entry.story.deepLink)
         default:
             SmallWidgetBody(story: entry.story)
-                .containerBackground(for: .widget) { Color(hex: entry.story.palette.skyBottom) }
+                .containerBackground(for: .widget) { paperBackground }
                 .widgetURL(entry.story.deepLink)
         }
     }

@@ -71,7 +71,8 @@ struct MediumBackground: View {
             let window = geo.size.width - panelWidth + MediumLayout.edgeAmplitude * 2
             let imageHeight = max(window / aspect, geo.size.height)
             ZStack(alignment: .topTrailing) {
-                paper
+                // Couche de base papier : jamais en mode teinté (iOS la rendrait en aplat uni).
+                if !accented { paper }
                 if let image = illustrationImage(for: story, bundle: bundle) {
                     let framed = accentedFullColor(image.resizable()).aspectRatio(aspect, contentMode: .fill)
                         .frame(width: window, height: imageHeight)
@@ -86,11 +87,10 @@ struct MediumBackground: View {
                         framed
                     }
                 }
-                if accented {
-                    // Mode teinté : fond système sombre derrière le texte, voile accent très atténué, bord gouache visible.
-                    GouacheEdge(share: MediumLayout.panelShare, amplitude: MediumLayout.edgeAmplitude)
-                        .fill(Color.white).opacity(AccentPolicy.panelVeil).accentGroup()
-                } else {
+                // Mode teinté : AUCUNE forme remplie derrière le texte (iOS rend le groupe accent à pleine intensité,
+                // l'opacité est ignorée) ; le fond système sombre sert de panneau, le bord gouache est porté par
+                // la découpe de l'illustration.
+                if !accented {
                     GouacheEdge(share: MediumLayout.panelShare, amplitude: MediumLayout.edgeAmplitude).fill(paper)
                 }
                 // Grain en multiply : jamais en mode teinté (le mode de fusion aplatit la composition).

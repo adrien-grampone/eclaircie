@@ -77,6 +77,8 @@ struct ThemePill: View {
     let label: String
     let accent: String
     let size: CGFloat
+    /// Mode teinté sans fond (petit format, posée sur la zone claire de l'image) : point et texte blancs, ombre légère.
+    var bareWhenAccented = false
 
     var body: some View {
         RenderingModeReader { accented in
@@ -87,11 +89,12 @@ struct ThemePill: View {
                     .tracking(1.2)
                     .foregroundStyle(accented ? Color.white : Color(hex: WidgetTokens.ink))
             }
+            .shadow(color: Color.black.opacity(accented && bareWhenAccented ? 0.45 : 0), radius: 2, x: 0, y: 1)
             .padding(.horizontal, size * 0.9)
             .padding(.vertical, size * 0.5)
             .background {
                 if accented {
-                    Capsule().fill(Color.white).opacity(AccentPolicy.pillBackground).accentGroup()
+                    if !bareWhenAccented { Capsule().fill(Color.white).opacity(AccentPolicy.pillBackground).accentGroup() }
                 } else {
                     Capsule().fill(Color(hex: WidgetTokens.paper).opacity(0.88))
                 }
@@ -112,6 +115,9 @@ struct StoryBackground: View {
     static let veilStart: CGFloat = 0.34
     /// Courbe du voile : < 2 pour monter plus vite sous la première ligne du titre.
     static let veilPower: Double = 1.15
+    /// Mode teinté : l'image est opaque jusqu'à 40 % de la hauteur et s'efface jusqu'à 70 %.
+    static let accentedMaskFrom: CGFloat = 0.4
+    static let accentedMaskTo: CGFloat = 0.7
 
     var body: some View {
         let veil = mixHex(story.palette.accent, WidgetTokens.ink, WidgetTokens.veilInk)
@@ -120,23 +126,35 @@ struct StoryBackground: View {
             let w = geo.size.width
             let h = max(w / aspect, geo.size.height)
             ZStack(alignment: .top) {
-                Color(hex: story.palette.skyBottom)
+                // Couche de base ciel : jamais en mode teinté (iOS la rendrait en aplat uni).
+                if !accented { Color(hex: story.palette.skyBottom) }
                 if let image = illustrationImage(for: story, bundle: bundle) {
                     // L'image (plus haute que le cadre) ne dicte jamais la taille de la pile : cadre fixe + clip.
-                    accentedFullColor(image.resizable()).aspectRatio(aspect, contentMode: .fill)
+                    let framed = accentedFullColor(image.resizable()).aspectRatio(aspect, contentMode: .fill)
                         .frame(width: w, height: h)
                         .offset(y: min(0, max(geo.size.height - h, geo.size.height / 2 - h * focus)))
                         .frame(width: geo.size.width, height: geo.size.height, alignment: .top)
                         .clipped()
+                    if accented {
+                        // Mode teinté : le bas de l'image s'efface (masque, aucune forme ajoutée) et laisse le fond
+                        // système sombre derrière le titre.
+                        framed.mask {
+                            LinearGradient(stops: [.init(color: .black, location: 0), .init(color: .black, location: Self.accentedMaskFrom),
+                                                   .init(color: .clear, location: Self.accentedMaskTo), .init(color: .clear, location: 1)],
+                                           startPoint: .top, endPoint: .bottom)
+                        }
+                    } else {
+                        framed
+                    }
                 }
                 // Courbe douce (quadratique) sur la moitié basse : aucune cassure visible, aucun aplat.
-                // Mode teinté : voile accent très atténué (jamais un aplat), texte clair du groupe par défaut.
-                let veilMax = accented ? AccentPolicy.smallVeilMax : WidgetTokens.veilMax
-                LinearGradient(stops: (0...8).map { i in
-                    let t = CGFloat(i) / 8
-                    return .init(color: veil.opacity(veilMax * pow(Double(t), Self.veilPower)), location: Self.veilStart + (1 - Self.veilStart) * t)
-                }, startPoint: .top, endPoint: .bottom)
-                .accentGroup()
+                // Mode teinté : aucun voile (il serait rendu en aplat accent) ; texte clair avec son ombre, direct sur l'image.
+                if !accented {
+                    LinearGradient(stops: (0...8).map { i in
+                        let t = CGFloat(i) / 8
+                        return .init(color: veil.opacity(WidgetTokens.veilMax * pow(Double(t), Self.veilPower)), location: Self.veilStart + (1 - Self.veilStart) * t)
+                    }, startPoint: .top, endPoint: .bottom)
+                }
                 // Grain en multiply : jamais en mode teinté (le mode de fusion aplatit la composition).
                 if !accented, let grain = paperGrainImage(bundle: bundle) {
                     grain.resizable().aspectRatio(contentMode: .fill)
@@ -160,7 +178,7 @@ struct StoryContent: View {
         let m = Metrics.of(layout)
         let cream = Color(hex: WidgetTokens.paper)
         VStack(alignment: .leading, spacing: 0) {
-            ThemePill(label: story.themeLabel, accent: story.palette.accent, size: m.pill)
+            ThemePill(label: story.themeLabel, accent: story.palette.accent, size: m.pill, bareWhenAccented: true)
             Spacer(minLength: 6)
             StoryTitle(story: story, size: m.title, lines: m.titleLines, color: cream)
                 .shadow(color: Color.black.opacity(0.4), radius: 3, x: 0, y: 1)

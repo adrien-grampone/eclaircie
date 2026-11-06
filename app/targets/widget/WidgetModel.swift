@@ -89,10 +89,8 @@ enum AccentPolicy {
     static let illustrationFullColor = true
     /// Opacité du fond de la pastille (groupe accent) en mode teinté : texte et point blancs lisibles dessus.
     static let pillBackground = 0.25
-    /// Mode teinté : le panneau papier n'est qu'un voile accent très atténué sur le fond système sombre.
-    static let panelVeil = 0.12
-    /// Mode teinté : opacité maximale du voile sous le titre du petit format (jamais un aplat accent).
-    static let smallVeilMax = 0.15
+    /// Mode teinté : aucune forme remplie derrière le texte (iOS rend le groupe accent à pleine intensité,
+    /// l'opacité est ignorée) ; seule la pastille garde un fond, dans le groupe accent.
 }
 
 /// Illustration gardée en pleine couleur quand iOS teinte le widget. Appliqué DIRECTEMENT sur l'Image.
