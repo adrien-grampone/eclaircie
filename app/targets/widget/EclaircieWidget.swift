@@ -116,3 +116,8 @@ struct EclaircieWidgetBundle: WidgetBundle {
         EclaircieWidget()
     }
 }
+
+// Aperçus Xcode : dans le canevas, le sélecteur de rendu propose « Teinté » (iOS 18) pour vérifier les groupes.
+#Preview("Moyen", as: .systemMedium) { EclaircieWidget() } timeline: { StoryEntry(date: .now, story: SampleStories.preview) }
+#Preview("Petit", as: .systemSmall) { EclaircieWidget() } timeline: { StoryEntry(date: .now, story: SampleStories.preview) }
+#Preview("Verrouillé", as: .accessoryRectangular) { EclaircieWidget() } timeline: { StoryEntry(date: .now, story: SampleStories.preview) }

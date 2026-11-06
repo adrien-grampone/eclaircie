@@ -3,6 +3,7 @@
 // Usage : design/widget/snapshot.sh  →  PNG dans design/widget/out/
 import AppKit
 import SwiftUI
+import WidgetKit
 
 let args = CommandLine.arguments
 let assetsDir = args[1]
@@ -44,9 +45,11 @@ func main() {
     try? FileManager.default.createDirectory(atPath: outDir, withIntermediateDirectories: true)
     for story in samples {
         for (layout, label, size) in sizes {
-            for dark in [false, true] {
+            for variant in ["light", "dark", "accented"] {
+                let dark = variant == "dark"
+                let accented = variant == "accented"
                 let scheme: ColorScheme = dark ? .dark : .light
-                let name = "\(story.themeId)-\(label)-\(dark ? "dark" : "light")"
+                let name = "\(story.themeId)-\(label)-\(variant)"
                 if layout == .accessory {
                     // Écran verrouillé : texte vibrant (blanc) sur le fond d'écran ; simulé par un fond uni assombri.
                     let view = ZStack {
@@ -73,6 +76,7 @@ func main() {
                     .padding(14)
                     .background(dark ? Color(hex: "#15181E") : Color(hex: "#E9E4DA"))
                     .environment(\.colorScheme, scheme)
+                    .environment(\.widgetRenderingMode, accented ? .accented : .fullColor)
                     render(view, size: CGSize(width: size.width + 28, height: size.height + 28), name: name)
                 }
             }

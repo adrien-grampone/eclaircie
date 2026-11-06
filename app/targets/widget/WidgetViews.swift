@@ -71,23 +71,32 @@ struct StoryTitle: View {
     }
 }
 
-/// Pastille du thème : point d'accent + libellé en capitales, sur crème translucide.
+/// Pastille du thème : point d'accent + libellé en capitales, sur crème translucide. En mode teinté : fond
+/// dans le groupe accent, atténué, texte et point dans le groupe par défaut (blanc) pour un vrai contraste.
 struct ThemePill: View {
     let label: String
     let accent: String
     let size: CGFloat
 
     var body: some View {
-        HStack(spacing: 5) {
-            Circle().fill(Color(hex: accent)).frame(width: size * 0.7, height: size * 0.7)
-            Text(label.uppercased())
-                .font(.custom(WidgetFonts.bodyBold, size: size))
-                .tracking(1.2)
-                .foregroundStyle(Color(hex: WidgetTokens.ink))
+        RenderingModeReader { accented in
+            HStack(spacing: 5) {
+                Circle().fill(accented ? Color.white : Color(hex: accent)).frame(width: size * 0.7, height: size * 0.7)
+                Text(label.uppercased())
+                    .font(.custom(WidgetFonts.bodyBold, size: size))
+                    .tracking(1.2)
+                    .foregroundStyle(accented ? Color.white : Color(hex: WidgetTokens.ink))
+            }
+            .padding(.horizontal, size * 0.9)
+            .padding(.vertical, size * 0.5)
+            .background {
+                if accented {
+                    Capsule().fill(Color.white).opacity(AccentPolicy.pillBackground).accentGroup()
+                } else {
+                    Capsule().fill(Color(hex: WidgetTokens.paper).opacity(0.88))
+                }
+            }
         }
-        .padding(.horizontal, size * 0.9)
-        .padding(.vertical, size * 0.5)
-        .background { Capsule().fill(Color(hex: WidgetTokens.paper).opacity(0.88)).accentGroup() }
     }
 }
 
@@ -106,6 +115,7 @@ struct StoryBackground: View {
 
     var body: some View {
         let veil = mixHex(story.palette.accent, WidgetTokens.ink, WidgetTokens.veilInk)
+        RenderingModeReader { accented in
         GeometryReader { geo in
             let w = geo.size.width
             let h = max(w / aspect, geo.size.height)
@@ -125,7 +135,8 @@ struct StoryBackground: View {
                     return .init(color: veil.opacity(WidgetTokens.veilMax * pow(Double(t), Self.veilPower)), location: Self.veilStart + (1 - Self.veilStart) * t)
                 }, startPoint: .top, endPoint: .bottom)
                 .accentGroup()
-                if let grain = paperGrainImage(bundle: bundle) {
+                // Grain en multiply : jamais en mode teinté (le mode de fusion aplatit la composition).
+                if !accented, let grain = paperGrainImage(bundle: bundle) {
                     grain.resizable().aspectRatio(contentMode: .fill)
                         .frame(width: geo.size.width, height: geo.size.height)
                         .blendMode(.multiply).opacity(WidgetTokens.grainOpacity)
@@ -133,6 +144,7 @@ struct StoryBackground: View {
             }
             .frame(width: geo.size.width, height: geo.size.height)
             .clipped()
+        }
         }
     }
 }
@@ -153,8 +165,12 @@ struct StoryContent: View {
                 // Halo flou de la couleur du voile, derrière le bloc de titre seulement : lisible sur une
                 // illustration claire sans ternir le haut de l'image.
                 .background {
-                    Rectangle().fill(mixHex(story.palette.accent, WidgetTokens.ink, WidgetTokens.veilInk).opacity(0.5))
-                        .blur(radius: 18).padding(.horizontal, -18).padding(.vertical, -14).accentGroup()
+                    RenderingModeReader { accented in
+                        if !accented {
+                            Rectangle().fill(mixHex(story.palette.accent, WidgetTokens.ink, WidgetTokens.veilInk).opacity(0.5))
+                                .blur(radius: 18).padding(.horizontal, -18).padding(.vertical, -14)
+                        }
+                    }
                 }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)

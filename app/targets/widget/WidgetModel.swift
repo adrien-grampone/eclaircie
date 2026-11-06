@@ -81,12 +81,26 @@ func frenchTypography(_ text: String) -> String {
 
 // MARK: - Mode « teinté » d'iOS 18
 
-/// Illustration gardée en pleine couleur quand iOS teinte le widget (sinon elle deviendrait monochrome).
+/// En mode teinté, iOS rend tout en monochrome sauf les images déclarées `fullColor`. Deux groupes :
+/// « accent » (couleur de teinte) et « par défaut » (blanc). Pas de mode de fusion ni de flou dans ce mode :
+/// ils aplatissent la composition et peuvent faire disparaître l'illustration.
+/// Repli possible si `fullColor` restait ignoré sur un appareil : `.accentedDesaturated` (monochrome teinté).
+enum AccentPolicy {
+    static let illustrationFullColor = true
+    /// Opacité du fond de la pastille (groupe accent) en mode teinté : texte et point blancs lisibles dessus.
+    static let pillBackground = 0.25
+}
+
+/// Illustration gardée en pleine couleur quand iOS teinte le widget. Appliqué DIRECTEMENT sur l'Image.
 @ViewBuilder
 func accentedFullColor(_ image: Image) -> some View {
     #if canImport(WidgetKit) && os(iOS)
     if #available(iOS 18.0, *) {
-        image.widgetAccentedRenderingMode(.fullColor)
+        if AccentPolicy.illustrationFullColor {
+            image.widgetAccentedRenderingMode(.fullColor)
+        } else {
+            image.widgetAccentedRenderingMode(.accentedDesaturated)
+        }
     } else {
         image
     }
@@ -106,6 +120,17 @@ extension View {
         self
         #endif
     }
+}
+
+/// Vrai quand le widget est rendu en mode teinté (iOS 18). Faux hors WidgetKit.
+struct RenderingModeReader<Content: View>: View {
+    @ViewBuilder let content: (Bool) -> Content
+    #if canImport(WidgetKit)
+    @Environment(\.widgetRenderingMode) private var mode
+    var body: some View { content(mode == .accented) }
+    #else
+    var body: some View { content(false) }
+    #endif
 }
 
 // MARK: - Couleurs

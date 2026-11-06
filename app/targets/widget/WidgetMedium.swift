@@ -51,6 +51,7 @@ struct MediumBackground: View {
     private let aspect: CGFloat = 3.0 / 4.0
 
     var body: some View {
+        RenderingModeReader { accented in
         GeometryReader { geo in
             let paper = Color(hex: story.palette.skyBottom)
             let panelWidth = geo.size.width * MediumLayout.panelShare
@@ -68,7 +69,8 @@ struct MediumBackground: View {
                 GouacheEdge(share: MediumLayout.panelShare, amplitude: MediumLayout.edgeAmplitude)
                     .fill(paper)
                     .accentGroup()
-                if let grain = paperGrainImage(bundle: bundle) {
+                // Grain en multiply : jamais en mode teinté (le mode de fusion aplatit la composition).
+                if !accented, let grain = paperGrainImage(bundle: bundle) {
                     grain.resizable().aspectRatio(contentMode: .fill)
                         .frame(width: geo.size.width, height: geo.size.height)
                         .blendMode(.multiply).opacity(WidgetTokens.grainOpacity)
@@ -76,6 +78,7 @@ struct MediumBackground: View {
             }
             .frame(width: geo.size.width, height: geo.size.height)
             .clipped()
+        }
         }
     }
 }
