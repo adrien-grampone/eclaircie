@@ -103,7 +103,7 @@ struct MediumContent: View {
                         .padding(.top, 5)
                 }
             }
-            // Le panneau fait 55 % du widget, marges système comprises : le texte reste à l'écart du bord gouache.
+            // Le panneau fait 55 % du widget entier (geo = widget moins les marges de 16) : le texte reste à l'écart du bord gouache.
             .frame(width: (geo.size.width + 32) * MediumLayout.panelShare - 32 - MediumLayout.edgeAmplitude, alignment: .leading)
             .frame(maxHeight: .infinity, alignment: .leading)
         }

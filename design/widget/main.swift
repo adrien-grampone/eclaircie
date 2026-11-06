@@ -62,14 +62,8 @@ func main() {
                     render(view, size: CGSize(width: size.width + 20, height: size.height + 20), name: name)
                 } else {
                     // Écran d'accueil : coins 22 pt et marges de contenu 16 pt comme containerBackground d'iOS 17.
-                    let view = ZStack {
-                        if layout == .medium {
-                            MediumBackground(story: story, bundle: bundle)
-                            MediumContent(story: story).padding(16)
-                        } else {
-                            StoryBackground(story: story, bundle: bundle)
-                            StoryContent(story: story, layout: layout).padding(16)
-                        }
+                    let view = Group {
+                        if layout == .medium { MediumWidgetBody(story: story, bundle: bundle) } else { SmallWidgetBody(story: story, bundle: bundle) }
                     }
                     .frame(width: size.width, height: size.height)
                     .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))

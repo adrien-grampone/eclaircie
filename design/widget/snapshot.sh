@@ -4,5 +4,5 @@ set -e
 cd "$(dirname "$0")/../.."
 OUT=design/widget/out; BIN=design/widget/.snapshot
 mkdir -p "$OUT"
-swiftc -O -framework SwiftUI -framework WidgetKit -framework AppKit -framework CoreText app/targets/widget/WidgetModel.swift app/targets/widget/WidgetViews.swift app/targets/widget/WidgetMedium.swift design/widget/main.swift -o "$BIN"
+swiftc -O -framework SwiftUI -framework WidgetKit -framework AppKit -framework CoreText app/targets/widget/WidgetModel.swift app/targets/widget/WidgetViews.swift app/targets/widget/WidgetMedium.swift app/targets/widget/WidgetBodies.swift design/widget/main.swift -o "$BIN"
 "$BIN" "$PWD/app/targets/widget/assets" "$PWD/$OUT"

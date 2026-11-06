@@ -88,12 +88,12 @@ struct EclaircieWidgetView: View {
                 .containerBackground(for: .widget) { Color.clear }
                 .widgetURL(entry.story.deepLink)
         case .systemMedium:
-            MediumContent(story: entry.story)
-                .containerBackground(for: .widget) { MediumBackground(story: entry.story) }
+            MediumWidgetBody(story: entry.story)
+                .containerBackground(for: .widget) { Color(hex: entry.story.palette.skyBottom) }
                 .widgetURL(entry.story.deepLink)
         default:
-            StoryContent(story: entry.story, layout: .small)
-                .containerBackground(for: .widget) { StoryBackground(story: entry.story) }
+            SmallWidgetBody(story: entry.story)
+                .containerBackground(for: .widget) { Color(hex: entry.story.palette.skyBottom) }
                 .widgetURL(entry.story.deepLink)
         }
     }
@@ -107,6 +107,8 @@ struct EclaircieWidget: Widget {
         .configurationDisplayName("Nouvelle du jour")
         .description("Ta bonne nouvelle du matin, vérifiée et sourcée.")
         .supportedFamilies([.systemSmall, .systemMedium, .accessoryRectangular])
+        // Les calques illustrés sont dans le contenu : ils vont jusqu'aux bords, les textes reprennent les marges système.
+        .contentMarginsDisabled()
     }
 }
 
