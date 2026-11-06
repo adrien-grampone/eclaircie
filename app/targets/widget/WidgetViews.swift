@@ -130,9 +130,11 @@ struct StoryBackground: View {
                         .clipped()
                 }
                 // Courbe douce (quadratique) sur la moitié basse : aucune cassure visible, aucun aplat.
+                // Mode teinté : voile accent très atténué (jamais un aplat), texte clair du groupe par défaut.
+                let veilMax = accented ? AccentPolicy.smallVeilMax : WidgetTokens.veilMax
                 LinearGradient(stops: (0...8).map { i in
                     let t = CGFloat(i) / 8
-                    return .init(color: veil.opacity(WidgetTokens.veilMax * pow(Double(t), Self.veilPower)), location: Self.veilStart + (1 - Self.veilStart) * t)
+                    return .init(color: veil.opacity(veilMax * pow(Double(t), Self.veilPower)), location: Self.veilStart + (1 - Self.veilStart) * t)
                 }, startPoint: .top, endPoint: .bottom)
                 .accentGroup()
                 // Grain en multiply : jamais en mode teinté (le mode de fusion aplatit la composition).

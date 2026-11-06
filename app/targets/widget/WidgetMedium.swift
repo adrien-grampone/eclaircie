@@ -44,6 +44,19 @@ struct GouacheEdge: Shape {
     }
 }
 
+/// Complément du panneau (à droite du bord gouache), pour découper l'illustration en mode teinté, quand
+/// le panneau n'est plus opaque : le bord reste net sur l'image. Remplissage pair-impair.
+struct GouacheCutout: Shape {
+    var share: CGFloat
+    var amplitude: CGFloat
+
+    func path(in rect: CGRect) -> Path {
+        var path = Path(rect)
+        path.addPath(GouacheEdge(share: share, amplitude: amplitude).path(in: rect))
+        return path
+    }
+}
+
 /// Fond du format moyen : papier + illustration à droite + panneau gouache (le grain couvre tout).
 struct MediumBackground: View {
     let story: WidgetStory
@@ -60,15 +73,26 @@ struct MediumBackground: View {
             ZStack(alignment: .topTrailing) {
                 paper
                 if let image = illustrationImage(for: story, bundle: bundle) {
-                    accentedFullColor(image.resizable()).aspectRatio(aspect, contentMode: .fill)
+                    let framed = accentedFullColor(image.resizable()).aspectRatio(aspect, contentMode: .fill)
                         .frame(width: window, height: imageHeight)
                         .offset(y: min(0, max(geo.size.height - imageHeight, geo.size.height / 2 - imageHeight * MediumLayout.focus)))
                         .frame(width: window, height: geo.size.height, alignment: .top)
                         .clipped()
+                    if accented {
+                        // Le panneau n'est plus opaque : l'image est découpée le long du bord gouache.
+                        framed.frame(width: geo.size.width, height: geo.size.height, alignment: .trailing)
+                            .clipShape(GouacheCutout(share: MediumLayout.panelShare, amplitude: MediumLayout.edgeAmplitude), style: FillStyle(eoFill: true))
+                    } else {
+                        framed
+                    }
                 }
-                GouacheEdge(share: MediumLayout.panelShare, amplitude: MediumLayout.edgeAmplitude)
-                    .fill(paper)
-                    .accentGroup()
+                if accented {
+                    // Mode teinté : fond système sombre derrière le texte, voile accent très atténué, bord gouache visible.
+                    GouacheEdge(share: MediumLayout.panelShare, amplitude: MediumLayout.edgeAmplitude)
+                        .fill(Color.white).opacity(AccentPolicy.panelVeil).accentGroup()
+                } else {
+                    GouacheEdge(share: MediumLayout.panelShare, amplitude: MediumLayout.edgeAmplitude).fill(paper)
+                }
                 // Grain en multiply : jamais en mode teinté (le mode de fusion aplatit la composition).
                 if !accented, let grain = paperGrainImage(bundle: bundle) {
                     grain.resizable().aspectRatio(contentMode: .fill)
@@ -88,8 +112,10 @@ struct MediumContent: View {
     let story: WidgetStory
 
     var body: some View {
-        let ink = mixHex(story.palette.accent, WidgetTokens.ink, 0.45)
-        let caption = mixHex(story.palette.accent, WidgetTokens.ink, 0.2)
+        RenderingModeReader { accented in
+        // Mode teinté : texte clair dans le groupe par défaut, lisible sur le fond système sombre.
+        let ink = accented ? Color.white : mixHex(story.palette.accent, WidgetTokens.ink, 0.45)
+        let caption = accented ? Color.white : mixHex(story.palette.accent, WidgetTokens.ink, 0.2)
         GeometryReader { geo in
             VStack(alignment: .leading, spacing: 0) {
                 ThemePill(label: story.themeLabel, accent: story.palette.accent, size: 10)
@@ -106,6 +132,7 @@ struct MediumContent: View {
             // Le panneau fait 55 % du widget entier (geo = widget moins les marges de 16) : le texte reste à l'écart du bord gouache.
             .frame(width: (geo.size.width + 32) * MediumLayout.panelShare - 32 - MediumLayout.edgeAmplitude, alignment: .leading)
             .frame(maxHeight: .infinity, alignment: .leading)
+        }
         }
     }
 }
