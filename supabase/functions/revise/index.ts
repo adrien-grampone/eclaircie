@@ -12,6 +12,7 @@ import { STORY_SELECT, draftOf, isRework, type StoryRow } from "../_shared/stori
 import { planBatch } from "../_shared/pipeline/budget.ts";
 import { buildReworkPrompt, buildRevisePrompt, decideDraftOutput, type ReviseOptions } from "../_shared/pipeline/draft.ts";
 import { revisableProblems } from "../_shared/pipeline/verify.ts";
+import { servePipeline } from "../_shared/serve.ts";
 
 interface ItemResult {
   id: string;
@@ -28,7 +29,7 @@ const REWORK_STEP = "rework";
 /** Stories en attente, la file la plus ancienne d'abord, réparties entre révision ordinaire et reprise. */
 const QUEUE_SCAN = 200;
 
-Deno.serve(async () => {
+servePipeline(async () => {
   const startedAt = new Date().toISOString();
   const db = serviceClient();
   try {

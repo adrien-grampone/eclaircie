@@ -7,6 +7,7 @@
 import { loadConfig, recordRun, serviceClient } from "../_shared/db.ts";
 import { errorMessage, fetchText, json, mapLimit } from "../_shared/http.ts";
 import { classifyExtraction, extractMainText } from "../_shared/pipeline/extract.ts";
+import { servePipeline } from "../_shared/serve.ts";
 
 interface ArticleRow {
   id: string;
@@ -25,7 +26,7 @@ const STEP = "extract";
 const PAGE_TIMEOUT_MS = 20_000;
 const PAGE_ACCEPT = "text/html,application/xhtml+xml;q=0.9,*/*;q=0.5";
 
-Deno.serve(async () => {
+servePipeline(async () => {
   const startedAt = new Date().toISOString();
   const db = serviceClient();
   try {

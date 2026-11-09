@@ -9,6 +9,7 @@ import { errorMessage, json, mapLimit } from "../_shared/http.ts";
 import { planBatch } from "../_shared/pipeline/budget.ts";
 import { buildDraftPrompt, decideDraftOutput, type Draft, type DraftOptions } from "../_shared/pipeline/draft.ts";
 import { mainTheme } from "../_shared/pipeline/editorial.ts";
+import { servePipeline } from "../_shared/serve.ts";
 
 interface ArticleRow {
   id: string;
@@ -30,7 +31,7 @@ interface ItemResult {
 
 const STEP = "draft";
 
-Deno.serve(async () => {
+servePipeline(async () => {
   const startedAt = new Date().toISOString();
   const db = serviceClient();
   try {

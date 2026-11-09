@@ -14,6 +14,7 @@ import { orderQueue, yieldBySource, type QueueCandidate, type SourceStats } from
 import { applyEditorialRules, assessTriage } from "../_shared/pipeline/editorial.ts";
 import { buildTriagePrompt, parseTriage } from "../_shared/pipeline/triage.ts";
 import type { ThemeRef } from "../_shared/pipeline/types.ts";
+import { servePipeline } from "../_shared/serve.ts";
 
 interface ArticleRow {
   id: string;
@@ -99,7 +100,7 @@ async function expireStale(db: ReturnType<typeof serviceClient>, config: Awaited
   return ids.length;
 }
 
-Deno.serve(async (req) => {
+servePipeline(async (req) => {
   const options = await readOptions(req);
   const startedAt = new Date().toISOString();
   const db = serviceClient();

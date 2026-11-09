@@ -414,8 +414,10 @@ enabled = true
 # and column/key alignment. Set to "null" to emit raw, unformatted SQL.
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":180,\"commaStyle\":\"trailing\"}"
 
-# Edge Functions du pipeline : déclenchées par pg_cron (plus tard) ou à la main,
-# jamais par l'app, donc pas de JWT utilisateur à vérifier.
+# Edge Functions du pipeline : déclenchées par pg_cron ou scripts/pipeline-pass.sh, jamais par l'app.
+# verify_jwt reste désactivé (la clé anon de l'app est un JWT valide : elle ne protégerait rien) ; chaque
+# fonction exige à la place `Authorization: Bearer <PIPELINE_FUNCTIONS_KEY>` (_shared/auth.ts), secret partagé
+# avec Vault (pipeline_functions_key), posé par scripts/pipeline-key-set.sh.
 [functions.collect]
 verify_jwt = false
 import_map = "./functions/deno.json"

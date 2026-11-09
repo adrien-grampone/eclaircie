@@ -12,6 +12,7 @@ import { errorMessage, json } from "../_shared/http.ts";
 import { checkImageAlerts } from "./images.ts";
 import { scheduleOnePerDay } from "./onePerDay.ts";
 import { addDays, toIsoDate } from "../_shared/pipeline/dates.ts";
+import { servePipeline } from "../_shared/serve.ts";
 import {
   isStockLow, pickForSchedule, scheduleHorizon, stockDays,
   type ScheduleCandidate, type ScheduledStory,
@@ -41,7 +42,7 @@ interface ThemeResult {
 
 const STEP = "schedule";
 
-Deno.serve(async () => {
+servePipeline(async () => {
   const startedAt = new Date().toISOString();
   const db = serviceClient();
   try {

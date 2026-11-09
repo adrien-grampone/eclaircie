@@ -11,6 +11,7 @@ import { STORY_SELECT, draftOf, triageOf, type StoryRow, type VerifyLogEntry } f
 import { checkEvidence } from "../_shared/pipeline/evidence.ts";
 import { buildVerifyPrompt, decideVerify, parseVerify, resolveThemeMismatch, revisableProblems, type VerifyDecision } from "../_shared/pipeline/verify.ts";
 import type { ThemeRef } from "../_shared/pipeline/types.ts";
+import { servePipeline } from "../_shared/serve.ts";
 
 interface ItemResult {
   id: string;
@@ -25,7 +26,7 @@ interface ItemResult {
 const STEP = "verify";
 const STATUS_OF: Record<VerifyDecision, string> = { verified: "verified", revise: "to_revise", rejected: "rejected" };
 
-Deno.serve(async () => {
+servePipeline(async () => {
   const startedAt = new Date().toISOString();
   const db = serviceClient();
   try {

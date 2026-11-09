@@ -9,6 +9,7 @@ import { loadConfig, recordRun, serviceClient } from "../_shared/db.ts";
 import { MODELS, askModel } from "../_shared/claude.ts";
 import { errorMessage, json, mapLimit } from "../_shared/http.ts";
 import { buildDedupPrompt, matchedCandidate, parseDedup, resolveDuplicate, type DedupCard, type DedupStory } from "../_shared/pipeline/dedup.ts";
+import { servePipeline } from "../_shared/serve.ts";
 
 interface StoryRow {
   id: string;
@@ -41,7 +42,7 @@ const storyOf = (s: StoryRow): DedupStory => ({
   id: s.id, trustLevel: s.raw_articles?.sources?.trust_level ?? 1, status: s.status, createdAt: s.created_at,
 });
 
-Deno.serve(async () => {
+servePipeline(async () => {
   const startedAt = new Date().toISOString();
   const db = serviceClient();
   try {

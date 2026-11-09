@@ -2,7 +2,7 @@
 # Passage complet du pipeline à la main, en production, sans attendre la fenêtre du matin.
 # Appelle les Edge Functions une par une et ATTEND chaque réponse (pas de lots qui se chevauchent).
 # Les plafonds du jour (pipeline_config) restent appliqués : un passage manuel consomme le budget du jour UTC.
-# L'URL et la clé éventuelle sont lues dans Vault (comme pg_cron), jamais affichées.
+# L'URL et la clé (pipeline_functions_key) sont lues dans Vault, comme pg_cron, jamais affichées.
 # Usage : scripts/pipeline-pass.sh          (depuis la racine du dépôt, CLI supabase connectée au projet)
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -14,9 +14,8 @@ secret() {
 URL=$(secret pipeline_functions_url)
 KEY=$(secret pipeline_functions_key)
 [[ -n "$URL" ]] || { echo "URL introuvable dans Vault (pipeline_functions_url)" >&2; exit 1; }
-# Clé facultative, comme pour pg_cron : sans elle, aucun en-tête Authorization.
-AUTH=()
-[[ -n "$KEY" ]] && AUTH=(-H "Authorization: Bearer $KEY")
+[[ -n "$KEY" ]] || { echo "pipeline_functions_key absente de Vault : lancer scripts/pipeline-key-set.sh" >&2; exit 1; }
+AUTH=(-H "Authorization: Bearer $KEY")
 
 # Appelle une étape, affiche un résumé d'une ligne, renvoie le nombre d'éléments traités.
 call() {

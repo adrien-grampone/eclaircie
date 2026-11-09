@@ -8,6 +8,7 @@ import { loadConfig, recordRun, serviceClient } from "../_shared/db.ts";
 import { errorMessage, fetchText, json, mapLimit } from "../_shared/http.ts";
 import { collectMaxAgeDays, isFreshEnough, sourceIsFollowed } from "../_shared/pipeline/collect.ts";
 import { parseFeed } from "../_shared/pipeline/rss.ts";
+import { servePipeline } from "../_shared/serve.ts";
 
 interface SourceRow {
   id: string;
@@ -28,7 +29,7 @@ interface SourceReport {
 const FEED_TIMEOUT_MS = 15_000;
 const FEED_ACCEPT = "application/rss+xml, application/atom+xml, application/xml, text/xml;q=0.9, */*;q=0.5";
 
-Deno.serve(async () => {
+servePipeline(async () => {
   const startedAt = new Date().toISOString();
   const db = serviceClient();
   try {
