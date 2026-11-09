@@ -1,7 +1,9 @@
 import { Stack, usePathname } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { demo as demoVar } from "@/lib/demo.ts";
 import { configureNotifications } from "@/lib/notifications.ts";
@@ -9,6 +11,7 @@ import { readSplashPalette, settleSplash, useSplashOutcome } from "@/lib/splashS
 import { Splash } from "@/screens/Splash.tsx";
 import { useAppFonts } from "@/theme/fonts.ts";
 import { FpsOverlay } from "@/ui/FpsOverlay.tsx";
+import { FoldProvider, useFold } from "@/ui/fold/FoldProvider.tsx";
 import { colors, type Palette } from "@/theme/tokens.ts";
 
 void SplashScreen.preventAutoHideAsync();
@@ -39,13 +42,34 @@ export default function RootLayout() {
   useEffect(() => { void readSplashPalette().then(setPalette); }, []);
   if (!fontsLoaded || !palette) return null;
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <StatusBar style={splash === "shown" ? "light" : "dark"} />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.paper } }} />
-      {splash === "shown" ? (
-        <Splash palette={palette} outcome={outcome} onFirstFrame={hideNativeSplash} onDone={() => setSplash("done")} onHoldTimeout={forceSplashEnd} />
-      ) : null}
-      {__DEV__ ? <FpsOverlay /> : null}
+    <GestureHandlerRootView style={styles.root}>
+      <FoldProvider>
+        <StatusBar style={splash === "shown" ? "light" : "dark"} />
+        <AppFrame>
+          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.paper } }} />
+          {splash === "shown" ? (
+            <Splash palette={palette} outcome={outcome} onFirstFrame={hideNativeSplash} onDone={() => setSplash("done")} onHoldTimeout={forceSplashEnd} />
+          ) : null}
+        </AppFrame>
+        {__DEV__ ? <FpsOverlay /> : null}
+      </FoldProvider>
     </GestureHandlerRootView>
   );
 }
+
+/**
+ * Page unique : l'app garde ses marges latérales hors des zones sûres (rail de barre d'état vertical de
+ * l'iPhone Duo), exactement comme avant le SDK iOS 27.1. Sur un iPhone ordinaire en portrait, ces marges
+ * valent 0 : rien ne change. En double page, chaque page gère elle-même ses zones sûres.
+ */
+function AppFrame({ children }: { children: ReactNode }) {
+  const fold = useFold();
+  const insets = useSafeAreaInsets();
+  const sides = fold.kind === "single" ? { paddingLeft: insets.left, paddingRight: insets.right } : null;
+  return <View style={[styles.root, sides]}>{children}</View>;
+}
+
+const styles = StyleSheet.create({
+  /** Noir sous les marges latérales, comme l'écran autour d'une app qui évite le rail. */
+  root: { flex: 1, backgroundColor: "#000" },
+});

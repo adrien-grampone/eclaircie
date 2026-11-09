@@ -14,6 +14,8 @@ import { useSaved } from "./story/useSaved.ts";
 import { useShareCard } from "./story/useShareCard.tsx";
 import { ReportSheet } from "@/ui/ReportSheet.tsx";
 import { demo as demoVar } from "@/lib/demo.ts";
+import { useFold } from "@/ui/fold/FoldProvider.tsx";
+import { WideStory } from "./story/WideStory.tsx";
 
 /** Part de l'écran occupée par l'illustration avant que la feuille crème ne commence. */
 export const IMAGE_SHARE = 0.47;
@@ -54,6 +56,32 @@ export function DailyStoryScreen({ view, userId, onBack }: { view: DailyView; us
   const backdropStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: interpolate(scrollY.value, [0, imageHeight], [0, -imageHeight * PARALLAX], "clamp") }],
   }));
+  const fold = useFold();
+  const topLeft = (
+    <>
+      {onBack ? <GlassButton label="Retour" onPress={onBack}><BackIcon color={colors.ink} /></GlassButton> : null}
+      <ThemePill label={view.theme.label} accent={view.theme.palette.accent} />
+    </>
+  );
+  const topRight = (
+    <>
+      {story ? (
+        <GlassButton label={bookmark.saved ? "Ne plus garder" : "Garder"} onPress={bookmark.toggle}>
+          {bookmark.saved ? <BookmarkFilledIcon color={colors.ink} /> : <BookmarkIcon color={colors.ink} />}
+        </GlassButton>
+      ) : null}
+      {onBack ? null : <GlassButton label="Menu" onPress={() => setMenu(true)}><MenuIcon color={colors.ink} /></GlassButton>}
+    </>
+  );
+  const overlays = (
+    <>
+      {story ? <ReportSheet visible={reporting} userId={userId} storyId={story.id} onClose={() => setReporting(false)} /> : null}
+      <MenuSheet visible={menu} onClose={() => setMenu(false)} />
+    </>
+  );
+  if (fold.kind === "spread") {
+    return <WideStory layout={fold} view={view} topLeft={topLeft} topRight={topRight} sheet={<SheetContent view={view} actions={actions} natural />} overlays={<>{shareCard.element}{overlays}</>} />;
+  }
   return (
     <View style={styles.screen}>
       {shareCard.element}
@@ -61,18 +89,8 @@ export function DailyStoryScreen({ view, userId, onBack }: { view: DailyView; us
         <Backdrop view={view} />
       </Animated.View>
       <View style={[styles.topBar, { top: insets.top + space.s }]}>
-        <View style={styles.topActions}>
-          {onBack ? <GlassButton label="Retour" onPress={onBack}><BackIcon color={colors.ink} /></GlassButton> : null}
-          <ThemePill label={view.theme.label} accent={view.theme.palette.accent} />
-        </View>
-        <View style={styles.topActions}>
-          {story ? (
-            <GlassButton label={bookmark.saved ? "Ne plus garder" : "Garder"} onPress={bookmark.toggle}>
-              {bookmark.saved ? <BookmarkFilledIcon color={colors.ink} /> : <BookmarkIcon color={colors.ink} />}
-            </GlassButton>
-          ) : null}
-          {onBack ? null : <GlassButton label="Menu" onPress={() => setMenu(true)}><MenuIcon color={colors.ink} /></GlassButton>}
-        </View>
+        <View style={styles.topActions}>{topLeft}</View>
+        <View style={styles.topActions}>{topRight}</View>
       </View>
       <Animated.ScrollView style={styles.scroll} contentContainerStyle={{ paddingTop: sheetTop }} showsVerticalScrollIndicator={false}
         onScroll={onScroll} scrollEventThrottle={16} contentInsetAdjustmentBehavior="never">
@@ -81,8 +99,7 @@ export function DailyStoryScreen({ view, userId, onBack }: { view: DailyView; us
         </View>
       </Animated.ScrollView>
       <PaperTexture />
-      {story ? <ReportSheet visible={reporting} userId={userId} storyId={story.id} onClose={() => setReporting(false)} /> : null}
-      <MenuSheet visible={menu} onClose={() => setMenu(false)} />
+      {overlays}
     </View>
   );
 }

@@ -6,24 +6,58 @@ import { hapticTap } from "@/lib/haptics.ts";
 import { colors, fonts, radius, sizes, space, type } from "@/theme/tokens.ts";
 import { BackIcon } from "./Icons.tsx";
 import { PaperTexture } from "./PaperTexture.tsx";
+import { useFold } from "./fold/FoldProvider.tsx";
+import { GutterShadow, Spread } from "./fold/Spread.tsx";
+import { IllustratedPage } from "./fold/IllustratedPage.tsx";
+import { useTodayView } from "@/lib/useTodayView.ts";
 
 interface Props {
   title: string;
+  /** Double page : la liste (StoryList) court sur les deux pages en grille ; sinon le contenu va à droite. */
+  grid?: boolean;
   children: ReactNode;
 }
 
-/** Cadre des écrans secondaires : fond papier, bouton retour, grand titre, contenu. */
-export function ListScreen({ title, children }: Props) {
+/**
+ * Cadre des écrans secondaires : fond papier, bouton retour, grand titre, contenu. En double page
+ * (iPhone Duo déplié), la page gauche porte l'illustration du thème du jour et le titre ; le contenu occupe
+ * la page droite. En grille (`grid`, Archives et Gardées), titre en haut à gauche et une colonne par page.
+ * Rien sur la pliure.
+ */
+export function ListScreen({ title, grid = false, children }: Props) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const fold = useFold();
+  const today = useTodayView(fold.kind === "spread" && !grid);
+  const header = (
+    <View style={[styles.header, { paddingTop: insets.top + space.s }, fold.kind === "spread" ? { paddingLeft: insets.left + space.xl } : null]}>
+      <Pressable style={styles.back} onPressIn={hapticTap} onPress={() => router.back()} accessibilityRole="button" accessibilityLabel="Retour" hitSlop={8}>
+        <BackIcon color={colors.ink} />
+      </Pressable>
+      <Text style={styles.title}>{title}</Text>
+    </View>
+  );
+  if (fold.kind === "spread" && grid) {
+    return (
+      <View style={styles.screen}>
+        <View style={{ width: fold.left.width }}>{header}</View>
+        <View style={styles.content}>{children}</View>
+        <GutterShadow gutter={fold.gutter} />
+        <PaperTexture />
+      </View>
+    );
+  }
+  if (fold.kind === "spread") {
+    return (
+      <View style={styles.screen}>
+        <Spread layout={fold} left={<IllustratedPage view={today} header={header} />} right={<View style={[styles.content, { paddingTop: insets.top + space.xl, paddingRight: insets.right }]}>{children}</View>} />
+        <PaperTexture />
+      </View>
+    );
+  }
   return (
     <View style={styles.screen}>
-      <View style={[styles.header, { paddingTop: insets.top + space.s }]}>
-        <Pressable style={styles.back} onPressIn={hapticTap} onPress={() => router.back()} accessibilityRole="button" accessibilityLabel="Retour" hitSlop={8}>
-          <BackIcon color={colors.ink} />
-        </Pressable>
-        <Text style={styles.title}>{title}</Text>
-      </View>
+      {header}
       <View style={styles.content}>{children}</View>
       <PaperTexture />
     </View>

@@ -1,7 +1,8 @@
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useRef, useState } from "react";
-import { Image as RNImage, Pressable, StyleSheet, useWindowDimensions } from "react-native";
+import { Image as RNImage, Pressable, StyleSheet } from "react-native";
+import { useAppSize } from "@/ui/fold/FoldProvider.tsx";
 import Animated, {
   Easing, cancelAnimation, runOnUI, useAnimatedReaction, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming, type SharedValue,
 } from "react-native-reanimated";
@@ -51,7 +52,7 @@ interface Props {
  * Tap = saut à l'état final.
  */
 export function Splash({ palette, outcome, onFirstFrame, onDone, onHoldTimeout, hold = false }: Props) {
-  const { width, height } = useWindowDimensions();
+  const { width, height } = useAppSize();
   const reducedMotion = useReducedMotion();
   const t = useSharedValue(0);
   const fade = useSharedValue(1);

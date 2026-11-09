@@ -1,16 +1,19 @@
 import { useState, type ReactNode } from "react";
-import { Pressable, StyleSheet, Text, View, useWindowDimensions } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { hapticTap } from "@/lib/haptics.ts";
 import { colors, radius, sizes, space, type, type Palette } from "@/theme/tokens.ts";
 import { CrossfadeSky } from "@/ui/CrossfadeSky.tsx";
 import { PaperTexture } from "@/ui/PaperTexture.tsx";
-import { bannerSky } from "@/ui/Sky.tsx";
 import { sheetStyle } from "../DailyStory.tsx";
+import { useAppSize, useFold } from "@/ui/fold/FoldProvider.tsx";
+import { WideOnboardingFrame } from "./WideOnboardingFrame.tsx";
 
 /** Part de l'écran occupée par le bandeau de ciel (maquette 01). */
 const BANNER_SHARE = 0.34;
 const TITLE_SIZE = 38;
+/** Écart entre le bas du titre et le plus haut sommet des collines du bandeau. */
+const BANNER_HILLS_GAP = 10;
 
 interface Props {
   palette: Palette;
@@ -28,17 +31,21 @@ interface Props {
  * posé sur le ciel, feuille crème avec son contenu et un bouton encre en bas.
  */
 export function OnboardingFrame({ palette, caption, titleMain, titleAccent, cta, ctaDisabled = false, onCta, children }: Props) {
-  const { height } = useWindowDimensions();
+  const { height } = useAppSize();
   const insets = useSafeAreaInsets();
   const bannerHeight = Math.round(height * BANNER_SHARE) + radius.sheet;
   const titleTop = insets.top + space.xl;
   const [titleHeight, setTitleHeight] = useState(0);
-  // Le soleil se cale sous le titre mesuré : il ne passe jamais derrière le texte.
-  const layout = bannerSky(bannerHeight, titleTop + titleHeight + space.xs);
+  const fold = useFold();
+  if (fold.kind === "spread") {
+    return <WideOnboardingFrame layout={fold} palette={palette} caption={caption} titleMain={titleMain} titleAccent={titleAccent} cta={cta} ctaDisabled={ctaDisabled} onCta={onCta}>{children}</WideOnboardingFrame>;
+  }
   return (
     <View style={styles.screen}>
       <View style={[styles.banner, { height: bannerHeight }]}>
-        <CrossfadeSky palette={palette} layout={layout} />
+        {/* Matière du splash (collines gouache, bruit de valeur, grain), ajustée au bandeau : sommets juste sous
+            le titre, soleil levant à droite derrière la crête. */}
+        <CrossfadeSky palette={palette} gouache banner={{ hillsTop: titleTop + titleHeight + BANNER_HILLS_GAP }} />
       </View>
       <View style={[styles.titleBlock, { top: titleTop }]} pointerEvents="none" onLayout={(e) => setTitleHeight(e.nativeEvent.layout.height)}>
         <Text style={[type.caption, styles.caption]}>{caption}</Text>
@@ -72,3 +79,4 @@ const styles = StyleSheet.create({
   cta: { height: sizes.button, borderRadius: radius.button, backgroundColor: colors.ink, alignItems: "center", justifyContent: "center", marginTop: space.s },
   ctaDisabled: { opacity: 0.35 },
 });
+

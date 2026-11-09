@@ -2,7 +2,7 @@ import { memo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { ARCHIVE_COPY, isRetracted } from "@/lib/archive.ts";
 import { frenchTypography } from "@/lib/typography.ts";
-import { formatDayLabel } from "@/lib/daily.ts";
+import { formatDayLabel, formatShortDayLabel } from "@/lib/daily.ts";
 import { hapticTap } from "@/lib/haptics.ts";
 import { colors, fonts, space, type } from "@/theme/tokens.ts";
 import type { Story, Theme } from "@/types.ts";
@@ -13,10 +13,12 @@ interface Props {
   theme: Theme;
   fallbackFiles: readonly string[];
   onPress: (story: Story) => void;
+  /** Colonne étroite (double page) : date courte, et la ligne date + thème passe à la ligne plutôt que tronquer. */
+  compact?: boolean;
 }
 
 /** Ligne éditoriale : date, pastille du thème, titre en deux parties, vignette. Retirée : mention seule. */
-export const StoryListItem = memo(function StoryListItem({ story, theme, fallbackFiles, onPress }: Props) {
+export const StoryListItem = memo(function StoryListItem({ story, theme, fallbackFiles, onPress, compact = false }: Props) {
   const retracted = isRetracted(story);
   return (
     <Pressable
@@ -24,7 +26,7 @@ export const StoryListItem = memo(function StoryListItem({ story, theme, fallbac
       accessibilityRole="button" accessibilityLabel={retracted ? ARCHIVE_COPY.retracted : `${story.title_main} ${story.title_accent ?? ""}`}>
       <View style={styles.text}>
         <View style={styles.meta}>
-          <Text style={type.caption}>{formatDayLabel(story.publish_date)}</Text>
+          <Text style={type.caption}>{compact ? formatShortDayLabel(story.publish_date) : formatDayLabel(story.publish_date)}</Text>
           <View style={[styles.dot, { backgroundColor: theme.palette.accent }]} />
           <Text style={styles.themeLabel}>{theme.label}</Text>
         </View>
@@ -43,7 +45,8 @@ export const StoryListItem = memo(function StoryListItem({ story, theme, fallbac
 const styles = StyleSheet.create({
   row: { flexDirection: "row", alignItems: "center", gap: space.m, paddingVertical: space.m, borderTopWidth: 1, borderColor: "rgba(31,27,22,0.12)" },
   text: { flex: 1, gap: space.xs },
-  meta: { flexDirection: "row", alignItems: "center", gap: space.xs },
+  /** Passe à la ligne plutôt que de tronquer le thème quand la colonne est étroite. */
+  meta: { flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: space.xs },
   dot: { width: 7, height: 7, borderRadius: 4, marginLeft: space.xs },
   themeLabel: { fontFamily: fonts.bodyBold, fontSize: 13, color: colors.caption },
   title: { fontSize: 21, lineHeight: 24 },

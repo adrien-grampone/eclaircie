@@ -188,3 +188,18 @@ App Group `group.app.eclaircie`, iOS 17). Trois formats : petit, moyen, rectangu
   Expo Go n'affiche pas les widgets.
 - EAS : au premier build après l'ajout, répondre oui à l'enregistrement du bundle identifier `app.eclaircie.widget`,
   de son profil de provisionnement et de l'App Group sur les deux identifiants. `eas.json` ne change pas.
+
+## iPhone Duo (pliable)
+
+Build avec le SDK iOS 27.1 ou plus récent (image EAS `sdk-58`, fixée dans `eas.json`). Plié, l'app reste en page
+unique et garde ses marges hors du rail de barre d'état (`AppFrame`, `useAppSize`). Déplié, les écrans passent en
+double page : la découpe vient d'`ArrangementView` (Expo UI, `@expo/ui`) utilisé comme sonde invisible dont on mesure
+les deux panneaux (`app/src/ui/fold/FoldProvider.tsx`, logique pure testée dans `app/src/lib/fold.ts`) ; le contenu
+reste en React Native, posé sur ces mesures, avec une gouttière vide et ombrée sur la pliure.
+
+- Simulateur : Xcode 27.1+ et runtime iOS 27.1+, appareil « iPhone Duo », pliage et rotation uniquement dans
+  Device Hub (Xcode → Open Developer Tool → Device Hub), pas en ligne de commande. Captures par écran :
+  `xcrun simctl io <udid> screenshot --display=1` (extérieur) ou `--display=3` (intérieur).
+- Captures de référence : `design/captures/duo/`.
+- Badge « Made for iPhone Duo » : build SDK 27.1+ et captures iPhone Duo dans App Store Connect ; captures
+  obligatoires pour toute soumission à partir d'avril 2027.

@@ -26,5 +26,5 @@ export function SavedScreen() {
   else if (boot.status !== "ready" || state.status !== "ready") body = <Loading />;
   else if (state.stories.length === 0) body = <EmptyState {...SAVED_COPY.empty} />;
   else body = <StoryList themes={boot.boot.themes} sections={[{ title: SAVED_COPY.title.toUpperCase(), stories: state.stories, paginated: true }]} />;
-  return <ListScreen title={SAVED_COPY.title}>{body}</ListScreen>;
+  return <ListScreen title={SAVED_COPY.title} grid={state.status === "ready" && state.stories.length > 0}>{body}</ListScreen>;
 }

@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, View, useWindowDimensions } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { useAppSize, useFold } from "@/ui/fold/FoldProvider.tsx";
+import { WideArrival } from "./arrival/WideArrival.tsx";
 import { GestureDetector, usePanGesture } from "react-native-gesture-handler";
 import Animated, { Easing, interpolate, useAnimatedStyle, useReducedMotion, useSharedValue, withSequence, withSpring, withTiming } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -66,7 +68,8 @@ export function DailyFlow({ view, userId, showArrival, autoDiscover = false }: P
   const [phase, setPhase] = useState<"arrival" | "fading" | "story">(showArrival ? "arrival" : "story");
   const [blur, setBlur] = useState(true);
   const reducedMotion = useReducedMotion();
-  const { width, height } = useWindowDimensions();
+  const { width, height } = useAppSize();
+  const fold = useFold();
   const insets = useSafeAreaInsets();
   const progress = useSharedValue(0);
   const crossed = useSharedValue(false);
@@ -99,7 +102,8 @@ export function DailyFlow({ view, userId, showArrival, autoDiscover = false }: P
     glassOn.value = withTiming(1, { duration: GLASS_BACK_MS });
   };
   const discover = () => {
-    if (reducedMotion) {
+    // Double page : simple fondu vers la Nouvelle (la transition signature est pensée pour une page unique).
+    if (reducedMotion || fold.kind === "spread") {
       setPhase("fading");
       fade.value = withTiming(0, { duration: FADE_MS }, (done) => { if (done) scheduleOnRN(finish); });
       return;
@@ -196,7 +200,7 @@ export function DailyFlow({ view, userId, showArrival, autoDiscover = false }: P
     </Animated.View>
   );
 
-  const arrival = (
+  const arrival = fold.kind === "spread" ? <WideArrival layout={fold} view={view} onDiscover={discover} /> : (
     // Fond sombre : pendant le trajet, les marges de la carte découvrent un instant le bas de l'écran sous l'image.
     <View style={[styles.screen, { backgroundColor: colors.ink }]}>
       <MotionBackdrop view={view} progress={progress} veil={veil} width={width} height={height} imageHeight={imageHeight} />

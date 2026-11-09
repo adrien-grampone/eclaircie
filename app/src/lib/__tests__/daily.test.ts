@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDayLabel, formatSourceDate, readingMinutes, selectDailyStory, sourceLabel, splitMeasuredLines, titleSize } from "../daily.ts";
+import { formatDayLabel, formatShortDayLabel, formatSourceDate, readingMinutes, selectDailyStory, sourceLabel, splitMeasuredLines, titleSize } from "../daily.ts";
 import type { Story } from "../../types.ts";
 
 const story = (id: string, theme_id: string, publish_date: string): Story => ({
@@ -77,5 +77,12 @@ describe("sourceLabel", () => {
     expect(sourceLabel("Le Monde | Planète")).toBe("Le Monde");
     expect(sourceLabel("Phys.org – Earth")).toBe("Phys.org");
     expect(sourceLabel("Jean-Michel Actu")).toBe("Jean-Michel Actu");
+  });
+});
+
+describe("formatShortDayLabel", () => {
+  it("date courte en capitales pour les colonnes étroites", () => {
+    expect(formatShortDayLabel("2026-11-06")).toBe("VEN. 6 NOV.");
+    expect(formatShortDayLabel("2026-05-01")).toBe("VEN. 1 MAI");
   });
 });

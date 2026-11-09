@@ -22,12 +22,13 @@ export function ArrivalHeader({ today }: { today: string }) {
 }
 
 /** Contenu de la carte en verre : thème et durée, promesse en deux parties, bouton Découvrir. */
-export function ArrivalCardContent({ view, onDiscover }: { view: DailyView; onDiscover: () => void }) {
+/** `grow` : la carte prend la hauteur de son contenu (double page, page étroite) au lieu d'une hauteur fixe. */
+export function ArrivalCardContent({ view, onDiscover, grow = false }: { view: DailyView; onDiscover: () => void; grow?: boolean }) {
   const minutes = view.pick.story ? readingMinutes(view.pick.story.summary) : 1;
   const title = titleSize(ARRIVAL_COPY.cardMain, ARRIVAL_COPY.cardAccent);
   return (
-    <View style={styles.card}>
-      <View style={styles.handle} accessible={false} />
+    <View style={[styles.card, grow ? styles.cardGrow : null]}>
+      {grow ? null : <View style={styles.handle} accessible={false} />}
       <Text style={[type.caption, styles.cream]}>{view.theme.label.toUpperCase()} · {minutes} MIN</Text>
       <Text style={[styles.cardTitle, title]}>
         <Text style={[type.title, title, styles.cream]}>{ARRIVAL_COPY.cardMain}</Text>
@@ -46,6 +47,8 @@ const styles = StyleSheet.create({
   greeting: { marginTop: space.s },
   tagline: { fontSize: 24, lineHeight: 30, marginTop: space.xs },
   card: { flex: 1, padding: space.l, justifyContent: "flex-end", gap: space.s },
+  /** Base de hauteur naturelle : le contenu pousse la carte au lieu de déborder d'une hauteur fixe. */
+  cardGrow: { flexBasis: "auto", paddingTop: space.xl },
   /** Poignée type feuille iOS : invite à tirer la carte vers le haut. */
   handle: { position: "absolute", top: space.s, alignSelf: "center", width: 40, height: 5, borderRadius: 3, backgroundColor: "rgba(245,239,228,0.55)" },
   cardTitle: { marginBottom: space.xs },

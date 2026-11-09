@@ -1,6 +1,9 @@
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState, type ComponentRef, type ReactNode } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { pairRows, type Span } from "@/lib/fold.ts";
+import { useFold } from "@/ui/fold/FoldProvider.tsx";
 import { ARCHIVE_COPY, paginate } from "@/lib/archive.ts";
 import { listFallbackFiles } from "@/lib/stories.ts";
 import { space } from "@/theme/tokens.ts";
@@ -35,6 +38,7 @@ interface Section {
  */
 export function StoryList({ sections, themes, header }: { sections: readonly Section[]; themes: readonly Theme[]; header?: ReactNode }) {
   const router = useRouter();
+  const fold = useFold();
   const [page, setPage] = useState(0);
   const files = useFallbackFiles(sections.flatMap((s) => s.stories.map((x) => x.theme_id)));
   const open = (story: Story) => router.push({ pathname: "/story/[id]", params: { id: story.id } });
@@ -46,20 +50,32 @@ export function StoryList({ sections, themes, header }: { sections: readonly Sec
     if (demo === "open" && last) setTimeout(() => open(last), 2500);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  const item = (story: Story | null) => {
+    const theme = story ? themes.find((t) => t.id === story.theme_id) : undefined;
+    return story && theme ? <StoryListItem key={story.id} story={story} theme={theme} fallbackFiles={files[story.theme_id] ?? []} onPress={open} compact={fold.kind === "spread"} /> : null;
+  };
   return (
-    <ScrollView ref={scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-      {header}
+    <ScrollView ref={scroll} contentContainerStyle={fold.kind === "spread" ? styles.spreadContent : styles.content} showsVerticalScrollIndicator={false}>
+      {fold.kind === "spread" ? <Columns fold={fold} left={header} right={null} /> : header}
       {sections.map((section) => {
         if (section.stories.length === 0) return null;
         const { items, hasMore } = section.paginated ? paginate(section.stories, page) : { items: [...section.stories], hasMore: false };
+        const more = hasMore ? <MoreButton label={ARCHIVE_COPY.more} onPress={() => setPage((p) => p + 1)} /> : null;
+        if (fold.kind === "spread") {
+          // Grille sur deux pages : une colonne par page, rangée par lignes ; la gouttière reste vide.
+          return (
+            <View key={section.title}>
+              <Columns fold={fold} left={<SectionTitle>{section.title}</SectionTitle>} right={null} />
+              {pairRows(items).map(([a, b]) => <Columns key={a.id} fold={fold} left={item(a)} right={item(b)} />)}
+              {more}
+            </View>
+          );
+        }
         return (
           <View key={section.title}>
             <SectionTitle>{section.title}</SectionTitle>
-            {items.map((story) => {
-              const theme = themes.find((t) => t.id === story.theme_id);
-              return theme ? <StoryListItem key={story.id} story={story} theme={theme} fallbackFiles={files[story.theme_id] ?? []} onPress={open} /> : null;
-            })}
-            {hasMore ? <MoreButton label={ARCHIVE_COPY.more} onPress={() => setPage((p) => p + 1)} /> : null}
+            {items.map(item)}
+            {more}
           </View>
         );
       })}
@@ -67,6 +83,20 @@ export function StoryList({ sections, themes, header }: { sections: readonly Sec
   );
 }
 
+/** Une ligne de la grille : colonne de la page gauche, gouttière vide, colonne de la page droite. */
+function Columns({ fold, left, right }: { fold: { left: Span; gutter: Span; right: Span }; left: ReactNode; right: ReactNode }) {
+  const insets = useSafeAreaInsets();
+  return (
+    <View style={styles.row}>
+      <View style={{ width: fold.left.width, paddingLeft: insets.left + space.xl, paddingRight: space.l }}>{left}</View>
+      <View style={{ width: fold.gutter.width }} />
+      <View style={{ width: fold.right.width, paddingLeft: space.l, paddingRight: insets.right + space.xl }}>{right}</View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   content: { paddingHorizontal: space.l, paddingBottom: space.xl },
+  spreadContent: { paddingBottom: space.xl },
+  row: { flexDirection: "row", alignItems: "stretch" },
 });

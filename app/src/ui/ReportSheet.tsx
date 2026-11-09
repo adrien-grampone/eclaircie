@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useFold } from "@/ui/fold/FoldProvider.tsx";
+import { pageSheetStyle } from "@/ui/fold/pageSheet.ts";
 import { hapticTap } from "@/lib/haptics.ts";
 import { REPORT_COPY, REPORT_MESSAGE_MAX, REPORT_REASONS, buildReport, type ReportReason } from "@/lib/report.ts";
 import { submitReport } from "@/lib/reports.ts";
@@ -16,6 +18,7 @@ interface Props {
 /** Feuille « Signaler une erreur » : trois raisons rapides, champ libre facultatif, remerciement. */
 export function ReportSheet({ visible, userId, storyId, onClose }: Props) {
   const insets = useSafeAreaInsets();
+  const fold = useFold();
   const [reason, setReason] = useState<ReportReason | null>(null);
   const [message, setMessage] = useState("");
   const [state, setState] = useState<{ status: "editing" | "sending" | "sent" | "failed"; error?: string }>({ status: "editing" });
@@ -43,7 +46,7 @@ export function ReportSheet({ visible, userId, storyId, onClose }: Props) {
     <Modal visible={visible} transparent animationType="slide" onRequestClose={close}>
       <Pressable style={styles.backdrop} onPress={close} accessibilityLabel={REPORT_COPY.close} />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.avoid} pointerEvents="box-none">
-        <View style={[styles.sheet, { paddingBottom: insets.bottom + space.m }]}>
+        <View style={[styles.sheet, { paddingBottom: insets.bottom + space.m }, pageSheetStyle(fold, insets.right, space.l)]}>
           <View style={styles.handle} />
           {state.status === "sent" ? (
             <>

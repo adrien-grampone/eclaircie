@@ -33,5 +33,6 @@ export function ArchiveScreen() {
         sections={[{ title: ARCHIVE_COPY.alsoToday, stories: state.data.alsoToday }, { title: ARCHIVE_COPY.past, stories: state.data.past, paginated: true }]} />
     );
   }
-  return <ListScreen title={ARCHIVE_COPY.title}>{body}</ListScreen>;
+  const grid = state.status === "ready" && (state.data.alsoToday.length > 0 || state.data.past.length > 0);
+  return <ListScreen title={ARCHIVE_COPY.title} grid={grid}>{body}</ListScreen>;
 }

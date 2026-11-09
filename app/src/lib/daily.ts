@@ -57,6 +57,14 @@ export function sourceLabel(sourceName: string): string {
   return (media ?? sourceName).trim() || sourceName.trim();
 }
 
+/** « VEN. 6 NOV. » : version courte de formatDayLabel, pour les colonnes étroites. */
+export function formatShortDayLabel(isoDate: string, locale = "fr-FR"): string {
+  const [y, m, d] = isoDate.split("-").map(Number) as [number, number, number];
+  const date = new Date(Date.UTC(y, m - 1, d, 12));
+  return new Intl.DateTimeFormat(locale, { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" })
+    .format(date).toUpperCase();
+}
+
 /** « janvier 2023 » pour la date de la source ; vide sans date. */
 export function formatSourceDate(isoDate: string | null, locale = "fr-FR"): string {
   if (!isoDate) return "";

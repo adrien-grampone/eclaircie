@@ -1,6 +1,8 @@
 import { useRouter, type Href } from "expo-router";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useFold } from "@/ui/fold/FoldProvider.tsx";
+import { pageSheetStyle } from "@/ui/fold/pageSheet.ts";
 import { hapticTap } from "@/lib/haptics.ts";
 import { absoluteFill, colors, fonts, radius, space } from "@/theme/tokens.ts";
 import { ArchiveIcon, BookmarkIcon, ChevronIcon, GearIcon } from "./Icons.tsx";
@@ -15,6 +17,7 @@ const ENTRIES: { href: Href; label: string; Icon: (p: { color: string }) => Reac
 export function MenuSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const fold = useFold();
   const go = (href: Href) => {
     onClose();
     router.push(href);
@@ -23,7 +26,7 @@ export function MenuSheet({ visible, onClose }: { visible: boolean; onClose: () 
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={onClose} accessibilityLabel="Fermer le menu" />
       <View style={styles.wrap} pointerEvents="box-none">
-        <View style={[styles.sheet, { paddingBottom: insets.bottom + space.m }]}>
+        <View style={[styles.sheet, { paddingBottom: insets.bottom + space.m }, pageSheetStyle(fold, insets.right, space.l)]}>
           <View style={styles.handle} />
           {ENTRIES.map(({ href, label, Icon }) => (
             <Pressable key={label} style={styles.row} onPressIn={hapticTap} onPress={() => go(href)} accessibilityRole="button" accessibilityLabel={label}>
