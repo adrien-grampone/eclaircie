@@ -58,7 +58,7 @@ servePipeline(async () => {
       const images = await checkImageAlerts(db, today, config);
       const total = result.scheduled.length;
       await recordRun(db, { step: STEP, startedAt, processed: total, succeeded: total, failed: 0, error: null });
-      return json({ step: STEP, today, strategy: "one_per_day", scheduled: total, reserve: result.reserve, reserve_low: result.reserve_low,
+      return json({ step: STEP, today, strategy: "one_per_day", scheduled: total, released: result.released.length, reserve: result.reserve, reserve_low: result.reserve_low,
         images_missing: images.missing, image_alerts_resolved: images.resolved, results: result.scheduled });
     }
 

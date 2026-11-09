@@ -142,3 +142,46 @@ export function reserveSize(
 export function isReserveLow(reserve: number, config: Pick<PipelineConfig, "reserve_min">): boolean {
   return reserve < config.reserve_min;
 }
+
+/** Fraîche : créée (rédigée) depuis moins de `schedule_fresh_hours` heures — c'est-à-dire au passage du matin. */
+export function isFresh(createdAt: string, now: Date, config: Pick<PipelineConfig, "schedule_fresh_hours">): boolean {
+  return now.getTime() - new Date(createdAt).getTime() < config.schedule_fresh_hours * 3_600_000;
+}
+
+/** Choix du jour avec priorité stricte aux fraîches : la réserve ne sert que si aucune fraîche n'est programmable. */
+export function pickFreshFirst(
+  candidates: readonly ScheduleCandidate[],
+  alreadyScheduled: readonly ScheduledStory[],
+  day: IsoDate,
+  now: Date,
+  config: ScheduleConfig & Pick<PipelineConfig, "schedule_fresh_hours">,
+): ScheduleCandidate | null {
+  const fresh = candidates.filter((c) => isFresh(c.createdAt, now, config));
+  return pickForSchedule(fresh, alreadyScheduled, day, config) ?? pickForSchedule(candidates, alreadyScheduled, day, config);
+}
+
+/** Une nouvelle déjà programmée sur un jour à venir. */
+export interface UpcomingStory {
+  id: string;
+  publishDate: IsoDate;
+  createdAt: string;
+}
+
+/**
+ * Nouvelles de la réserve à déprogrammer pour laisser leur jour aux fraîches : seulement les jours APRÈS `today`
+ * (pas encore visibles dans l'app), seulement les non fraîches, au plus autant que de fraîches candidates, les
+ * jours les plus proches d'abord.
+ */
+export function upcomingToRelease(
+  upcoming: readonly UpcomingStory[],
+  freshCount: number,
+  today: IsoDate,
+  now: Date,
+  config: Pick<PipelineConfig, "schedule_fresh_hours">,
+): string[] {
+  return upcoming
+    .filter((s) => daysBetween(today, s.publishDate) > 0 && !isFresh(s.createdAt, now, config))
+    .sort((a, b) => a.publishDate.localeCompare(b.publishDate))
+    .slice(0, freshCount)
+    .map((s) => s.id);
+}

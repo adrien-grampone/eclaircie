@@ -42,6 +42,7 @@ export const CONFIG_ROWS: ConfigRow[] = [
   { key: "auto_approve_verified", value: false },
   { key: "schedule_strategy", value: "per_theme" },
   { key: "reserve_min", value: 3 },
+  { key: "schedule_fresh_hours", value: 24 },
 ];
 
 export function loadConfig(): PipelineConfig {

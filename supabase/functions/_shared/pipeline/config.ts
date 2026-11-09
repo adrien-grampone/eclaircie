@@ -109,6 +109,11 @@ export const PipelineConfigSchema = z.object({
   schedule_strategy: z.enum(["per_theme", "one_per_day"]),
   /** Réserve (one_per_day) : alerte quand moins de N nouvelles validées restent programmables. */
   reserve_min: z.number().int().min(0),
+  /**
+   * Fraîcheur (one_per_day) : une nouvelle créée depuis moins de N heures passe avant la réserve, et prend la place
+   * d'une nouvelle de la réserve déjà programmée sur un jour à venir (pas encore visible).
+   */
+  schedule_fresh_hours: z.number().positive(),
   /** Éléments traités par invocation d'une Edge Function. */
   batch_size: z.number().int().positive(),
   /** §4.5 — passes de vérification maximales (draft → verify → revise → verify = 2). */

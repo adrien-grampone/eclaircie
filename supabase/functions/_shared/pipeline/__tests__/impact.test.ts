@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { sourceIsFollowed } from "../collect.ts";
 import { applyEditorialRules, assessTriage, isUnfollowedException, type FollowedThemes } from "../editorial.ts";
 import { finalScore, impactScore, isNonHumanStudy, type ImpactFields } from "../impact.ts";
-import { isReserveLow, reserveSize, type ScheduleCandidate } from "../schedule.ts";
+import { isFresh, isReserveLow, pickFreshFirst, reserveSize, upcomingToRelease, type ScheduleCandidate } from "../schedule.ts";
 import type { Triage } from "../triage.ts";
 import { resolveThemeMismatch } from "../verify.ts";
 import { CONFIG } from "./fixtures/config.ts";
@@ -142,6 +142,41 @@ describe("réserve (one_per_day)", () => {
     expect(reserveSize(candidates, day, CONFIG)).toBe(2);
     expect(isReserveLow(2, CONFIG)).toBe(true);
     expect(isReserveLow(3, CONFIG)).toBe(false);
+  });
+});
+
+describe("fraîches avant la réserve (one_per_day)", () => {
+  const now = new Date("2026-11-10T05:30:00Z");
+  const cand = (id: string, createdAt: string, score: number, sourceName = id): ScheduleCandidate =>
+    ({ id, sourceName, sourceDate: createdAt.slice(0, 10), createdAt, evergreen: true, score });
+  const reserve = cand("reserve", "2026-11-08T05:00:00Z", 0.9);
+  const fresh = cand("fraiche", "2026-11-10T04:40:00Z", 0.66);
+
+  it("est fraîche une nouvelle rédigée depuis moins de schedule_fresh_hours", () => {
+    expect(isFresh(fresh.createdAt, now, CONFIG)).toBe(true);
+    expect(isFresh(reserve.createdAt, now, CONFIG)).toBe(false);
+  });
+
+  it("prend la fraîche même quand la réserve a un meilleur score", () => {
+    expect(pickFreshFirst([reserve, fresh], [], "2026-11-11", now, CONFIG)?.id).toBe("fraiche");
+  });
+
+  it("pioche dans la réserve quand aucune fraîche n'est programmable", () => {
+    expect(pickFreshFirst([reserve], [], "2026-11-11", now, CONFIG)?.id).toBe("reserve");
+    const sameSourceNextDay = cand("fraiche", "2026-11-10T04:40:00Z", 0.66, "Voisine");
+    expect(pickFreshFirst([reserve, sameSourceNextDay], [{ publishDate: "2026-11-12", sourceName: "Voisine" }], "2026-11-11", now, CONFIG)?.id).toBe("reserve");
+  });
+
+  it("libère un jour à venir tenu par la réserve, jamais aujourd'hui ni une fraîche, au plus autant que de fraîches", () => {
+    const upcoming = [
+      { id: "auj", publishDate: "2026-11-10", createdAt: "2026-11-08T05:00:00Z" },
+      { id: "j2", publishDate: "2026-11-12", createdAt: "2026-11-08T05:00:00Z" },
+      { id: "j1", publishDate: "2026-11-11", createdAt: "2026-11-08T05:00:00Z" },
+      { id: "j1f", publishDate: "2026-11-11", createdAt: "2026-11-10T04:00:00Z" },
+    ];
+    expect(upcomingToRelease(upcoming, 1, "2026-11-10", now, CONFIG)).toEqual(["j1"]);
+    expect(upcomingToRelease(upcoming, 5, "2026-11-10", now, CONFIG)).toEqual(["j1", "j2"]);
+    expect(upcomingToRelease(upcoming, 0, "2026-11-10", now, CONFIG)).toEqual([]);
   });
 });
 
