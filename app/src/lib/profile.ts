@@ -1,10 +1,23 @@
 import { supabase } from "./supabase.ts";
 import type { Profile, Theme } from "@/types.ts";
 
+/**
+ * Thèmes proposés dans l'app : seulement les thèmes suivis par le pipeline (themes.followed, réglé dans
+ * pipeline_config.followed_themes), plus les thèmes « bientôt » affichés en avant-première.
+ */
 export async function loadThemes(): Promise<Theme[]> {
-  const { data, error } = await supabase.from("themes").select("id, label, position, palette, active, coming_soon").order("position");
+  const { data, error } = await supabase.from("themes").select("id, label, position, palette, active, coming_soon, followed").order("position");
   if (error) throw new Error(`themes : ${error.message}`);
-  return data as Theme[];
+  return visibleThemes(data as (Theme & { followed: boolean })[]);
+}
+
+export function visibleThemes(rows: readonly (Theme & { followed: boolean })[]): Theme[] {
+  return rows.filter((t) => t.followed || t.coming_soon).map(({ followed: _followed, ...theme }) => theme);
+}
+
+/** Les thèmes du profil qui sont encore proposés (un thème qui n'est plus suivi disparaît de la sélection). */
+export function profileThemes(profileThemeIds: readonly string[], themes: readonly Theme[]): string[] {
+  return profileThemeIds.filter((id) => themes.some((t) => t.id === id && t.active && !t.coming_soon));
 }
 
 /** Profil de l'utilisateur, ou null s'il n'a pas encore fait l'onboarding. */

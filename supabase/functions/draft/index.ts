@@ -65,7 +65,7 @@ Deno.serve(async () => {
         // Tentative 1, puis une de plus par revise_length_retries si seules des longueurs dépassent.
         for (let attempt = 1; draft === null; attempt++) {
           const prompt = buildDraftPrompt(articleInput, config, options);
-          const reply = await askModel(MODELS.draft, prompt, { maxTokens: 4096, effort: "low", thinking: true });
+          const reply = await askModel(MODELS.draft, prompt, { maxTokens: 8192, effort: "low", thinking: true });
           if (reply.stopReason === "refusal" || reply.stopReason === "max_tokens") {
             return fail(article, `draft_incomplete: ${reply.stopReason}`);
           }

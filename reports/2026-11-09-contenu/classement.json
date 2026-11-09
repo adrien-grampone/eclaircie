@@ -1,0 +1,875 @@
+[
+ {
+  "i": 1,
+  "type": "F",
+  "stade": "A",
+  "validee": false,
+  "source": "Futura",
+  "theme": "science",
+  "titre": "Le pin de Wollemi a survécu aux flammes."
+ },
+ {
+  "i": 2,
+  "type": "F",
+  "stade": "A",
+  "validee": false,
+  "source": "Nature — News",
+  "theme": "science",
+  "titre": "Deux disques de débris autour d'une étoile morte."
+ },
+ {
+  "i": 3,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "Nature — News",
+  "theme": "science",
+  "titre": "Un tissu moléculaire tissé à trois axes."
+ },
+ {
+  "i": 4,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "Nature — News",
+  "theme": "inventions",
+  "titre": "Un capteur infrarouge né d'une seule étape."
+ },
+ {
+  "i": 5,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "Nature — News",
+  "theme": "science",
+  "titre": "Un laboratoire guidé par l'IA expérimente presque seul."
+ },
+ {
+  "i": 6,
+  "type": "F",
+  "stade": "A",
+  "validee": false,
+  "source": "Science Daily",
+  "theme": "science",
+  "titre": "Rubin repère deux satellites inconnus de la Voie lactée."
+ },
+ {
+  "i": 7,
+  "type": "R",
+  "stade": "A",
+  "validee": false,
+  "source": "Phys.org — Earth",
+  "theme": "science",
+  "titre": "Le satellite MTG-I2 livre ses premières images."
+ },
+ {
+  "i": 8,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "TechXplore",
+  "theme": "science",
+  "titre": "Trois techniques pour atténuer les portes dérobées des IA."
+ },
+ {
+  "i": 9,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "MIT News",
+  "theme": "science",
+  "titre": "Prédire les molécules avec moins d'essais."
+ },
+ {
+  "i": 10,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "MIT News",
+  "theme": "inventions",
+  "titre": "Des coffrages en tissu pour une poutre optimisée."
+ },
+ {
+  "i": 11,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "TechXplore",
+  "theme": "inventions",
+  "titre": "Une structure de réfrigération tient plus de 100 millions"
+ },
+ {
+  "i": 12,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "TechXplore",
+  "theme": "planete",
+  "titre": "Des pales d'éoliennes retrouvent une seconde vie."
+ },
+ {
+  "i": 13,
+  "type": "C",
+  "stade": "A",
+  "validee": false,
+  "source": "Phys.org — Biology",
+  "theme": "animaux",
+  "titre": "Le serpent à tête large, relâché avec succès."
+ },
+ {
+  "i": 14,
+  "type": "H",
+  "stade": "P",
+  "validee": false,
+  "source": "Medical Xpress",
+  "theme": "sante",
+  "titre": "Une montre connectée pour l'hypertension."
+ },
+ {
+  "i": 15,
+  "type": "H",
+  "stade": "A",
+  "validee": false,
+  "source": "Medical Xpress",
+  "theme": "sante",
+  "titre": "Crigler-Najjar : thérapie génique tient quatre ans."
+ },
+ {
+  "i": 16,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "Phys.org — Earth",
+  "theme": "planete",
+  "titre": "Le technétium, piégé dans un minéral."
+ },
+ {
+  "i": 17,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "Nature — News",
+  "theme": "science",
+  "titre": "Une colle inspirée par une bactérie redoutée."
+ },
+ {
+  "i": 18,
+  "type": "R",
+  "stade": "P",
+  "validee": false,
+  "source": "New Atlas",
+  "theme": "inventions",
+  "titre": "L'avion solaire ApusNeo vise 100 heures de vol."
+ },
+ {
+  "i": 19,
+  "type": "P",
+  "stade": "A",
+  "validee": false,
+  "source": "Mongabay",
+  "theme": "planete",
+  "titre": "Le Kenya lance Thamani Asili 160 millions de dollars."
+ },
+ {
+  "i": 20,
+  "type": "C",
+  "stade": "A",
+  "validee": false,
+  "source": "Mongabay",
+  "theme": "animaux",
+  "titre": "Un orang-outan saisi à Mumbai est rapatrié en Indonésie."
+ },
+ {
+  "i": 21,
+  "type": "C",
+  "stade": "A",
+  "validee": false,
+  "source": "Mongabay",
+  "theme": "planete",
+  "titre": "Le cacao gagne du terrain sans raser la forêt."
+ },
+ {
+  "i": 22,
+  "type": "H",
+  "stade": "A",
+  "validee": false,
+  "source": "Medical Xpress",
+  "theme": "sante",
+  "titre": "Vaccins anti-Covid : 81 à 810 $ par dollar."
+ },
+ {
+  "i": 23,
+  "type": "F",
+  "stade": "P",
+  "validee": false,
+  "source": "MIT News",
+  "theme": "science",
+  "titre": "Une théorie au-delà d'Einstein pour les quarks lourds."
+ },
+ {
+  "i": 24,
+  "type": "H",
+  "stade": "P",
+  "validee": false,
+  "source": "Medical Xpress",
+  "theme": "sante",
+  "titre": "Cancers : une analyse génétique révèle des risques cachés."
+ },
+ {
+  "i": 25,
+  "type": "S",
+  "stade": "A",
+  "validee": false,
+  "source": "Reasons to be Cheerful",
+  "theme": "solidarite",
+  "titre": "Au Montana, un ranch où des autistes sont guides."
+ },
+ {
+  "i": 26,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "Medical Xpress",
+  "theme": "science",
+  "titre": "Des outils vérifiés pour lire la mosaïque."
+ },
+ {
+  "i": 27,
+  "type": "P",
+  "stade": "A",
+  "validee": false,
+  "source": "The Guardian — Environment",
+  "theme": "planete",
+  "titre": "À Lancaster, une ancienne route devient un boulevard arboré."
+ },
+ {
+  "i": 28,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "TechXplore",
+  "theme": "science",
+  "titre": "Une éponge de graphène booste les batteries."
+ },
+ {
+  "i": 29,
+  "type": "H",
+  "stade": "P",
+  "validee": false,
+  "source": "Science Daily",
+  "theme": "sante",
+  "titre": "Des virus alliés contre les superbactéries."
+ },
+ {
+  "i": 30,
+  "type": "F",
+  "stade": "A",
+  "validee": false,
+  "source": "Science Daily",
+  "theme": "science",
+  "titre": "Le gène DHRS7 enfin trouvé après trente ans."
+ },
+ {
+  "i": 31,
+  "type": "H",
+  "stade": "A",
+  "validee": false,
+  "source": "Medical Xpress",
+  "theme": "sante",
+  "titre": "Valeurs de globules blancs propres au trait Duffy-null."
+ },
+ {
+  "i": 32,
+  "type": "S",
+  "stade": "A",
+  "validee": false,
+  "source": "Franceinfo — Culture",
+  "theme": "culture",
+  "titre": "La justice ordonne la restitution d'un Pissarro"
+ },
+ {
+  "i": 33,
+  "type": "S",
+  "stade": "A",
+  "validee": false,
+  "source": "Connaissance des Arts",
+  "theme": "culture",
+  "titre": "Le Buveur, volé en 1940, refait surface à Lucerne."
+ },
+ {
+  "i": 34,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "TechXplore",
+  "theme": "science",
+  "titre": "Une IA qui calcule à la lumière une piste prometteuse."
+ },
+ {
+  "i": 35,
+  "type": "S",
+  "stade": "A",
+  "validee": false,
+  "source": "Franceinfo — Culture",
+  "theme": "culture",
+  "titre": "Six gravures de Picasso retrouvées en parfait état."
+ },
+ {
+  "i": 36,
+  "type": "P",
+  "stade": "A",
+  "validee": false,
+  "source": "Le Monde — Santé",
+  "theme": "sante",
+  "titre": "3 000 docteurs juniors pour les déserts médicaux."
+ },
+ {
+  "i": 37,
+  "type": "R",
+  "stade": "A",
+  "validee": false,
+  "source": "Le Monde — Santé",
+  "theme": "sante",
+  "titre": "Un générique du lénacapavir contre le VIH, en 120 pays."
+ },
+ {
+  "i": 38,
+  "type": "C",
+  "stade": "A",
+  "validee": false,
+  "source": "The Guardian — Wildlife",
+  "theme": "planete",
+  "titre": "À la ferme Allerton, les oiseaux progressent."
+ },
+ {
+  "i": 39,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "MIT News",
+  "theme": "science",
+  "titre": "Un robot qui doute et corrige sa mémoire."
+ },
+ {
+  "i": 40,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "Phys.org — Biology",
+  "theme": "science",
+  "titre": "Les gènes de la tuberculose révèlent leurs alliances."
+ },
+ {
+  "i": 41,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "TechXplore",
+  "theme": "science",
+  "titre": "Calcul 3D des contraintes six fois plus vite."
+ },
+ {
+  "i": 42,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "TechXplore",
+  "theme": "science",
+  "titre": "Un condensateur qui tient un trillion de cycles."
+ },
+ {
+  "i": 43,
+  "type": "C",
+  "stade": "A",
+  "validee": false,
+  "source": "Good News Network",
+  "theme": "planete",
+  "titre": "Un parc brésilien s'agrandit pour la faune du Pantanal."
+ },
+ {
+  "i": 44,
+  "type": "C",
+  "stade": "A",
+  "validee": false,
+  "source": "Phys.org — Biology",
+  "theme": "planete",
+  "titre": "Des chiens sur la piste des plantes envahissantes."
+ },
+ {
+  "i": 45,
+  "type": "H",
+  "stade": "P",
+  "validee": false,
+  "source": "Medical Xpress",
+  "theme": "sante",
+  "titre": "Une IA repère des signes précoces de Parkinson."
+ },
+ {
+  "i": 46,
+  "type": "H",
+  "stade": "P",
+  "validee": false,
+  "source": "Medical Xpress",
+  "theme": "sante",
+  "titre": "Prostate : le bavdegalutamide fait baisser le PSA."
+ },
+ {
+  "i": 47,
+  "type": "F",
+  "stade": "A",
+  "validee": false,
+  "source": "Phys.org — Biology",
+  "theme": "science",
+  "titre": "Un gobie nain, Trimma charon, décrit en mer Rouge."
+ },
+ {
+  "i": 48,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "TechXplore",
+  "theme": "science",
+  "titre": "Des cellules solaires qui durent plus longtemps."
+ },
+ {
+  "i": 49,
+  "type": "H",
+  "stade": "A",
+  "validee": false,
+  "source": "Medical Xpress",
+  "theme": "sante",
+  "titre": "Enfants en cancérologie apaisés par l'hypnose."
+ },
+ {
+  "i": 50,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "TechXplore",
+  "theme": "science",
+  "titre": "Des cellules solaires organiques aux molécules redressées."
+ },
+ {
+  "i": 51,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "MIT News",
+  "theme": "sante",
+  "titre": "Un robot inspiré du serpent explore le petit intestin."
+ },
+ {
+  "i": 52,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "MIT News",
+  "theme": "inventions",
+  "titre": "Une feuille qui sait où elle se plie."
+ },
+ {
+  "i": 53,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "MIT News",
+  "theme": "science",
+  "titre": "Une IA corrige les prévisions météo à deux-six semaines."
+ },
+ {
+  "i": 54,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "MIT News",
+  "theme": "inventions",
+  "titre": "Des structures en origami tiennent debout."
+ },
+ {
+  "i": 55,
+  "type": "F",
+  "stade": "A",
+  "validee": false,
+  "source": "Science Daily",
+  "theme": "science",
+  "titre": "Deux carottes de glace du Tibet se ressemblent."
+ },
+ {
+  "i": 56,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "MIT News",
+  "theme": "science",
+  "titre": "Un embryon de souris filmé cellule par cellule."
+ },
+ {
+  "i": 57,
+  "type": "H",
+  "stade": "P",
+  "validee": false,
+  "source": "MIT News",
+  "theme": "science",
+  "titre": "Des aimants dans les muscles pour mieux les suivre."
+ },
+ {
+  "i": 58,
+  "type": "C",
+  "stade": "A",
+  "validee": false,
+  "source": "Positive News",
+  "theme": "animaux",
+  "titre": "Des rangers protègent lions et troupeaux."
+ },
+ {
+  "i": 59,
+  "type": "F",
+  "stade": "A",
+  "validee": false,
+  "source": "Science Daily",
+  "theme": "science",
+  "titre": "Le bouclier de Jupiter se révèle plus complexe."
+ },
+ {
+  "i": 60,
+  "type": "R",
+  "stade": "A",
+  "validee": false,
+  "source": "ESA — Space News",
+  "theme": "science",
+  "titre": "Un faisceau laser relie l'espace au sol."
+ },
+ {
+  "i": 61,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "Medical Xpress",
+  "theme": "science",
+  "titre": "Une enzyme Cas9 évoluée vise APOC3 et PCSK9."
+ },
+ {
+  "i": 62,
+  "type": "H",
+  "stade": "P",
+  "validee": false,
+  "source": "Medical Xpress",
+  "theme": "sante",
+  "titre": "Un traitement fait monter des protéines dans le sang."
+ },
+ {
+  "i": 63,
+  "type": "H",
+  "stade": "P",
+  "validee": false,
+  "source": "Medical Xpress",
+  "theme": "sante",
+  "titre": "Drépanocytose : thérapie CRISPR passe en essai clinique."
+ },
+ {
+  "i": 64,
+  "type": "F",
+  "stade": "A",
+  "validee": false,
+  "source": "Science Daily",
+  "theme": "science",
+  "titre": "Un faux hippocampe reçoit son propre genre."
+ },
+ {
+  "i": 65,
+  "type": "S",
+  "stade": "A",
+  "validee": false,
+  "source": "Mongabay",
+  "theme": "planete",
+  "titre": "À Pune, des citoyens cartographient les arbres."
+ },
+ {
+  "i": 66,
+  "type": "C",
+  "stade": "A",
+  "validee": false,
+  "source": "Mongabay",
+  "theme": "animaux",
+  "titre": "Un loris de Bangka réputé disparu, survit."
+ },
+ {
+  "i": 67,
+  "type": "C",
+  "stade": "P",
+  "validee": false,
+  "source": "Mongabay",
+  "theme": "planete",
+  "titre": "Un récif vivant veut protéger le rivage."
+ },
+ {
+  "i": 68,
+  "type": "F",
+  "stade": "P",
+  "validee": false,
+  "source": "Science Daily",
+  "theme": "science",
+  "titre": "Un temps né sans horloge dans un univers miniature."
+ },
+ {
+  "i": 69,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "Science Daily",
+  "theme": "science",
+  "titre": "Cellules bleues de la rétine semblent changer d'identité"
+ },
+ {
+  "i": 70,
+  "type": "F",
+  "stade": "A",
+  "validee": false,
+  "source": "Science Daily",
+  "theme": "science",
+  "titre": "Les arbres se redressent avec des muscles cachés."
+ },
+ {
+  "i": 71,
+  "type": "F",
+  "stade": "P",
+  "validee": false,
+  "source": "Science Daily",
+  "theme": "science",
+  "titre": "Supernovae, vents et lumière UV Hubble ouvre une piste."
+ },
+ {
+  "i": 72,
+  "type": "F",
+  "stade": "A",
+  "validee": false,
+  "source": "Science Daily",
+  "theme": "science",
+  "titre": "Un mur de 3 500 à 4 000 ans réécrit l'Afrique du Nord."
+ },
+ {
+  "i": 73,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "Science Daily",
+  "theme": "science",
+  "titre": "Des métaux qui tiennent bon sous le grand froid."
+ },
+ {
+  "i": 74,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "Science Daily",
+  "theme": "science",
+  "titre": "Un moteur moléculaire tourne sous l'électricité."
+ },
+ {
+  "i": 75,
+  "type": "F",
+  "stade": "A",
+  "validee": false,
+  "source": "Science Daily",
+  "theme": "science",
+  "titre": "Un singe fossile d'Égypte éclaire nos origines."
+ },
+ {
+  "i": 76,
+  "type": "F",
+  "stade": "A",
+  "validee": false,
+  "source": "Science Daily",
+  "theme": "science",
+  "titre": "Objets glacés au-delà de Neptune gardent leur origine."
+ },
+ {
+  "i": 77,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "Science Daily",
+  "theme": "science",
+  "titre": "Des nanoparticules forment des cristaux inédits."
+ },
+ {
+  "i": 78,
+  "type": "F",
+  "stade": "A",
+  "validee": false,
+  "source": "Science Daily",
+  "theme": "science",
+  "titre": "Un troisième type de magnétisme existe vraiment."
+ },
+ {
+  "i": 79,
+  "type": "R",
+  "stade": "A",
+  "validee": false,
+  "source": "Science Daily",
+  "theme": "science",
+  "titre": "Le rover Perseverance bat un record."
+ },
+ {
+  "i": 80,
+  "type": "L",
+  "stade": "P",
+  "validee": false,
+  "source": "TechXplore",
+  "theme": "inventions",
+  "titre": "Le Lightning se prépare aux ordinateurs quantiques."
+ },
+ {
+  "i": 81,
+  "type": "F",
+  "stade": "A",
+  "validee": true,
+  "source": "New Atlas",
+  "theme": "science",
+  "titre": "Des traces de sang dans un os de dinosaure."
+ },
+ {
+  "i": 82,
+  "type": "L",
+  "stade": "P",
+  "validee": true,
+  "source": "Medical Xpress",
+  "theme": "science",
+  "titre": "Contre le lupus, une piste chez la souris."
+ },
+ {
+  "i": 83,
+  "type": "S",
+  "stade": "A",
+  "validee": true,
+  "source": "The Art Newspaper",
+  "theme": "culture",
+  "titre": "63 œuvres retrouvent leur place à Bogotá."
+ },
+ {
+  "i": 84,
+  "type": "P",
+  "stade": "A",
+  "validee": true,
+  "source": "Mongabay",
+  "theme": "solidarite",
+  "titre": "Les peuples autochtones pèsent davantage."
+ },
+ {
+  "i": 85,
+  "type": "H",
+  "stade": "P",
+  "validee": true,
+  "source": "Medical Xpress",
+  "theme": "sante",
+  "titre": "Une IA lit les cœurs en quelques secondes."
+ },
+ {
+  "i": 86,
+  "type": "C",
+  "stade": "A",
+  "validee": true,
+  "source": "Mongabay",
+  "theme": "planete",
+  "titre": "En Éthiopie, 23 000 hectares revivent."
+ },
+ {
+  "i": 87,
+  "type": "S",
+  "stade": "A",
+  "validee": true,
+  "source": "Good News Network",
+  "theme": "solidarite",
+  "titre": "Un donneur de sang rare fait le tour de l'Australie."
+ },
+ {
+  "i": 88,
+  "type": "L",
+  "stade": "P",
+  "validee": true,
+  "source": "TechXplore",
+  "theme": "inventions",
+  "titre": "Des bactéries calculent plusieurs pistes à la fois."
+ },
+ {
+  "i": 89,
+  "type": "P",
+  "stade": "A",
+  "validee": true,
+  "source": "Medical Xpress",
+  "theme": "sante",
+  "titre": "À Flint, plus de bébés survivent."
+ },
+ {
+  "i": 90,
+  "type": "L",
+  "stade": "P",
+  "validee": true,
+  "source": "Medical Xpress",
+  "theme": "science",
+  "titre": "Un endoscope ultrafin pour explorer l'œil."
+ },
+ {
+  "i": 91,
+  "type": "L",
+  "stade": "P",
+  "validee": true,
+  "source": "Phys.org — Earth",
+  "theme": "planete",
+  "titre": "Les « polluants éternels » cèdent à plus basse chaleur."
+ },
+ {
+  "i": 92,
+  "type": "L",
+  "stade": "A",
+  "validee": true,
+  "source": "Phys.org — Biology",
+  "theme": "animaux",
+  "titre": "Pour les chiens, des plaquettes gardées trois semaines."
+ },
+ {
+  "i": 93,
+  "type": "H",
+  "stade": "P",
+  "validee": true,
+  "source": "Medical Xpress",
+  "theme": "sante",
+  "titre": "Test HPV et IA : un dépistage plus efficace."
+ },
+ {
+  "i": 94,
+  "type": "F",
+  "stade": "P",
+  "validee": true,
+  "source": "Science Daily",
+  "theme": "science",
+  "titre": "L'univers primitif se recrée en plus petit."
+ },
+ {
+  "i": 95,
+  "type": "F",
+  "stade": "A",
+  "validee": true,
+  "source": "Science Daily",
+  "theme": "science",
+  "titre": "Deux astéroïdes, enfin distincts."
+ },
+ {
+  "i": 96,
+  "type": "S",
+  "stade": "A",
+  "validee": true,
+  "source": "Franceinfo — Culture",
+  "theme": "solidarite",
+  "titre": "Un élan de solidarité pour Limoges."
+ },
+ {
+  "i": 97,
+  "type": "F",
+  "stade": "A",
+  "validee": true,
+  "source": "Science Daily",
+  "theme": "science",
+  "titre": "Les cinq « lettres » de la vie ont été trouvées dans un astéroïde."
+ }
+]

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { PipelineConfig } from "./config.ts";
+import { IMPACT_JSON_EXAMPLE, IMPACT_PROMPT } from "./impact.ts";
 import { parseJsonWith } from "./json.ts";
 import type { ParseResult, Prompt, ThemeRef } from "./types.ts";
 
@@ -36,6 +37,14 @@ export const TriageSchema = z.object({
   positivity: z.number().min(0).max(1),
   significance: z.number().min(0).max(1),
   evergreen: z.boolean().default(false),
+  /** Score d'impact (impact.ts). Absent = 0 : une bonne nouvelle sans note d'impact ne passe pas le plancher. */
+  concrete: z.number().min(0).max(1).default(0),
+  accomplished: z.number().min(0).max(1).default(0),
+  closeness: z.number().min(0).max(1).default(0),
+  magnitude: z.number().min(0).max(1).default(0),
+  before_after: z.number().min(0).max(1).default(0),
+  preliminary: z.boolean().default(false),
+  too_technical: z.boolean().default(false),
   reason: z.string(),
 }).superRefine((triage, ctx) => {
   if (!triage.is_good_news) return;
@@ -102,6 +111,8 @@ export type TriageRejectReason =
   | "promotional"
   | "no_theme"
   | "low_score"
+  | "low_impact"
+  | "theme_not_followed"
   | "discovery_outside_science"
   | "health_requires_human"
   | "scheduled_event"
@@ -142,6 +153,8 @@ export function buildTriagePrompt(input: TriageInput, themes: readonly ThemeRef[
     "- `is_scheduled_event` : vrai pour un événement du calendrier, qui a lieu de toute façon : remise de prix ou récompense annuelle (Goncourt, Nobel, César…), festival, sortie d'une œuvre, classement, palmarès. Ce n'est pas une bonne nouvelle. Exception : un prix qui récompense une avancée concrète (un traitement, une technique) → faux, et juge l'avancée elle-même.",
     "- `is_food_health_claim` : vrai pour une étude du type « tel aliment, boisson ou complément est bénéfique pour… ». Jamais acceptée, quel que soit le thème.",
     "",
+    IMPACT_PROMPT,
+    "",
     "Réponds UNIQUEMENT avec un objet JSON strict, sans commentaire, de la forme :",
     "{",
     '  "is_good_news": true,',
@@ -155,10 +168,11 @@ export function buildTriagePrompt(input: TriageInput, themes: readonly ThemeRef[
     '  "positivity": 0.9,',
     '  "significance": 0.8,',
     '  "evergreen": false,',
+    ...IMPACT_JSON_EXAMPLE,
     '  "reason": "courte justification en français"',
     "}",
     "",
-    "positivity et significance sont des nombres entre 0 et 1. study_subject vaut human, animal, in_vitro ou not_a_study.",
+    "positivity, significance, concrete, accomplished, closeness, magnitude et before_after sont des nombres entre 0 et 1. study_subject vaut human, animal, in_vitro ou not_a_study.",
     "evergreen vaut true si la nouvelle restera vraie et intéressante dans plusieurs mois (une découverte, un résultat durable), false si elle est liée à l'actualité immédiate.",
   ].join("\n");
 

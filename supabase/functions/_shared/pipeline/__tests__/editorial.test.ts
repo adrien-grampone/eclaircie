@@ -6,6 +6,7 @@ function triage(overrides: Partial<Triage>): Triage {
     is_good_news: true, themes: ["planete"], kind: "achievement", study_subject: "not_a_study",
     is_fact: true, is_promotional: false, is_scheduled_event: false, is_food_health_claim: false,
     positivity: 0.8, significance: 0.7, evergreen: false, reason: "",
+    concrete: 0.8, accomplished: 0.8, closeness: 0.7, magnitude: 0.6, before_after: 0.7, preliminary: false, too_technical: false,
     ...overrides,
   };
 }

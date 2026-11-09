@@ -30,6 +30,18 @@ export const CONFIG_ROWS: ConfigRow[] = [
   { key: "batch_size", value: 10 },
   { key: "verify_max_passes", value: 2 },
   { key: "revise_length_retries", value: 1 },
+  { key: "impact_weights", value: { concrete: 0.25, accomplished: 0.25, closeness: 0.2, magnitude: 0.15, before_after: 0.15 } },
+  { key: "impact_penalties", value: { non_human_study: 0.4, preliminary: 0.5, too_technical: 0.6 } },
+  { key: "impact_mix", value: 0.5 },
+  { key: "impact_min", value: 0.5 },
+  { key: "followed_themes", value: null },
+  { key: "unfollowed_exception", value: { min_accomplished: 0.7, fallback_theme: "sante" } },
+  { key: "max_revise_per_day", value: 20 },
+  { key: "max_rework_per_day", value: 50 },
+  { key: "run_mode", value: "continuous" },
+  { key: "auto_approve_verified", value: false },
+  { key: "schedule_strategy", value: "per_theme" },
+  { key: "reserve_min", value: 3 },
 ];
 
 export function loadConfig(): PipelineConfig {

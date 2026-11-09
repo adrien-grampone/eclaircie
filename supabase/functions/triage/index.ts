@@ -11,13 +11,8 @@ import { errorMessage, json, mapLimit } from "../_shared/http.ts";
 import { planBatch } from "../_shared/pipeline/budget.ts";
 import { isExpired } from "../_shared/pipeline/collect.ts";
 import { orderQueue, yieldBySource, type QueueCandidate, type SourceStats } from "../_shared/pipeline/queue.ts";
-import { applyEditorialRules } from "../_shared/pipeline/editorial.ts";
-import {
-  buildTriagePrompt,
-  parseTriage,
-  triageRejectReason,
-  triageScore,
-} from "../_shared/pipeline/triage.ts";
+import { applyEditorialRules, assessTriage } from "../_shared/pipeline/editorial.ts";
+import { buildTriagePrompt, parseTriage } from "../_shared/pipeline/triage.ts";
 import type { ThemeRef } from "../_shared/pipeline/types.ts";
 
 interface ArticleRow {
@@ -163,10 +158,10 @@ Deno.serve(async (req) => {
             .eq("id", article.id);
           return { ...base, outcome: "failed", reason: "parse_error", score: null, themes: null, kind: null };
         }
-        const ruled = applyEditorialRules(parsed.value);
-        const score = triageScore(ruled.triage, trustLevel, config);
-        const reason = ruled.reason ?? triageRejectReason(ruled.triage, score, config);
-        const triage = { ...ruled.triage, score, trust_level: trustLevel, model: MODELS.triage };
+        const ruled = applyEditorialRules(parsed.value, { themes: config.followed_themes, exception: config.unfollowed_exception });
+        const { base, impact, score, reason: scoreReason } = assessTriage(ruled.triage, trustLevel, config);
+        const reason = ruled.reason ?? scoreReason;
+        const triage = { ...ruled.triage, score, base_score: base, impact, trust_level: trustLevel, model: MODELS.triage };
         const keptStatus = options.retriage ? article.status : "triaged";
         await db.from("raw_articles")
           .update({ status: reason ? "rejected" : keptStatus, reject_reason: reason, triage, triaged_at: new Date().toISOString() })

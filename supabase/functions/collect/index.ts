@@ -6,7 +6,7 @@
  */
 import { loadConfig, recordRun, serviceClient } from "../_shared/db.ts";
 import { errorMessage, fetchText, json, mapLimit } from "../_shared/http.ts";
-import { collectMaxAgeDays, isFreshEnough } from "../_shared/pipeline/collect.ts";
+import { collectMaxAgeDays, isFreshEnough, sourceIsFollowed } from "../_shared/pipeline/collect.ts";
 import { parseFeed } from "../_shared/pipeline/rss.ts";
 
 interface SourceRow {
@@ -14,6 +14,8 @@ interface SourceRow {
   name: string;
   feed_url: string;
   trust_level: number;
+  /** Thèmes que la source alimente (null = non renseigné : toujours collectée). */
+  themes: string[] | null;
 }
 
 interface SourceReport {
@@ -33,11 +35,11 @@ Deno.serve(async () => {
     const config = await loadConfig(db);
     const { data, error } = await db
       .from("sources")
-      .select("id, name, feed_url, trust_level")
+      .select("id, name, feed_url, trust_level, themes")
       .eq("active", true)
       .order("last_fetched_at", { ascending: true, nullsFirst: true });
     if (error) throw new Error(`sources : ${error.message}`);
-    const sources = (data ?? []) as SourceRow[];
+    const sources = ((data ?? []) as SourceRow[]).filter((s) => sourceIsFollowed(s.themes, config.followed_themes));
     const now = new Date();
 
     const reports = await mapLimit(sources, 5, async (source): Promise<SourceReport> => {

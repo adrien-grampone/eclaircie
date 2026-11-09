@@ -84,7 +84,7 @@ export function decideDraftOutput(
   json: string,
   attempt: number,
   config: LengthConfig & Pick<PipelineConfig, "revise_length_retries">,
-  prefix: "draft" | "revise" = "revise",
+  prefix: "draft" | "revise" | "rework" = "revise",
 ): ReviseStep {
   const strict = parseDraft(json, config);
   if (strict.ok) {
@@ -116,19 +116,31 @@ export function draftRules(config: LengthConfig): string {
     "- JAMAIS un terme plus précis que la source : « beetles » ne devient pas « carabes », « a study » ne devient pas « un essai clinique ». La traduction fidèle est autorisée et attendue ; l'ajout de précision ne l'est pas.",
     "- Chaque chiffre, date et nom propre du résumé doit figurer dans l'article, avec la même portée (une période reste une période, une espèce reste une espèce).",
     "- Noms d'espèces et de lieux : le nom français courant s'il existe (« méloé », « loris lent »), sinon une description (« un coléoptère rare »). JAMAIS un nom anglais brut dans le texte.",
+    "- PIÈGE DES GÉNÉRALISATIONS : rendre le texte concret ne veut jamais dire compléter l'article. Erreurs réelles, toutes rejetées par le relecteur : « Washington State University » devenue « l'université de Washington » (c'est une autre université) ; « un juge » devenu « une juge » ; « de l'hème » devenu « de l'hémoglobine » ; « une molécule liée au sang » devenue « des traces de sang ». Garde le mot exact de l'article ou un mot plus général, jamais un mot voisin plus parlant.",
     "",
-    "TON : C'EST UNE BONNE NOUVELLE",
-    "- Une nuance (limite, opposition, contrepartie) n'est mentionnée QUE si elle change le sens de CETTE nouvelle. Pas de contexte général négatif ajouté (« les effectifs déclinent ailleurs », « les menaces persistent »).",
-    "- Quand elle s'impose : une demi-phrase maximum, jamais la dernière phrase, jamais dans le titre. Le résumé FINIT sur la bonne nouvelle.",
-    "- Si la contrepartie est si forte qu'elle devrait figurer dans le titre, ce n'est pas une bonne nouvelle : réponds alors { \"verdict\": \"not_good_news\", \"reason\": \"…\" } et rien d'autre.",
+    "CE QU'ON VEUT : UN PETIT BONHEUR QU'ON COMPREND DU PREMIER COUP",
+    "Le lecteur a quinze secondes et aucune culture scientifique particulière. Il doit comprendre ce qui s'est passé, et sourire.",
+    "- Si la contrepartie est si forte qu'elle devrait figurer dans le titre, ou si l'article ne raconte aucun fait réellement arrivé, ce n'est pas une bonne nouvelle : réponds { \"verdict\": \"not_good_news\", \"reason\": \"…\" } et rien d'autre.",
+    "",
+    "TITRE",
+    "- verdict : \"ok\" quand tu livres un brouillon.",
+    "- Le titre dit CE QUI S'EST PASSÉ, en mots simples, avec un sujet concret (qui ou quoi, et si possible où). Un adolescent de 15 ans le comprend sans aide.",
+    "- Aucun jargon : pas de sigle, pas de nom de molécule, de gène ou de technique, pas de mot savant. Dis ce que ça fait, pas comment ça s'appelle. Un nom propre n'est utile que s'il parle au lecteur (un pays, une ville).",
+    `- 12 mots maximum. title_main est le début de la phrase (en droit), title_accent la fin (en italique) : le sens prime sur l'effet de style. title_main : ${config.title_main_max_chars} caractères MAXIMUM ; title_accent : ${config.title_accent_max_chars} caractères MAXIMUM.`,
+    "- Exemples du ton voulu : « Un policier australien » / « a donné son sang rare 545 fois. » — « À Flint, moins de bébés meurent » / « depuis une aide versée aux familles. »",
+    "- Le titre se comprend SEUL, sans le résumé : on sait ce qui s'est passé, sans exiger de nom propre ni de terme technique. INTERDIT : une formulation vague ou allusive (« une vieille idée », « un donneur », « une découverte », « une avancée »).",
+    "- Le titre n'apporte aucun fait absent du résumé et ne le contredit pas. Jamais de nuance, de « pourrait » ni de « piste » dans le titre.",
+    "- Un résultat qui n'est qu'une possibilité (« pourrait mieux dépister ») n'est pas un résultat : si l'article mesure quelque chose, écris le fait mesuré ; sinon, verdict not_good_news.",
+    "",
+    "RÉSUMÉ EN TROIS TEMPS (tutoiement, chaleureux, phrases courtes)",
+    "1. Le problème de départ, en une phrase concrète : ce qui n'allait pas, pour qui.",
+    "2. Ce qui a changé : le fait, avec ses chiffres rendus parlants SANS rien ajouter (arrondi honnête, « un sur trois » pour 33 %, conversion d'unités ; jamais de comparaison absente de l'article).",
+    "3. Pourquoi c'est une bonne nouvelle pour les gens (ou les animaux, la nature) : la conséquence concrète, telle que l'article la permet.",
+    "- Nuance : une seule phrase courte, en toute fin, et QUE si elle change le sens de CETTE nouvelle (« Il faudra le confirmer sur plus de patients. »). Pas de contexte général négatif ajouté (« les effectifs déclinent ailleurs », « les menaces persistent »).",
+    "- Le temps 3 reste dans ce que l'article permet : pas de « enfin », « mieux », « révolution » ni de promesse qu'il ne fait pas.",
+    `- summary : ${config.summary_max_chars} caractères MAXIMUM, en français. Compte large : un résumé trop long est renvoyé.`,
     "",
     "FORMAT",
-    "- verdict : \"ok\" quand tu livres un brouillon.",
-    `- title_main + title_accent forment le titre en deux parties du design (title_accent est la chute, en italique). title_main : ${config.title_main_max_chars} caractères MAXIMUM ; title_accent : ${config.title_accent_max_chars} caractères MAXIMUM. Exemple : « La couche d'ozone » / « se répare. »`,
-    "- Le titre est évocateur, c'est voulu ; il n'apporte aucun fait absent du résumé et ne le contredit pas.",
-    "- Le titre se comprend SEUL, sans le résumé : il nomme le sujet concret (l'espèce, le lieu, la technique, le résultat). INTERDIT : une formulation vague ou allusive (« une vieille idée », « un donneur », « une découverte », « une avancée »).",
-    "- Un résultat qui n'est qu'une possibilité (« pourrait mieux dépister ») n'est pas un résultat : si l'article mesure quelque chose, écris le fait mesuré ; s'il n'y a aucun résultat mesuré, ce n'est pas une bonne nouvelle (verdict not_good_news).",
-    `- summary : 2 à 3 phrases, ${config.summary_max_chars} caractères MAXIMUM, en français, tutoiement, ton chaleureux et précis.`,
     "- claims : chaque affirmation factuelle du résumé, avec en `evidence` la phrase EXACTE de l'article qui la soutient, recopiée mot pour mot (c'est la seule chose que tu recopies ; elle sera vérifiée par recherche dans le texte).",
     "- scene : description visuelle de la scène à illustrer, en anglais, pour un illustrateur qui n'a pas lu l'article. Règles :",
     "  · le sujet est EXACT (« three wind turbines », « a branching coral ») ou GÉNÉRIQUE (« a small farmland bird »), jamais approximatif (pas de « some kind of bird », pas d'espèce devinée) ;",
@@ -197,7 +209,7 @@ export function buildRevisePrompt(
   options: ReviseOptions = {},
 ): Prompt {
   const system = [
-    "Tu révises la bonne nouvelle du jour d'une application française. Un relecteur a relevé des problèmes précis dans un brouillon. Corrige-les TOUS, en appliquant la correction proposée ou une formulation plus prudente, sans introduire aucun fait nouveau. Tout ce que le relecteur n'a pas signalé reste tel quel. Le texte corrigé doit toujours se lire comme une bonne nouvelle et finir sur elle.",
+    "Tu révises la bonne nouvelle du jour d'une application française. Un relecteur a relevé des problèmes précis dans un brouillon. Corrige-les TOUS, en appliquant la correction proposée ou une formulation plus prudente, sans introduire aucun fait nouveau. Tout ce que le relecteur n'a pas signalé reste tel quel. Le texte corrigé doit toujours se lire comme une bonne nouvelle, sans autre nuance qu'une phrase courte en toute fin.",
     "",
     draftRules(config),
   ].join("\n");
@@ -215,5 +227,20 @@ export function buildRevisePrompt(
     list,
     ...shorten,
   ].join("\n");
+  return { system, user };
+}
+
+/**
+ * Reprise d'une ancienne nouvelle (statut `to_rework`) : le brouillon, écrit avec une consigne antérieure, est
+ * réécrit selon la consigne actuelle, à partir du même article et sans fait nouveau. Il repasse ensuite par
+ * la double vérification comme un nouveau brouillon.
+ */
+export function buildReworkPrompt(article: Article, draft: Draft, config: LengthConfig, options: ReviseOptions = {}): Prompt {
+  const system = [
+    "Tu reprends une bonne nouvelle déjà publiée par une application française, écrite avec une ancienne consigne. Réécris le titre et le résumé selon la consigne ci-dessous, à partir du texte de l'article UNIQUEMENT : aucun fait nouveau, rien qui ne figure dans l'article. Les claims et leurs evidence doivent correspondre au nouveau résumé. Si l'article ne permet pas d'écrire une bonne nouvelle selon cette consigne, réponds not_good_news.",
+    "",
+    draftRules(config),
+  ].join("\n");
+  const user = [articleBlock(article), "", "ANCIEN BROUILLON (à réécrire)", JSON.stringify(draft, null, 2), ...shortenInstruction(options.shorten ?? [])].join("\n");
   return { system, user };
 }

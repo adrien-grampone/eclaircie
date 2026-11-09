@@ -120,8 +120,8 @@ describe("buildDraftPrompt", () => {
   it("impose les règles de ton : nuance utile seulement, jamais en fin ni dans le titre, not_good_news sinon", () => {
     expect(prompt.system).toMatch(/QUE si elle change le sens de CETTE nouvelle/);
     expect(prompt.system).toMatch(/Pas de contexte général négatif/);
-    expect(prompt.system).toMatch(/jamais la dernière phrase, jamais dans le titre/);
-    expect(prompt.system).toMatch(/FINIT sur la bonne nouvelle/);
+    expect(prompt.system).toMatch(/une seule phrase courte, en toute fin/);
+    expect(prompt.system).toMatch(/Jamais de nuance, de « pourrait » ni de « piste » dans le titre/);
     expect(prompt.system).toMatch(/"verdict": "not_good_news"/);
     expect(prompt.system).toMatch(/nom français courant/);
     expect(prompt.system).toMatch(/JAMAIS un nom anglais brut/);
@@ -159,7 +159,7 @@ describe("buildRevisePrompt", () => {
     expect(prompt.system).toMatch(/Corrige-les TOUS/);
     expect(prompt.system).toMatch(/sans introduire aucun fait nouveau/);
     expect(prompt.system).toMatch(/« could » reste « pourrait »/); // mêmes règles que le draft
-    expect(prompt.system).toMatch(/finir sur elle/);
+    expect(prompt.system).toMatch(/une phrase courte en toute fin/);
   });
 });
 

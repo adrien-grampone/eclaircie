@@ -1,0 +1,522 @@
+[
+ {
+  "id": "1394a32b-b83a-4a74-b87b-de8b3850f169",
+  "validee": true,
+  "theme": "science",
+  "source": "Medical Xpress",
+  "avant": {
+   "titre": "Contre le lupus, une piste chez la souris.",
+   "resume": "Des chercheurs de Riverside et City of Hope ont trouvé une piste contre le lupus : cibler un déséquilibre de récepteurs à la prolactine dans les cellules immunitaires malades. Chez la souris, le traitement a réduit les atteintes rénales, un résultat encore préclinique, tout en préservant les cellules immunitaires saines."
+  },
+  "issue": "vérifiée",
+  "detail": null,
+  "passes": 1,
+  "apres": {
+   "titre": "Chez la souris, des reins moins abîmés par le lupus.",
+   "title_main": "Chez la souris,",
+   "title_accent": "des reins moins abîmés par le lupus.",
+   "resume": "Le lupus fait attaquer le corps par son propre système immunitaire, et les reins sont souvent touchés. Chez la souris, une approche qui agit sur certaines cellules immunitaires a réduit les dégâts aux reins, en épargnant les cellules saines. Pour les malades, cela pourrait permettre de protéger les organes sans affaiblir toute la défense. Il faudra le confirmer chez les patients.",
+   "mots_titre": 10,
+   "car_resume": 382,
+   "depassements": []
+  },
+  "problemes": []
+ },
+ {
+  "id": "2528fd6d-2f30-4ce0-ae57-1022cfd54df8",
+  "validee": true,
+  "theme": "science",
+  "source": "Science Daily",
+  "avant": {
+   "titre": "L'univers primitif se recrée en plus petit.",
+   "resume": "Les quatre grandes expériences du LHC ont relevé des signes d’une matière primordiale dans des collisions d’oxygène et de néon. On croyait qu’il fallait des noyaux très lourds, comme le plomb ; des noyaux plus légers pourraient suffire aussi. Une nouvelle fenêtre s’ouvre sur les tout premiers instants de l’univers."
+  },
+  "issue": "vérifiée",
+  "detail": null,
+  "passes": 2,
+  "apres": {
+   "titre": "Au CERN, oxygène et néon des signes de la matière des débuts.",
+   "title_main": "Au CERN, oxygène et néon",
+   "title_accent": "des signes de la matière des débuts.",
+   "resume": "Pendant des décennies, on a cru qu'il fallait écraser des noyaux très lourds, comme ceux du plomb, pour recréer la matière des premiers instants de l'univers. Dans le grand accélérateur de particules du CERN, des collisions d'oxygène et de néon montrent des signes de cette matière. Les quatre grandes expériences de ce lieu ont toutes rapporté ces signes. Des noyaux plus légers permettent donc d'étudier ces conditions extrêmes autrement.",
+   "mots_titre": 12,
+   "car_resume": 440,
+   "depassements": []
+  },
+  "problemes": [
+   "[overstatement] Avec de petits chocs, on recrée la matière des débuts. → Le titre affirme une recréation établie, alors que l'article parle de « signes » et d'indices. Reformuler : « Avec de petits chocs, des signes de la matière des débuts apparaissent ».",
+   "[vague_title] Avec de petits chocs, on recrée la matière des débuts. → Le titre ne nomme pas le sujet concret (le plasma quark-gluon) et ne dit pas quelles collisions sont en cause. Proposer : « Collisions d'oxygène et de néon : des signes de plasma quark-gluon »."
+  ]
+ },
+ {
+  "id": "c4b9c7ab-ca60-47e4-af38-7bf5ce761319",
+  "validee": true,
+  "theme": "sante",
+  "source": "Medical Xpress",
+  "avant": {
+   "titre": "Test HPV et IA : un dépistage plus efficace.",
+   "resume": "Combiner un test HPV à une analyse d'images par intelligence artificielle a montré son efficacité pour repérer les lésions précancéreuses et guider les soins. L'étude, menée dans neuf pays auprès de plus de 50 000 femmes, suggère que cette approche pourrait améliorer le dépistage, même là où les moyens sont limités."
+  },
+  "issue": "rejetée par le vérificateur",
+  "detail": "fact_error: Dans neuf pays, un prélèvement fait par soi-même aide à repérer les lésions.",
+  "passes": 1,
+  "apres": {
+   "titre": "Dans neuf pays, un prélèvement fait par soi-même aide à repérer les lésions.",
+   "title_main": "Dans neuf pays,",
+   "title_accent": "un prélèvement fait par soi-même aide à repérer les lésions.",
+   "resume": "Dans beaucoup de pays pauvres, peu de femmes sont dépistées du cancer du col de l'utérus, et l'accès aux bons tests et au suivi reste inégal. Entre 2022 et 2025, plus de 50 000 femmes de 25 à 49 ans ont participé à une étude dans neuf pays. Elles se sont prélevées elles-mêmes, puis une intelligence artificielle a analysé les images du col. Plus d'une sur quatre a eu un test positif, et plus de 500 cas de lésions graves ont été repérés. Cette méthode peut aider à savoir vite quelles femmes doivent être traitées, même là où les soins manquent.",
+   "mots_titre": 13,
+   "car_resume": 547,
+   "depassements": [
+    "chute",
+    "résumé"
+   ]
+  },
+  "problemes": [
+   "[fact_error] Dans neuf pays, un prélèvement fait par soi-même aide à repérer les lésions. → Dans neuf pays, un test VPH en auto-prélèvement combiné à l'analyse des images du col par IA aide à repérer les lésions précancéreuses. Le titre attribue l'efficacité au seul auto-prélèvement alors que l'article évalue une stratégie combinant test VPH, génotypage étendu et évaluation visuelle automatisée (IA).",
+   "[translation_issue] Dans beaucoup de pays pauvres, peu de femmes sont dépistées du cancer du col de l'utérus → Dans beaucoup de pays à revenu faible ou intermédiaire, peu de femmes sont dépistées du cancer du col de l'utérus. « Low- and middle-income » ne signifie pas « pauvres » : la catégorie inclut les pays à revenu intermédiaire."
+  ]
+ },
+ {
+  "id": "51d2a404-8d8c-453e-81fd-308fcb2dcfac",
+  "validee": true,
+  "theme": "solidarite",
+  "source": "Good News Network",
+  "avant": {
+   "titre": "Un donneur de sang rare fait le tour de l'Australie.",
+   "resume": "Trevor Bergman, policier de 59 ans, a donné son sang extrêmement rare dans les 85 centres de don d’Australie, 545 fois au total. Il fait partie des 150 Australiens connus pour porter l’anticorps anti-D. Son tour s’achève à Canberra, où il a donné aux côtés de la représentante de la Couronne."
+  },
+  "issue": "vérifiée",
+  "detail": null,
+  "passes": 2,
+  "apres": {
+   "titre": "Un policier australien a donné son sang rare 545 fois.",
+   "title_main": "Un policier australien",
+   "title_accent": "a donné son sang rare 545 fois.",
+   "resume": "Quand le bébé et la mère ne sont pas compatibles, le système de défense de la mère peut attaquer le sang du bébé. Un traitement, l'anti-D, leur est donné pour les protéger. Trevor Bergman, 59 ans, policier de Melbourne, fait partie des 150 Australiens connus pour porter cet anticorps rare. Il a donné son sang 545 fois, dans les 85 centres de don du pays, et ses dons ont aidé des patients un peu partout en Australie. Ces dons rappellent que, selon Lifeblood, un Australien sur trois aura un jour besoin de sang donné.",
+   "mots_titre": 10,
+   "car_resume": 520,
+   "depassements": [
+    "résumé"
+   ]
+  },
+  "problemes": [
+   "[translation_issue] Quand une maman et son bébé n'ont pas le même sang → Quand le bébé et la mère ne sont pas compatibles (« aren't compatible »). « Pas le même sang » change le sens : la source parle de compatibilité, pas d'un groupe sanguin identique.",
+   "[overstatement] Or seuls 150 Australiens portent ce sang rare. → Or 150 Australiens sont connus pour porter cet anticorps (« one of 150 Australians known to carry the anti-D antibody »). Le mot « seuls » et l'omission de « connus » supposent un recensement exhaustif que l'article ne dit pas.",
+   "[overstatement] rappellent qu'un Australien sur trois aura un jour besoin de sang donné → rappellent que, selon Lifeblood, un Australien sur trois aura un jour besoin de sang donné. La statistique doit être attribuée à sa source."
+  ]
+ },
+ {
+  "id": "83b3e22d-6216-4bd2-bc15-7d6202da06fe",
+  "validee": true,
+  "theme": "planete",
+  "source": "Mongabay",
+  "avant": {
+   "titre": "En Éthiopie, 23 000 hectares revivent.",
+   "resume": "Le projet Desa’a, en Éthiopie, vient d’être distingué par l’ONU. Plus de 23 000 hectares de terres dégradées ont été restaurés et environ 500 000 tonnes de sol protégées de l’érosion. Les combats de septembre 2026 pourraient menacer la suite, mais l’infiltration de l’eau dans le sol a déjà progressé de 26 % depuis 2019."
+  },
+  "issue": "vérifiée",
+  "detail": null,
+  "passes": 1,
+  "apres": {
+   "titre": "En Éthiopie, une forêt abîmée se remet à pousser avec ses habitants.",
+   "title_main": "En Éthiopie,",
+   "title_accent": "une forêt abîmée se remet à pousser avec ses habitants.",
+   "resume": "Dans le nord de l'Éthiopie, la forêt de Desa'a s'abîmait : en 2016, environ 74 % avait déjà disparu. Depuis, plus de 23 000 hectares de terres abîmées ont été remis en état, et environ 500 000 tonnes de sol ont été évitées à l'érosion. L'eau s'infiltre mieux dans la terre, de 26 % depuis 2019 selon WeForest. Des activités comme l'apiculture donnent aussi des revenus aux habitants. Mais les combats ont repris en septembre 2026, et le travail pourrait à nouveau être menacé.",
+   "mots_titre": 12,
+   "car_resume": 476,
+   "depassements": [
+    "chute"
+   ]
+  },
+  "problemes": []
+ },
+ {
+  "id": "3af787ec-5956-482e-b8d4-1ad1131f8201",
+  "validee": true,
+  "theme": "animaux",
+  "source": "Phys.org — Biology",
+  "avant": {
+   "titre": "Pour les chiens, des plaquettes gardées trois semaines.",
+   "resume": "Des plaquettes sanguines réfrigérées jusqu’à trois semaines se sont montrées efficaces contre les saignements, là où quelques jours suffisaient jusqu’ici. Sur 24 chiens soignés dans un hôpital vétérinaire universitaire américain, elles ont amélioré ou prévenu les saignements dans 70 % des cas."
+  },
+  "issue": "vérifiée",
+  "detail": null,
+  "passes": 2,
+  "apres": {
+   "titre": "Des plaquettes pour chiens gardées au frigo jusqu'à trois semaines",
+   "title_main": "Des plaquettes pour chiens",
+   "title_accent": "gardées au frigo jusqu'à trois semaines",
+   "resume": "Quand un chien perd trop de sang, les vétérinaires ont souvent peu de moyens d'agir. Le produit qui aide à contrôler les saignements ne se gardait que quelques jours à température ambiante. Une équipe de l'université d'État de Washington l'a conservé au frigo jusqu'à trois semaines : sur 24 chiens soignés, il a amélioré le saignement ou évité des complications dans 70 % des cas. Utilisés quand il faut, ces produits peuvent sauver des vies.",
+   "mots_titre": 10,
+   "car_resume": 443,
+   "depassements": []
+  },
+  "problemes": [
+   "[vague_title] Aux États-Unis, un produit sanguin pour chiens tient trois semaines au frigo. → Des plaquettes sanguines de chien conservées au frigo jusqu'à trois semaines. Le titre nomme les plaquettes (« produit sanguin » est trop vague) et « tient trois semaines » devient « jusqu'à trois semaines », comme dans l'article (« up to three weeks »).",
+   "[overstatement] Le produit qui aide à arrêter les saignements → Le produit qui aide à contrôler les saignements (l'article parle de « controlling bleeding » et de « helping control bleeding », pas d'arrêter les saignements).",
+   "[overstatement] l'a conservé au frigo pendant trois semaines → l'a conservé au frigo jusqu'à trois semaines. L'article dit que les plaquettes peuvent être stockées « jusqu'à » trois semaines, et non qu'elles l'ont été pendant exactement trois semaines.",
+   "[overstatement] Pour les chiens les plus graves, c'est une vraie bouée de sauvetage. → Utilisés quand ils sont nécessaires, ces produits peuvent sauver des vies. L'article ne restreint pas l'usage aux « chiens les plus graves », et « peuvent sauver des vies » est la formulation de l'article (« can be lifesaving »), non une certitude."
+  ]
+ },
+ {
+  "id": "813a021b-7285-4945-b710-d2b0f9a83c46",
+  "validee": true,
+  "theme": "solidarite",
+  "source": "Franceinfo — Culture",
+  "avant": {
+   "titre": "Un élan de solidarité pour Limoges.",
+   "resume": "Après l’incendie qui a en partie détruit l’hôtel de ville de Limoges, plus d’un million d’euros ont été récoltés en moins de deux semaines, grâce à plus de 9 000 participants. Beaucoup de petits dons venus de toute la France, mais aussi de 28 pays étrangers, ont porté cet élan."
+  },
+  "issue": "vérifiée",
+  "detail": null,
+  "passes": 2,
+  "apres": {
+   "titre": "À Limoges, des milliers de gens donnent pour relever leur hôtel de ville.",
+   "title_main": "À Limoges, des milliers de gens",
+   "title_accent": "donnent pour relever leur hôtel de ville.",
+   "resume": "Le 17 octobre, un incendie a en partie détruit l'hôtel de ville de Limoges, un bâtiment du XIXe siècle. Alors les gens ont répondu présent : en moins de deux semaines, plus d'un million d'euros de dons, dont beaucoup de petites sommes, venus de plus de 9 000 personnes. Et même de 28 pays ! Ces dons et les assurances financeront 20 % des travaux, la grande partie étant prise en charge par l'État. Le coût final n'est pas encore connu.",
+   "mots_titre": 13,
+   "car_resume": 436,
+   "depassements": [
+    "chute"
+   ]
+  },
+  "problemes": [
+   "[overstatement] plus d'un million d'euros de dons, surtout de petites sommes, venus de plus de 9 000 personnes → plus d'un million d'euros de dons, dont beaucoup de petites sommes, venus de plus de 9 000 personnes"
+  ]
+ },
+ {
+  "id": "bc24595d-537b-4aa0-9335-3323db40b347",
+  "validee": true,
+  "theme": "culture",
+  "source": "The Art Newspaper",
+  "avant": {
+   "titre": "63 œuvres retrouvent leur place à Bogotá.",
+   "resume": "Le Musée national de Colombie, à Bogotá, a remis en place les 63 objets retirés de ses salles permanentes. Un juge a invalidé ce retrait décidé par le gouvernement et interdit de retirer des œuvres selon leur contenu. Le ministère s'est conformé à l'ordre vendredi 30 octobre."
+  },
+  "issue": "rejetée par le vérificateur",
+  "detail": "fact_error: À Bogotá, 63 œuvres reviennent au musée national.",
+  "passes": 1,
+  "apres": {
+   "titre": "À Bogotá, 63 œuvres reviennent au musée national.",
+   "title_main": "À Bogotá, 63 œuvres",
+   "title_accent": "reviennent au musée national.",
+   "resume": "Le 15 octobre, 63 œuvres ont été retirées des salles permanentes du musée national de Colombia, à Bogotá. Le gouvernement les avait enlevées, au nom d'un supposé « endoctrinement politique ». Un juge a ordonné leur retour, et le ministère de la Culture s'est exécuté le vendredi 30 octobre. Parmi elles, un drapeau de la fierté et un stylo fait à partir d'une balle sont de nouveau exposés. Le juge a aussi interdit de retirer des œuvres à cause de leur contenu. Des changements restent possibles, s'ils sont justifiés.",
+   "mots_titre": 8,
+   "car_resume": 519,
+   "depassements": [
+    "résumé"
+   ]
+  },
+  "problemes": [
+   "[fact_error] À Bogotá, 63 œuvres reviennent au musée national. → À Bogotá, 63 œuvres retirées des salles du musée national y sont réexposées.",
+   "[overstatement] Le gouvernement les avait enlevées, au nom d'un supposé « endoctrinement politique ». → Le gouvernement les avait enlevées, en invoquant un « endoctrinement politique »."
+  ]
+ },
+ {
+  "id": "549944d0-1c2f-4cea-88d9-ace9f84c32d8",
+  "validee": true,
+  "theme": "sante",
+  "source": "Medical Xpress",
+  "avant": {
+   "titre": "Une IA lit les cœurs en quelques secondes.",
+   "resume": "Sur 27 382 patients, suivis en moyenne plus de cinq ans, une IA prédit un peu mieux le risque de décès que les cliniciens, à partir de l'IRM du cœur. Elle analyse un examen en environ 2 à 3 secondes, contre environ 13 minutes pour une analyse experte, les cliniciens gardant la vérification. Elle pourrait alléger la charge des soignants."
+  },
+  "issue": "vérifiée",
+  "detail": null,
+  "passes": 1,
+  "apres": {
+   "titre": "Une IA analyse le cœur en quelques secondes, contre treize minutes.",
+   "title_main": "Une IA analyse le cœur",
+   "title_accent": "en quelques secondes, contre treize minutes.",
+   "resume": "Pour savoir si ton cœur pompe bien, les médecins s'appuient sur une mesure tirée d'images IRM. Des chercheurs britanniques ont comparé une IA à des spécialistes sur plus de 27 000 patients. L'IA a fait l'analyse en deux à trois secondes, contre environ treize minutes pour un expert, et elle a mieux prédit quels patients risquaient de mourir, même si l'écart est petit. Elle pourrait alléger le travail des équipes et aider à soigner plus vite. Les médecins restent là pour vérifier.",
+   "mots_titre": 11,
+   "car_resume": 484,
+   "depassements": [
+    "chute",
+    "résumé"
+   ]
+  },
+  "problemes": []
+ },
+ {
+  "id": "6b7e82c9-cbfe-4147-a5ce-c765d097e0e1",
+  "validee": true,
+  "theme": "science",
+  "source": "New Atlas",
+  "avant": {
+   "titre": "Des traces de sang dans un os de dinosaure.",
+   "resume": "Dans une patte fossilisée d'un théropode de 115 millions d'années, des chercheurs ont repéré des dérivés de l'hème, composant de l'hémoglobine. Une contamination microbienne n'est pas totalement exclue, mais certaines structures pourraient être des globules rouges minéralisés, présentés comme une fenêtre moléculaire sur ces animaux disparus."
+  },
+  "issue": "rejetée par le vérificateur",
+  "detail": "fact_error: claim 0: L'article dit que la matière osseuse aurait dû se dissoudre et être remplacée par des minéraux, en ne préservant que l'architecture de l'os. Il ne dit rien du sang, et « normalement » généralise une idée que l'article présente comme une attente liée à ce cas. Le passage sur le sang est une extrapolation.",
+  "passes": 1,
+  "apres": {
+   "titre": "Dans une patte de dinosaure, on a retrouvé des traces de sang.",
+   "title_main": "Dans une patte de dinosaure,",
+   "title_accent": "on a retrouvé des traces de sang.",
+   "resume": "Normalement, les os d'un dinosaure sont remplacés par des minéraux, et le sang disparaît avec eux. Pourtant, dans une patte vieille de 115 millions d'années, trouvée au Brésil, des chercheurs ont repéré de petites formes rondes qui pourraient être des globules rouges. Ils y ont aussi trouvé un élément du sang qui sert à transporter l'oxygène. Selon Kliti Grice, c'est une fenêtre directe sur le fonctionnement du corps d'animaux disparus depuis longtemps. Il faudra encore écarter une contamination par des microbes.",
+   "mots_titre": 12,
+   "car_resume": 518,
+   "depassements": [
+    "résumé"
+   ]
+  },
+  "problemes": [
+   "[fact_error] Normalement, les os d'un dinosaure sont remplacés par des minéraux, et le sang disparaît avec eux. → Les os fossilisés sont généralement remplacés par des minéraux venus de la roche environnante, qui ne conservent souvent que l'architecture de l'os. Supprimer toute mention du sang, que l'article ne relie pas à ce processus, ou écrire : « Les os fossilisés sont en général remplacés par des minéraux, qui ne gardent souvent que leur architecture. »",
+   "[overstatement] Dans une patte de dinosaure, on a retrouvé des traces de sang. → Titre proposé : « Dans une patte de dinosaure vieille de 115 millions d'années, des chercheurs trouvent des indices de sang ». L'article ne montre pas de sang en tant que tel : il s'agit de structures qui pourraient être des globules rouges et d'une molécule de l'hémoglobine (l'hème).",
+   "[overstatement] Ils y ont aussi trouvé un élément du sang qui sert à transporter l'oxygène. → Ils y ont aussi identifié l'hème, composant de l'hémoglobine, la molécule qui transporte l'oxygène dans le sang."
+  ]
+ },
+ {
+  "id": "4846102e-1176-4d50-afcc-5f818a9b481c",
+  "validee": true,
+  "theme": "solidarite",
+  "source": "Mongabay",
+  "avant": {
+   "titre": "Les peuples autochtones pèsent davantage.",
+   "resume": "À la COP17, les peuples autochtones et communautés locales ont renforcé leur rôle décisionnel dans la Convention sur la diversité biologique, même si les sept régions socioculturelles n'y figurent plus, un regret de leurs négociateurs. Leur organe subsidiaire est opérationnel : il peut conseiller les États et rédiger des textes de décision."
+  },
+  "issue": "erreur",
+  "detail": "révision : Aucun objet JSON trouvé dans la réponse",
+  "apres": {
+   "titre": "Au sommet mondial sur la nature, les peuples autochtones pèsent plus.",
+   "title_main": "Au sommet mondial sur la nature,",
+   "title_accent": "les peuples autochtones pèsent plus.",
+   "resume": "En 2024, un organe créé pour donner la parole aux peuples autochtones et aux communautés locales restait à mettre en place. À la conférence sur la biodiversité de 2026, en Arménie, il a enfin été pleinement installé. Il peut désormais conseiller les pays et rédiger des textes de décision. Ces peuples ont davantage leur mot à dire sur la protection de la nature.",
+   "mots_titre": 11,
+   "car_resume": 363,
+   "depassements": []
+  },
+  "problemes": [
+   "[vague_title] Au sommet mondial sur la nature, les peuples autochtones pèsent plus. → Biodiversité : un organe de la Convention ouvre davantage les décisions aux peuples autochtones et communautés locales.",
+   "[overstatement] il a enfin été pleinement installé → il a été pleinement installé lors de la COP17 (Arménie, 2026)",
+   "[missing_caveat] Il peut désormais conseiller les pays et rédiger des textes de décision. Ces peuples ont davantage leur mot à dire sur la protection de la nature. → Il peut désormais conseiller les pays et rédiger des textes de décision. La question de la représentation a été le point le plus disputé : le compromis a retiré la référence aux sept régions socioculturelles, que les négociateurs autochtones regrettent, et le Canada a exprimé sa profonde déception.",
+   "[overstatement] Ces peuples ont davantage leur mot à dire sur la protection de la nature. → Ces peuples ont davantage leur mot à dire dans les décisions de la Convention sur la diversité biologique."
+  ]
+ },
+ {
+  "id": "f545e6ae-3fe6-4644-8090-4806c6cfefc5",
+  "validee": true,
+  "theme": "science",
+  "source": "Medical Xpress",
+  "avant": {
+   "titre": "Un endoscope ultrafin pour explorer l'œil.",
+   "resume": "Des physiciens de l'université de Kent ont conçu un prototype d'endoscope ultrafin, de 0,31 mm de diamètre, qui capte des images des tissus jusqu'à environ 1 mm sous la surface. Démontré en laboratoire pour l'instant, il pourrait se révéler utile lors de certaines opérations de l'œil."
+  },
+  "issue": "vérifiée",
+  "detail": null,
+  "passes": 2,
+  "apres": {
+   "titre": "Des physiciens ont créé une sonde fine pour voir dans l'œil.",
+   "title_main": "Des physiciens ont créé",
+   "title_accent": "une sonde fine pour voir dans l'œil.",
+   "resume": "Pour certaines opérations de l'œil, voir les tissus de l'intérieur pourrait aider. Aujourd'hui, les images de la rétine se prennent généralement depuis l'extérieur. Une équipe de l'université de Kent a mis au point un prototype de 0,31 mm de diamètre. Il regarde vers l'avant et photographie les tissus jusqu'à environ 1 mm sous la surface. Ça marche en laboratoire, et un tel outil pourrait un jour servir aux chirurgiens. Il reste à en faire un appareil médical et à tester son intérêt pendant de vraies opérations.",
+   "mots_titre": 11,
+   "car_resume": 517,
+   "depassements": [
+    "résumé"
+   ]
+  },
+  "problemes": [
+   "[overstatement] Aujourd'hui, les images de la rétine se prennent depuis l'extérieur. → Aujourd'hui, les images de la rétine se prennent généralement depuis l'extérieur de l'œil."
+  ]
+ },
+ {
+  "id": "0a674fde-ae67-45c8-9f52-8a9ad7e3f9df",
+  "validee": true,
+  "theme": "planete",
+  "source": "Phys.org — Earth",
+  "avant": {
+   "titre": "Les « polluants éternels » cèdent à plus basse chaleur.",
+   "resume": "Des chercheurs de l'université de l'Utah ont trouvé une méthode pour casser les liaisons qui rendent les PFAS si tenaces. La plupart des essais se font à 110 °C ou moins, contre souvent 1 000 °C ou plus pour l'incinération, et à l'air ordinaire. Pour l'instant, cela reste au laboratoire, mais une piste potentielle s'ouvre pour l'avenir."
+  },
+  "issue": "vérifiée",
+  "detail": null,
+  "passes": 2,
+  "apres": {
+   "titre": "À l'université de l'Utah, on casse les polluants éternels en labo.",
+   "title_main": "À l'université de l'Utah,",
+   "title_accent": "on casse les polluants éternels en labo.",
+   "resume": "Les polluants éternels résistent à la dégradation naturelle et persistent dans l'environnement. Une fois filtrés, il faut encore les détruire, sinon la pollution change simplement de place. Des chercheurs de l'université de l'Utah ont mis au point une méthode qui casse leurs liaisons carbone-fluor, réputées fortes, à 110 °C ou moins pour la plupart des essais, contre 1 000 °C ou plus souvent utilisés pour l'incinération. À terme, elle pourrait détruire ces polluants au lieu de les déplacer. Pour l'instant, ce n'est qu'au laboratoire.",
+   "mots_titre": 11,
+   "car_resume": 539,
+   "depassements": [
+    "résumé"
+   ]
+  },
+  "problemes": [
+   "[overstatement] À l'université de l'Utah, on sait casser les polluants éternels. → Des chercheurs de l'université de l'Utah savent casser les polluants éternels en laboratoire (ou : « À l'université de l'Utah, des chercheurs cassent les polluants éternels en laboratoire »). « On sait » généralise un résultat de laboratoire sur quelques composés.",
+   "[translation_issue] Les polluants éternels résistent à la nature → Les polluants éternels résistent à la dégradation naturelle. « Résistent à la nature » change le sens de « resistant to natural breakdown ».",
+   "[overstatement] casse leurs liaisons les plus solides → casse leurs liaisons carbone-fluor, réputées fortes (« strong carbon-fluorine bonds »). L'article ne dit pas que ce sont les liaisons les plus solides.",
+   "[overstatement] contre 1 000 °C ou plus pour l'incinération → contre 1 000 °C ou plus souvent utilisés pour l'incinération des PFAS. L'article dit « often used », pas une température systématique."
+  ]
+ },
+ {
+  "id": "dfd00a4d-7c87-4de5-92c4-a91d42df7720",
+  "validee": true,
+  "theme": "science",
+  "source": "Science Daily",
+  "avant": {
+   "titre": "Deux astéroïdes, enfin distincts.",
+   "resume": "Le 18 octobre, la sonde européenne Hera a photographié les astéroïdes Didymos et Dimorphos, qui apparaissent pour la première fois séparés. Dimorphos, d'environ 151 mètres de diamètre, ne tient encore que sur environ un pixel. Les premières images détaillées sont annoncées pour le 25 novembre."
+  },
+  "issue": "vérifiée",
+  "detail": null,
+  "passes": 2,
+  "apres": {
+   "titre": "Une sonde européenne voit deux astéroïdes séparés.",
+   "title_main": "Une sonde européenne",
+   "title_accent": "voit deux astéroïdes séparés.",
+   "resume": "En 2022, la NASA a fait percuter exprès une sonde contre un petit astéroïde. Les scientifiques veulent savoir ce que ce choc a changé. Le 18 octobre, la sonde européenne Hera a pris pour la première fois une image où Dimorphos se détache de son gros compagnon Didymos : avant, les deux ne formaient qu'un point. Les premières images détaillées arrivent le 25 novembre. Ces mesures de l'enquête devraient aider à mieux prévoir les futures tentatives de déviation.",
+   "mots_titre": 7,
+   "car_resume": 462,
+   "depassements": []
+  },
+  "problemes": [
+   "[overstatement] Une sonde européenne voit enfin deux astéroïdes séparés. → Une sonde européenne voit deux astéroïdes séparés pour la première fois.",
+   "[overstatement] Elles devraient aider à mieux prévoir les futures tentatives de déviation. → Ces mesures de l'enquête devraient aider à mieux prévoir les futures tentatives de déviation."
+  ]
+ },
+ {
+  "id": "ffc70a04-f08a-491c-956f-e16bbc7420b6",
+  "validee": true,
+  "theme": "inventions",
+  "source": "TechXplore",
+  "avant": {
+   "titre": "Des bactéries calculent plusieurs pistes à la fois.",
+   "resume": "Une équipe menée par McGill a conçu un biocalculateur à bactéries. Il peut résoudre certains problèmes complexes avec une fraction de la mémoire et des ressources des ordinateurs classiques, sans les remplacer. Les bactéries, en se divisant, explorent simultanément de nombreuses solutions possibles."
+  },
+  "issue": "vérifiée",
+  "detail": null,
+  "passes": 2,
+  "apres": {
+   "titre": "Des bactéries deviennent un ordinateur qui testent des solutions en même temps",
+   "title_main": "Des bactéries deviennent un ordinateur",
+   "title_accent": "qui testent des solutions en même temps",
+   "resume": "Un ordinateur classique teste les solutions une par une : cela peut prendre des années, voire des siècles. Une équipe de McGill a conçu un biocalculateur fait de bactéries. En se multipliant dans de minuscules canaux, elles explorent beaucoup de chemins à la fois, avec peu de mémoire. Ce n'est pas fait pour remplacer les ordinateurs classiques, mais pour des problèmes qu'ils ne savent pas traiter. Cela pourrait servir au chiffrement, à la biologie moléculaire ou à l'IA.",
+   "mots_titre": 12,
+   "car_resume": 474,
+   "depassements": []
+  },
+  "problemes": [
+   "[missing_caveat] Un ordinateur classique teste les solutions une par une, et certains problèmes peuvent lui prendre des années, voire des siècles. Une équipe menée par McGill a conçu un biocalculateur à base de bactéries. → Ajouter la limite précisée par l'article : « Ce biocalculateur ne vise pas à remplacer les ordinateurs classiques ou quantiques, mais à résoudre des problèmes que ceux-ci ne sont pas conçus pour traiter. » La formulation actuelle, qui oppose le biocalculateur à l'ordinateur classique, peut laisser croire à une supériorité générale."
+  ]
+ },
+ {
+  "id": "81048556-1a03-4b65-966e-b115625376c7",
+  "validee": true,
+  "theme": "sante",
+  "source": "Medical Xpress",
+  "avant": {
+   "titre": "À Flint, plus de bébés survivent.",
+   "resume": "À Flint, dans le Michigan, la mortalité néonatale a baissé de moitié après le lancement de Rx Kids, un programme d'aide financière aux familles. Sur la première semaine de vie, la baisse atteint 74 %. Ce sont de premiers résultats, que la directrice de Rx Kids, Mona Hanna, juge « très encourageants »."
+  },
+  "issue": "vérifiée",
+  "detail": null,
+  "passes": 2,
+  "apres": {
+   "titre": "À Flint, moins de nouveau-nés meurent depuis un programme d'aide aux familles.",
+   "title_main": "À Flint, moins de nouveau-nés meurent",
+   "title_accent": "depuis un programme d'aide aux familles.",
+   "resume": "À Flint, dans le Michigan, trop de nouveau-nés mouraient : leur mortalité était plus de deux fois plus élevée que dans le reste de l'État. Depuis le lancement de Rx Kids, un programme qui verse de l'argent aux familles, elle a été divisée par deux, de 10,2 à 5,1 décès pour 1 000 naissances vivantes. L'écart avec le reste de l'État s'est resserré, au point de ne plus être statistiquement significatif. Ce ne sont encore que des premiers résultats. Des études futures vérifieront si cela dure.",
+   "mots_titre": 12,
+   "car_resume": 494,
+   "depassements": [
+    "résumé"
+   ]
+  },
+  "problemes": [
+   "[overstatement] À Flint, moins de bébés meurent grâce à un coup de pouce financier. → À Flint, la mortalité des nouveau-nés a été divisée par deux après le lancement d'un programme d'aide financière aux familles. (Le lien est temporel : l'article dit « following the launch », et l'étude ne démontre pas à elle seule une cause.)",
+   "[overstatement] L'écart avec le reste du Michigan s'est nettement resserré. → L'écart avec le reste du Michigan s'est resserré, et les différences ne sont plus statistiquement significatives.",
+   "[overstatement] Rx Kids verse aux familles 1 500 dollars pendant la grossesse et 500 dollars par mois pendant la petite enfance. → Rx Kids verse aux familles des communautés participantes 1 500 dollars pendant la grossesse et 500 dollars par mois pendant la petite enfance.",
+   "[overstatement] Ce ne sont encore que des premiers résultats, qui doivent être confirmés par des études futures. → Ce ne sont encore que des premiers résultats. Des études futures vérifieront si ces améliorations se maintiennent et se reproduisent dans d'autres populations."
+  ]
+ },
+ {
+  "id": "28ef5b9b-c233-492d-a3fa-d7e50bb495e5",
+  "validee": true,
+  "theme": "science",
+  "source": "Science Daily",
+  "avant": {
+   "titre": "Les cinq « lettres » de la vie ont été trouvées dans un astéroïde.",
+   "resume": "Des chercheurs japonais ont confirmé la présence des cinq nucléobases, les « lettres » moléculaires de l'ADN et de l'ARN, dans des échantillons de l'astéroïde Ryugu. Ces ingrédients de la vie pourraient avoir été répandus dans tout le Système solaire à ses débuts."
+  },
+  "issue": "rejetée par le vérificateur",
+  "detail": "verify_failed après 2 passe(s), non corrigé : vague_title: Dans un astéroïde, les cinq « lettres » de la vie sont là. (Le titre reste vague : « un astéroïde » ne nomme pas le sujet concret (Ryugu). Il ne se comprend pas seul comme le demande la règle. La métaphore « les cinq lettres du code de la vie » est acceptable, mais le sujet doit être nommé.)",
+  "passes": 2,
+  "apres": {
+   "titre": "Un astéroïde contient les cinq « lettres » du code de la vie.",
+   "title_main": "Un astéroïde contient",
+   "title_accent": "les cinq « lettres » du code de la vie.",
+   "resume": "Sans certaines molécules, appelées bases azotées, il n'y aurait pas de code génétique pour grandir, se reproduire et évoluer. Des chercheurs japonais ont confirmé que les cinq sont présentes dans la matière de l'astéroïde Ryugu, rapportée en 2020 par la mission Hayabusa2. Ces ingrédients étaient donc peut-être répandus dans le Système solaire dès ses débuts. Des astéroïdes ont peut-être aidé à les apporter sur la Terre.",
+   "mots_titre": 13,
+   "car_resume": 423,
+   "depassements": []
+  },
+  "problemes": [
+   "[vague_title] Dans un astéroïde, les cinq « lettres » de la vie sont là. → Titre proposé : « Les cinq bases azotées de l'ADN et de l'ARN trouvées dans l'astéroïde Ryugu »."
+  ]
+ },
+ {
+  "id": "a0545743-261f-4d26-9ee1-f1275d09ba2c",
+  "validee": false,
+  "theme": "science",
+  "source": "Futura",
+  "avant": {
+   "titre": "Le pin de Wollemi a survécu aux flammes.",
+   "resume": "En 1994, un garde forestier découvre en Australie un conifère qu'on croyait disparu depuis des millions d'années : le pin de Wollemi. Pendant les incendies de 2019-2020, des équipes ont protégé son dernier refuge naturel connu, et le 15 janvier 2020, les autorités ont annoncé le sauvetage des arbres."
+  },
+  "issue": "rejetée par le vérificateur",
+  "detail": "fact_error: claim 0: L'evidence (« Il remarque un conifère qui lui est totalement inconnu ») ne dit pas que l'espèce était considérée comme disparue depuis des millions d'années. Le fait figure dans l'evidence du claim 1 : ce claim fait doublon et doit être retiré.",
+  "passes": 1,
+  "apres": {
+   "titre": "En Australie, un arbre préhistorique est sauvé des incendies.",
+   "title_main": "En Australie, un arbre préhistorique",
+   "title_accent": "est sauvé des incendies.",
+   "resume": "Ce pin, qu'on croyait disparu depuis des millions d'années, ne compte plus que moins d'une centaine d'adultes à l'état sauvage. Fin 2019, les incendies approchent sa gorge. Des pompiers y sont hélitreuillés pour installer une irrigation ; malgré tout, le feu traverse la zone. Le 15 janvier 2020, les autorités annoncent pourtant leur sauvetage. Une belle nouvelle : son dernier refuge naturel connu est préservé.",
+   "mots_titre": 9,
+   "car_resume": 413,
+   "depassements": []
+  },
+  "problemes": [
+   "[vague_title] En Australie, un arbre préhistorique est sauvé des incendies. → Le pin de Wollemi, arbre préhistorique, sauvé des incendies en Australie."
+  ]
+ },
+ {
+  "id": "f3bf689c-5d53-46e4-ba5a-462e6af529ec",
+  "validee": false,
+  "theme": "science",
+  "source": "Nature — News",
+  "avant": {
+   "titre": "Deux disques de débris autour d'une étoile morte.",
+   "resume": "Des astronomes ont repéré deux disques de poussière et de gaz en forme d'anneau qui tournent autour d'une naine blanche, une étoile morte. C'est un double disque inédit, issu des restes d'un système planétaire. Il pourrait t'offrir un aperçu de ce que deviendra peut-être notre Système solaire."
+  },
+  "issue": "vérifiée",
+  "detail": null,
+  "passes": 1,
+  "apres": {
+   "titre": "Autour d'une étoile morte, deux anneaux de poussière, une première.",
+   "title_main": "Autour d'une étoile morte,",
+   "title_accent": "deux anneaux de poussière, une première.",
+   "resume": "Imagine une étoile morte, entourée des restes d'un système planétaire. Des astronomes y ont repéré deux disques en anneaux, faits de poussière et de gaz : une première. Pour toi comme pour nous, c'est un aperçu de ce que pourrait devenir notre Système solaire. Ce n'est qu'un aperçu, pas une certitude.",
+   "mots_titre": 10,
+   "car_resume": 302,
+   "depassements": []
+  },
+  "problemes": []
+ },
+ {
+  "id": "78d722ab-d588-4ccb-90f6-0cc5a2475eec",
+  "validee": false,
+  "theme": "science",
+  "source": "Nature — News",
+  "avant": {
+   "titre": "Un tissu moléculaire tissé à trois axes.",
+   "resume": "Des chercheurs de l'université du Zhejiang, en Chine, décrivent un tissu moléculaire bidimensionnel, tissé selon trois axes. Sa structure comporte des canaux poreux. Publiée dans Nature le 4 novembre 2026, cette étude est une belle avancée pour la chimie des molécules tissées."
+  },
+  "issue": "refusée par le rédacteur",
+  "detail": "Le texte fourni ne contient que les références, la déclaration de données, les remerciements, les financements et les légendes de figures supplémentaires. Il n'y a ni description du résultat ni conséquence concrète pour les personnes, les animaux ou la nature. Le titre annonce seulement un tissu moléculaire bidimensionnel, sans bénéfice énoncé dans l'article, donc on ne peut pas écrire un temps 2 fondé sur un fait réellement arrivé et une bonne nouvelle vérifiable."
+ }
+]

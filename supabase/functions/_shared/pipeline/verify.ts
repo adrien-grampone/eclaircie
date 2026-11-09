@@ -79,10 +79,13 @@ export function resolveThemeMismatch(
   current: string,
   triage: Pick<Triage, "kind" | "study_subject">,
   themes: readonly ThemeRef[],
+  /** Thèmes non suivis : les proposer ne change rien (la nouvelle garde son thème suivi). */
+  unfollowed: readonly string[] = [],
 ): ThemeResolution {
   const mismatch = problems.find((p) => p.type === "theme_mismatch");
   if (!mismatch) return { action: "keep" };
   const proposed = mismatch.theme;
+  if (proposed && unfollowed.includes(proposed)) return { action: "keep" };
   if (!proposed || !themes.some((t) => t.id === proposed)) {
     return { action: "reject", reason: `theme_mismatch: thème proposé absent ou inconnu (${proposed ?? "aucun"}) — ${mismatch.passage}` };
   }
@@ -91,6 +94,7 @@ export function resolveThemeMismatch(
     is_good_news: true, themes: [proposed], kind: triage.kind, study_subject: triage.study_subject,
     is_fact: true, is_promotional: false, is_scheduled_event: false, is_food_health_claim: false,
     positivity: 1, significance: 1, evergreen: false, reason: "",
+    concrete: 1, accomplished: 1, closeness: 1, magnitude: 1, before_after: 1, preliminary: false, too_technical: false,
   });
   if (ruled.reason || ruled.triage.themes[0] !== proposed) {
     return { action: "reject", reason: `theme_mismatch: ${proposed} non autorisé (${ruled.reason ?? "règle de thème"}) — ${mismatch.passage}` };
@@ -190,7 +194,7 @@ export function buildVerifyPrompt(article: Article, draft: Draft, context: Verif
     "6. « Pourrait » : si le résultat principal du titre ou du résumé n'est qu'une possibilité (« pourrait mieux dépister », « pourrait ouvrir la voie »), regarde l'article. S'il décrit un résultat MESURÉ, c'est un `overstatement` à reformuler au fait mesuré. S'il n'y a aucun résultat mesuré, c'est un `not_a_fact` : ce n'est pas une nouvelle.",
     "7. Le thème principal (indiqué ci-dessous) doit correspondre au sujet réel de l'article : des plaquettes sanguines ne sont pas « Animaux », une étude sur la souris n'est pas « Santé ». Sinon, `theme_mismatch` avec, dans `theme`, l'identifiant du thème correct parmi la liste.",
     "",
-    "LE TITRE (title_main + title_accent) est jugé sur TROIS points : il n'ajoute aucun fait absent du résumé ; il ne contredit pas le résumé ; il nomme le sujet concret et se comprend SEUL, sans le résumé (sinon `vague_title` : « une vieille idée », « un donneur », « une découverte » sont vagues). Son ton évocateur est voulu : ne signale jamais un titre pour son ton, son image ou sa chute.",
+    "LE TITRE (title_main + title_accent) est jugé sur TROIS points : il n'ajoute aucun fait absent du résumé ; il ne contredit pas le résumé ; un lecteur sans culture scientifique comprend SEUL ce qui s'est passé (sinon `vague_title`). Il est volontairement simple et sans jargon : un sujet concret décrit en mots courants (« un arbre préhistorique », « une sonde européenne », « des chiens qui saignent ») suffit. N'exige JAMAIS un nom propre, un nom scientifique, un sigle ou un terme technique : en réclamer un est une erreur de relecture. Ne signale jamais un titre pour son ton, sa simplicité ou sa coupe en deux parties.",
     "",
     secondPass
       ? "SECONDE PASSE : ce brouillon est une révision. Pour chaque problème de la passe précédente, dis s'il est corrigé (`previous_problems`, même index). Parmi les problèmes nouveaux, cherche UNIQUEMENT des fact_error, not_a_fact ou tone_negative : ne signale aucun nouvel overstatement, missing_caveat, translation_issue ou vague_title."
@@ -199,11 +203,11 @@ export function buildVerifyPrompt(article: Article, draft: Draft, context: Verif
     "TYPES DE PROBLÈMES",
     "- fact_error : un fait, un chiffre, un nom ou un lien de causalité que l'article ne dit pas, ou contredit. Rejet définitif.",
     "  Un claim dont le fait de base est dans l'article mais qui ajoute un simple qualificatif (« mieux », « nombreux », « enfin ») reste `supported: true` : signale le qualificatif en overstatement, pas en fact_error.",
-    "- overstatement : terme plus fort ou plus certain que la source (certitude pour un espoir, résultat pour un plan, généralisation).",
+    "- overstatement : terme plus fort ou plus certain que la source (certitude pour un espoir, résultat pour un plan, généralisation). Un mot voisin plus parlant mais différent (« université de Washington » pour « Washington State University », « hémoglobine » pour « hème ») est une fact_error.",
     "- missing_caveat : une limite, opposition ou contrepartie importante de l'article est passée sous silence.",
     "- translation_issue : traduction qui ajoute une précision ou change le sens (« beetles » → « carabes »). RAPPEL : une traduction FIDÈLE d'un mot anglais n'est JAMAIS un translation_issue (« folly » → « insensé » est correct), même si le mot français n'apparaît pas dans l'article.",
     "- tone_negative : le résumé se lit globalement comme une mauvaise nouvelle. Rejet définitif.",
-    "- vague_title : le titre ne nomme pas le sujet concret ou ne se comprend pas sans le résumé. Propose un titre qui nomme le sujet.",
+    "- vague_title : un lecteur ne comprend pas, avec le titre seul, ce qui s'est passé (« une vieille idée », « une découverte », « une avancée »). Propose un titre simple, en mots courants, sans nom propre ni terme technique.",
     "- not_a_fact : le résultat principal n'est qu'une possibilité et l'article ne décrit aucun résultat mesuré. Rejet définitif.",
     "- theme_mismatch : le thème principal ne correspond pas au sujet. Indique le thème correct dans `theme` (identifiant exact de la liste).",
     "",

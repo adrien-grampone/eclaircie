@@ -125,3 +125,20 @@ export function stockDays(alreadyScheduled: readonly ScheduledStory[], today: Is
 export function isStockLow(stock: number, config: Pick<PipelineConfig, "stock_alert_days">): boolean {
   return stock < config.stock_alert_days;
 }
+
+/**
+ * Réserve (stratégie one_per_day) : nouvelles validées non programmées qui resteront programmables
+ * le jour `day` (intemporelles, ou pas plus vieilles que schedule_max_age_days).
+ */
+export function reserveSize(
+  candidates: readonly ScheduleCandidate[],
+  day: IsoDate,
+  config: Pick<PipelineConfig, "schedule_max_age_days">,
+): number {
+  return candidates.filter((c) => c.evergreen || storyAgeDays(c, day) <= config.schedule_max_age_days).length;
+}
+
+/** Alerte de réserve : vrai quand la réserve programmable est sous `reserve_min`. */
+export function isReserveLow(reserve: number, config: Pick<PipelineConfig, "reserve_min">): boolean {
+  return reserve < config.reserve_min;
+}

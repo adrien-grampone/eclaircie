@@ -35,9 +35,12 @@ Deno.serve(async () => {
       .order("created_at", { ascending: true }).limit(config.batch_size);
     if (error) throw new Error(`stories : ${error.message}`);
     const stories = (data ?? []) as unknown as StoryRow[];
-    const { data: themeRows, error: themeError } = await db.from("themes").select("id, label").eq("active", true).order("position");
+    const { data: themeRows, error: themeError } = await db.from("themes").select("id, label, followed").eq("active", true).order("position");
     if (themeError) throw new Error(`themes : ${themeError.message}`);
-    const themes = (themeRows ?? []) as ThemeRef[];
+    const allThemes = (themeRows ?? []) as (ThemeRef & { followed: boolean })[];
+    // Le vérificateur ne peut déplacer une nouvelle que vers un thème suivi ; un thème non suivi proposé est ignoré.
+    const themes: ThemeRef[] = allThemes.filter((t) => t.followed).map(({ id, label }) => ({ id, label }));
+    const unfollowed = allThemes.filter((t) => !t.followed).map((t) => t.id);
 
     const results = await mapLimit(stories, 3, async (story): Promise<ItemResult> => {
       const pass = story.verify_log.length + 1;
@@ -47,6 +50,8 @@ Deno.serve(async () => {
         await db.from("stories")
           .update({
             status: STATUS_OF[decision], reject_reason: decision === "verified" ? null : reason?.slice(0, 1000) ?? null, verify_log: log,
+            // Mode perso : une nouvelle qui passe les deux vérifications est validée d'office (corrigeable dans /review).
+            ...(decision === "verified" && config.auto_approve_verified ? { approved_at: new Date().toISOString() } : {}),
             ...(theme ? { theme_id: theme } : {}),
           })
           .eq("id", story.id);
@@ -76,7 +81,7 @@ Deno.serve(async () => {
         const parsed = parseVerify(reply.text);
         if (!parsed.ok) return settle("rejected", `verify_parse_error: ${parsed.error.slice(0, 200)}`, null);
         const at = new Date().toISOString();
-        const theme = resolveThemeMismatch(parsed.value.problems, story.theme_id, triageOf(story), themes);
+        const theme = resolveThemeMismatch(parsed.value.problems, story.theme_id, triageOf(story), themes, unfollowed);
         if (theme.action === "reject") {
           return settle("rejected", theme.reason, { pass, model: MODELS.verify, decision: "rejected", reason: theme.reason, verify: parsed.value, at });
         }

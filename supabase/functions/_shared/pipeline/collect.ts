@@ -27,3 +27,12 @@ export function isExpired(
 ): boolean {
   return !isFreshEnough(article.publishedAt, collectMaxAgeDays(article.trustLevel, config), now);
 }
+
+/**
+ * Mode thèmes suivis : une source n'est collectée que si elle alimente au moins un thème suivi.
+ * Sans liste de thèmes suivis, ou sans thèmes renseignés pour la source, elle est collectée.
+ */
+export function sourceIsFollowed(sourceThemes: readonly string[] | null, followed: readonly string[] | null): boolean {
+  if (!followed || !sourceThemes || sourceThemes.length === 0) return true;
+  return sourceThemes.some((t) => followed.includes(t));
+}

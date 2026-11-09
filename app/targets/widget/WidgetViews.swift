@@ -35,7 +35,7 @@ func titleCandidates(main: String, accent: String?, minScale: CGFloat = 0.8) -> 
     var mainWords = main.split(separator: " ").map(String.init)
     var accentWords = (accent ?? "").split(separator: " ").map(String.init)
     let ellipsis = "…"
-    while mainWords.count + accentWords.count > 2, out.count < 14 {
+    while mainWords.count + accentWords.count > 2 {
         if !accentWords.isEmpty { accentWords.removeLast() } else { mainWords.removeLast() }
         let cutMain = accentWords.isEmpty ? mainWords.joined(separator: " ") + ellipsis : mainWords.joined(separator: " ")
         let cutAccent = accentWords.isEmpty ? nil : accentWords.joined(separator: " ") + ellipsis
@@ -45,7 +45,9 @@ func titleCandidates(main: String, accent: String?, minScale: CGFloat = 0.8) -> 
 }
 
 /// Titre en deux parties : principale en Fraunces semi-gras, accent en Fraunces italique, même corps.
-/// `ViewThatFits` retient la première variante qui tient dans `lines` lignes et la hauteur disponible.
+/// `ViewThatFits` retient la première variante qui tient ENTIÈRE dans `lines` lignes et la hauteur disponible :
+/// aucune variante n'a de lineLimit (SwiftUI couperait lui-même, au milieu d'un mot) ; `LineCap` refuse celles qui
+/// dépassent `lines` lignes, mesurées sur un texte de référence. Seule la dernière (deux mots + « … ») garde un lineLimit, en filet de sécurité.
 struct StoryTitle: View {
     let story: WidgetStory
     let size: CGFloat
@@ -53,9 +55,18 @@ struct StoryTitle: View {
     let color: Color
 
     var body: some View {
+        let candidates = titleCandidates(main: story.titleMain, accent: story.titleAccent)
         ViewThatFits(in: .vertical) {
-            ForEach(titleCandidates(main: story.titleMain, accent: story.titleAccent), id: \.self) { c in
-                titleText(c.main, c.accent, size * c.scale)
+            ForEach(Array(candidates.enumerated()), id: \.offset) { index, c in
+                let pt = size * c.scale
+                if index == candidates.count - 1 {
+                    titleText(c.main, c.accent, pt).lineLimit(lines)
+                } else {
+                    LineCap {
+                        titleText(c.main, c.accent, pt)
+                        titleText(Array(repeating: "Ég", count: lines).joined(separator: "\n"), "g", pt).hidden()
+                    }
+                }
             }
         }
     }
@@ -65,9 +76,27 @@ struct StoryTitle: View {
             + Text(accent.map { " \($0)" } ?? "").font(.custom(WidgetFonts.titleAccent, size: pt)))
             .foregroundStyle(color)
             .lineSpacing(pt * 0.12)
-            .lineLimit(lines)
             .multilineTextAlignment(.leading)
             .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+/// Mesure son premier enfant (le titre) à la largeur proposée et le compare au second (un texte de référence de
+/// `lines` lignes, même style, caché) : si le titre est plus haut, annonce une hauteur infinie pour que
+/// `ViewThatFits` passe à la variante suivante.
+struct LineCap: Layout {
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        guard subviews.count == 2 else { return .zero }
+        let free = ProposedViewSize(width: proposal.width, height: nil)
+        let size = subviews[0].sizeThatFits(free)
+        let limit = subviews[1].sizeThatFits(free).height
+        return size.height > limit + 0.5 ? CGSize(width: size.width, height: .greatestFiniteMagnitude) : size
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        subviews.first?.place(at: bounds.origin, proposal: ProposedViewSize(width: bounds.width, height: nil))
+        // La référence, cachée, est posée sans taille.
+        if subviews.count == 2 { subviews[1].place(at: bounds.origin, proposal: .zero) }
     }
 }
 

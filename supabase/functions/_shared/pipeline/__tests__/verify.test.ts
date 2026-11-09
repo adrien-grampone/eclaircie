@@ -185,8 +185,8 @@ describe("buildVerifyPrompt", () => {
 
   it("juge le titre sur trois points (faits, cohérence, sujet concret) et protège son ton", () => {
     expect(prompt.system).toMatch(/LE TITRE .* TROIS points/);
-    expect(prompt.system).toMatch(/se comprend SEUL, sans le résumé/);
-    expect(prompt.system).toMatch(/ne signale jamais un titre pour son ton/);
+    expect(prompt.system).toMatch(/comprend SEUL ce qui s'est passé/);
+    expect(prompt.system).toMatch(/N'exige JAMAIS un nom propre/);
     expect(prompt.system).toMatch(/« Pourrait »/);
     expect(prompt.system).toMatch(/résultat MESURÉ, c'est un `overstatement`/);
     expect(prompt.system).toMatch(/PREMIÈRE PASSE/);

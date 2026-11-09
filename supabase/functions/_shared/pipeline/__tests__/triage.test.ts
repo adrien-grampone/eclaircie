@@ -13,6 +13,7 @@ const GOOD: Triage = {
   positivity: 0.9,
   significance: 0.8,
   evergreen: true,
+  concrete: 0.8, accomplished: 0.8, closeness: 0.7, magnitude: 0.6, before_after: 0.7, preliminary: false, too_technical: false,
   reason: "Résultat mesuré par l'ONU",
 };
 
