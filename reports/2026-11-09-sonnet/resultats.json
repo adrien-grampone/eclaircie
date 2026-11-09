@@ -1,0 +1,690 @@
+{
+  "results": [
+    {
+      "id": "95a0c8ba-29f6-43ea-b3fb-7c57c58546ab",
+      "theme": "planete",
+      "status": "verified",
+      "publish_date": null,
+      "production": {
+        "title_main": "À Lancaster, une ancienne route",
+        "title_accent": "est devenue un boulevard arboré.",
+        "summary": "À Lancaster, en Californie, une route très fréquentée coupait le centre-ville. Depuis 2010, il y a à sa place un boulevard arboré, où la ville a investi 11,5 millions de dollars. Selon la ville, il a généré plus de 270 millions de dollars d'activité économique en quatre ans. Selon des habitants, il leur donne le sentiment de former une communauté, et la bibliothèque voit venir des gens qui n'y allaient jamais."
+      },
+      "haiku": {
+        "outcome": "verified",
+        "reason": null,
+        "draft": {
+          "title_main": "En Californie, une route devient",
+          "title_accent": "une allée ombragée où l'on flâne.",
+          "summary": "Dans la ville de Lancaster, en Californie, une grande route traversait le centre-ville. En 2010, neuf pâtés de maisons ont été refaits : trois voies ont cédé la place à des allées plantées d'arbres. Selon la ville, plus de 270 millions de dollars d'activité économique et plus de 130 millions d'investissements sont venus en quatre ans, avec des centaines d'emplois. Selon les habitants, on s'y sent en communauté, et la bibliothèque accueille de nouveaux visiteurs.",
+          "claims": [
+            {
+              "claim": "Avant les travaux, une grande route très fréquentée traversait le centre-ville de Lancaster.",
+              "evidence": "many complained about a major city centre thoroughfare being torn apart."
+            },
+            {
+              "claim": "En 2010, neuf pâtés de maisons de la rue ont été refaits.",
+              "evidence": "there are nine beautiful, leafy blocks on West Lancaster Boulevard, a piece of what used to be Highway 14. They were redeveloped as part of a mixed-use urban streetscape in the city of Lancaster, California in 2010."
+            },
+            {
+              "claim": "Trois voies ont été remplacées par des allées plantées d'arbres.",
+              "evidence": "The three lanes in the centre of the former five-lane road were replaced by a series of tree-lined ramblas"
+            },
+            {
+              "claim": "Selon la ville, en quatre ans, plus de 270 millions de dollars d'activité économique et plus de 130 millions d'investissements ont été générés, avec des centaines d'emplois.",
+              "evidence": "Within four years of completion, it had generated more than $270m in economic output, attracted $130m in investment, created hundreds of jobs and prompted the building or renovation of hundreds of housing units, according to the city."
+            },
+            {
+              "claim": "Selon les habitants, le quartier leur donne un sentiment d'appartenance à une communauté.",
+              "evidence": "The revitalisation has also created more intangible benefits, residents say."
+            },
+            {
+              "claim": "De nouveaux visiteurs ont commencé à fréquenter la bibliothèque.",
+              "evidence": "People who hadn’t visited the library began to wander in."
+            }
+          ],
+          "scene": "A wide, tree-lined pedestrian street in a desert town, with a row of mature trees shading the sidewalks, low buildings on both sides, and dry hills in the far background. A few tiny distant silhouettes of people walking, no faces. No text, signs, logos or screens visible."
+        },
+        "first": {
+          "title_main": "En Californie, une route devient",
+          "title_accent": "une allée ombragée où l'on flâne.",
+          "summary": "Dans la ville de Lancaster, en Californie, une grande route traversait le centre-ville. En 2010, neuf pâtés de maisons ont été refaits : trois voies ont cédé la place à des allées plantées d'arbres. Selon la ville, plus de 270 millions de dollars d'activité économique et plus de 130 millions d'investissements sont venus en quatre ans, avec des centaines d'emplois. Les habitants s'y sentent en communauté, et la bibliothèque accueille de nouveaux visiteurs.",
+          "claims": [
+            {
+              "claim": "Avant les travaux, une grande route très fréquentée traversait le centre-ville de Lancaster.",
+              "evidence": "many complained about a major city centre thoroughfare being torn apart."
+            },
+            {
+              "claim": "En 2010, neuf pâtés de maisons de la rue ont été refaits.",
+              "evidence": "there are nine beautiful, leafy blocks on West Lancaster Boulevard, a piece of what used to be Highway 14. They were redeveloped as part of a mixed-use urban streetscape in the city of Lancaster, California in 2010."
+            },
+            {
+              "claim": "Trois voies ont été remplacées par des allées plantées d'arbres.",
+              "evidence": "The three lanes in the centre of the former five-lane road were replaced by a series of tree-lined ramblas"
+            },
+            {
+              "claim": "Selon la ville, en quatre ans, plus de 270 millions de dollars d'activité économique et plus de 130 millions d'investissements ont été générés, avec des centaines d'emplois.",
+              "evidence": "Within four years of completion, it had generated more than $270m in economic output, attracted $130m in investment, created hundreds of jobs and prompted the building or renovation of hundreds of housing units, according to the city."
+            },
+            {
+              "claim": "Les habitants disent se sentir en communauté dans ce centre.",
+              "evidence": "The revitalisation has also created more intangible benefits, residents say."
+            },
+            {
+              "claim": "De nouveaux visiteurs ont commencé à fréquenter la bibliothèque.",
+              "evidence": "People who hadn’t visited the library began to wander in."
+            }
+          ],
+          "scene": "A wide, tree-lined pedestrian street in a desert town, with a row of mature trees shading the sidewalks, low buildings on both sides, and dry hills in the far background. A few tiny distant silhouettes of people walking, no faces. No text, signs, logos or screens visible."
+        },
+        "problems": []
+      },
+      "sonnet": {
+        "outcome": "rejected",
+        "reason": "fact_error: claim 0: L'article dit que la route 14 traverse le désert de Mojave, et que le boulevard est un morceau de cette ancienne route à Lancaster. Il ne dit pas que le boulevard traverse le désert de Mojave.",
+        "draft": {
+          "title_main": "À Lancaster, en Californie, une route",
+          "title_accent": "est devenue un boulevard arboré.",
+          "summary": "Au milieu du désert de Mojave, une ancienne route très fréquentée coupait le centre de Lancaster, en Californie. En 2010, neuf blocs ont été transformés en boulevard piéton bordé d'arbres, pour 11,5 millions de dollars. Il accueille aujourd'hui 250 commerces et lieux publics, dont un musée et une bibliothèque. Les habitants disent s'y retrouver et s'y sentir en communauté. Les plaintes du chantier ont cessé, selon le responsable de la bibliothèque.",
+          "claims": [
+            {
+              "claim": "Le boulevard est une partie d'une ancienne route, traversant le désert de Mojave, à Lancaster en Californie.",
+              "evidence": "But there are nine beautiful, leafy blocks on West Lancaster Boulevard, a piece of what used to be Highway 14."
+            },
+            {
+              "claim": "Neuf blocs ont été réaménagés en 2010.",
+              "evidence": "They were redeveloped as part of a mixed-use urban streetscape in the city of Lancaster, California in 2010."
+            },
+            {
+              "claim": "La ville a investi 11,5 millions de dollars pour transformer une artère très fréquentée en espace public.",
+              "evidence": "The city invested $11.5m (£8.5m) to transform a busy thoroughfare into an inviting public space."
+            },
+            {
+              "claim": "Le boulevard abrite 250 entreprises publiques et privées, dont un musée et une bibliothèque.",
+              "evidence": "The BLVD, as it’s been rebranded, is home to 250 public and private enterprises, from banks, tattoo shops and restaurants to museums, a performing arts centre and a public library."
+            },
+            {
+              "claim": "Les habitants disent que le centre-ville est un lieu de rassemblement où ils se sentent membres d'une communauté.",
+              "evidence": "The city centre the feels like a gathering space, they said — somewhere where they can feel like part of a community."
+            },
+            {
+              "claim": "Les plaintes ont cessé après l'inauguration, selon le responsable de la bibliothèque.",
+              "evidence": "“Everybody loved it and the complaints stopped.”"
+            }
+          ],
+          "scene": "A wide tree-lined pedestrian boulevard with leafy trees and planted central strips, small distant silhouettes of people strolling, low shop buildings on both sides, dry desert hills far in the background under a warm evening sky."
+        },
+        "first": {
+          "title_main": "À Lancaster, en Californie, une route",
+          "title_accent": "est devenue un boulevard arboré.",
+          "summary": "Au milieu du désert de Mojave, une ancienne route très fréquentée coupait le centre de Lancaster, en Californie. En 2010, neuf blocs ont été transformés en boulevard piéton bordé d'arbres, pour 11,5 millions de dollars. Il accueille aujourd'hui 250 commerces et lieux publics, dont un musée et une bibliothèque. Les habitants disent s'y retrouver et s'y sentir en communauté. Les plaintes du chantier ont cessé, selon le responsable de la bibliothèque.",
+          "claims": [
+            {
+              "claim": "Le boulevard est une partie d'une ancienne route, traversant le désert de Mojave, à Lancaster en Californie.",
+              "evidence": "But there are nine beautiful, leafy blocks on West Lancaster Boulevard, a piece of what used to be Highway 14."
+            },
+            {
+              "claim": "Neuf blocs ont été réaménagés en 2010.",
+              "evidence": "They were redeveloped as part of a mixed-use urban streetscape in the city of Lancaster, California in 2010."
+            },
+            {
+              "claim": "La ville a investi 11,5 millions de dollars pour transformer une artère très fréquentée en espace public.",
+              "evidence": "The city invested $11.5m (£8.5m) to transform a busy thoroughfare into an inviting public space."
+            },
+            {
+              "claim": "Le boulevard abrite 250 entreprises publiques et privées, dont un musée et une bibliothèque.",
+              "evidence": "The BLVD, as it’s been rebranded, is home to 250 public and private enterprises, from banks, tattoo shops and restaurants to museums, a performing arts centre and a public library."
+            },
+            {
+              "claim": "Les habitants disent que le centre-ville est un lieu de rassemblement où ils se sentent membres d'une communauté.",
+              "evidence": "The city centre the feels like a gathering space, they said — somewhere where they can feel like part of a community."
+            },
+            {
+              "claim": "Les plaintes ont cessé après l'inauguration, selon le responsable de la bibliothèque.",
+              "evidence": "“Everybody loved it and the complaints stopped.”"
+            }
+          ],
+          "scene": "A wide tree-lined pedestrian boulevard with leafy trees and planted central strips, small distant silhouettes of people strolling, low shop buildings on both sides, dry desert hills far in the background under a warm evening sky."
+        },
+        "problems": [
+          {
+            "type": "fact_error",
+            "passage": "Au milieu du désert de Mojave, une ancienne route très fréquentée coupait le centre de Lancaster, en Californie.",
+            "correction": "Une ancienne route très fréquentée coupait le centre de Lancaster, en Californie. (L'article évoque le désert de Mojave pour la route 14 que l'on emprunte, pas pour la localisation du boulevard.)"
+          },
+          {
+            "type": "fact_error",
+            "passage": "neuf blocs ont été transformés en boulevard piéton bordé d'arbres",
+            "correction": "neuf blocs ont été transformés en boulevard agréable à pied et bordé d'arbres. L'article ne dit pas que le boulevard est réservé aux piétons : on y circule encore en voiture, et des habitants se plaignent des limitations de vitesse."
+          },
+          {
+            "type": "translation_issue",
+            "passage": "Il accueille aujourd'hui 250 commerces et lieux publics",
+            "correction": "Il accueille aujourd'hui 250 entreprises publiques et privées, dont un musée et une bibliothèque. (« Enterprises » ne signifie pas « commerces » et l'article n'exclut pas les structures publiques de ce chiffre.)"
+          }
+        ]
+      }
+    },
+    {
+      "id": "d25aedf5-9125-4167-8eb7-0d16f34bb258",
+      "theme": "sante",
+      "status": "scheduled",
+      "publish_date": "2026-11-10",
+      "production": {
+        "title_main": "Chez trois malades rares du foie,",
+        "title_accent": "une thérapie génique reste efficace.",
+        "summary": "Cette maladie rare du foie empêche le corps de traiter une substance, qui peut abîmer le cerveau. Chez trois patients traités à Bergamo, en Italie, les effets d'une thérapie génique durent toujours quatre ans après. Deux ont pu arrêter la photothérapie. Une des personnes traitées a eu une grossesse sans complication et un bébé en bonne santé. Un essai plus large, commencé en janvier 2023, vise à confirmer ces résultats."
+      },
+      "haiku": {
+        "outcome": "verified",
+        "reason": null,
+        "draft": {
+          "title_main": "Contre une maladie rare du foie,",
+          "title_accent": "un traitement génique reste efficace.",
+          "summary": "Cette maladie rare du foie empêche d'éliminer la bilirubine, une substance qui peut abîmer le cerveau. À Bergamo, en Italie, trois patients ont reçu une thérapie génique. Quatre ans après, deux ont arrêté la luminothérapie, et le troisième en a besoin bien moins. Chez les trois, la bilirubine reste nettement sous le seuil à risque. L'un d'eux a eu une grossesse sans complication : un bébé en bonne santé. Il faudra le confirmer sur davantage de malades.",
+          "claims": [
+            {
+              "claim": "La bilirubine qui s'accumule peut abîmer le cerveau.",
+              "evidence": "The accumulation of this substance can lead to irreversible neurological damage"
+            },
+            {
+              "claim": "Environ 500 personnes sont concernées en Europe.",
+              "evidence": "affecting approximately 500 people in Europe"
+            },
+            {
+              "claim": "À Bergamo, trois patients ont reçu une thérapie génique.",
+              "evidence": "the three patients who received the therapeutic dose at the hospital in Bergamo, Italy"
+            },
+            {
+              "claim": "Quatre ans après, deux patients ont arrêté la luminothérapie.",
+              "evidence": "Two of them were able to discontinue phototherapy"
+            },
+            {
+              "claim": "Le troisième patient en a besoin bien moins.",
+              "evidence": "while the third maintained a partial response, requiring lower exposure to phototherapy"
+            },
+            {
+              "claim": "Chez les trois patients, la bilirubine reste nettement sous le seuil à risque.",
+              "evidence": "In all three patients, bilirubin levels remained significantly below the threshold associated with the risk of neurotoxicity"
+            },
+            {
+              "claim": "L'un des patients a eu une grossesse sans complication et un bébé en bonne santé.",
+              "evidence": "One of the patients also successfully completed a pregnancy without complications following gene therapy and gave birth to a healthy baby."
+            },
+            {
+              "claim": "Il faudra confirmer ces résultats sur davantage de malades.",
+              "evidence": "The pivotal part of the trial, which began in January 2023, aims to confirm the observed effect in a larger patient population"
+            }
+          ],
+          "scene": "A hospital bed beside a blue-light phototherapy unit glowing softly in a bright, clean room, with a small faint silhouette of a person far in the background. No text, no lettering, no logos, no screens."
+        },
+        "first": {
+          "title_main": "Chez trois patients rares,",
+          "title_accent": "un traitement génique dure quatre ans.",
+          "summary": "Cette maladie rare du foie empêche d'éliminer la bilirubine, une substance qui peut abîmer le cerveau. À Bergamo, en Italie, trois patients ont reçu une thérapie génique. Quatre ans après, deux ont arrêté la luminothérapie, et le troisième en a besoin bien moins. Chez les trois, la bilirubine reste nettement sous le seuil à risque. L'un d'eux a eu une grossesse sans complication : un bébé en bonne santé. Il faudra le confirmer sur davantage de malades.",
+          "claims": [
+            {
+              "claim": "La bilirubine qui s'accumule peut abîmer le cerveau.",
+              "evidence": "The accumulation of this substance can lead to irreversible neurological damage"
+            },
+            {
+              "claim": "Environ 500 personnes sont concernées en Europe.",
+              "evidence": "affecting approximately 500 people in Europe"
+            },
+            {
+              "claim": "À Bergamo, trois patients ont reçu une thérapie génique.",
+              "evidence": "the three patients who received the therapeutic dose at the hospital in Bergamo, Italy"
+            },
+            {
+              "claim": "Quatre ans après, deux patients ont arrêté la luminothérapie.",
+              "evidence": "Two of them were able to discontinue phototherapy"
+            },
+            {
+              "claim": "Le troisième patient en a besoin bien moins.",
+              "evidence": "while the third maintained a partial response, requiring lower exposure to phototherapy"
+            },
+            {
+              "claim": "Chez les trois patients, la bilirubine reste nettement sous le seuil à risque.",
+              "evidence": "In all three patients, bilirubin levels remained significantly below the threshold associated with the risk of neurotoxicity"
+            },
+            {
+              "claim": "L'un des patients a eu une grossesse sans complication et un bébé en bonne santé.",
+              "evidence": "One of the patients also successfully completed a pregnancy without complications following gene therapy and gave birth to a healthy baby."
+            },
+            {
+              "claim": "Il faudra confirmer ces résultats sur davantage de malades.",
+              "evidence": "The pivotal part of the trial, which began in January 2023, aims to confirm the observed effect in a larger patient population"
+            }
+          ],
+          "scene": "A hospital bed beside a blue-light phototherapy unit glowing softly in a bright, clean room, with a small faint silhouette of a person far in the background. No text, no lettering, no logos, no screens."
+        },
+        "problems": []
+      },
+      "sonnet": {
+        "outcome": "verified",
+        "reason": null,
+        "draft": {
+          "title_main": "Une thérapie génique agit encore",
+          "title_accent": "quatre ans après, en Italie.",
+          "summary": "Des patients atteints d'une maladie du foie très rare dépendaient d'une photothérapie à la lumière bleue pour contrôler leur bilirubine. Quatre ans après une thérapie génique à Bergame, en Italie, les trois patients traités ont toujours une bilirubine bien sous le seuil de risque neurologique. Deux ont pu arrêter la photothérapie, le troisième en a besoin moins souvent. Une patiente a aussi eu un bébé en bonne santé. L'essai doit encore être confirmé sur plus de patients.",
+          "claims": [
+            {
+              "claim": "Les patients dépendaient de la photothérapie à lumière bleue pour contrôler leur bilirubine.",
+              "evidence": "To date, patients have relied on blue-light phototherapy to control their bilirubin levels."
+            },
+            {
+              "claim": "Quatre ans après le traitement, les bénéfices persistent chez les trois patients traités à Bergame, en Italie.",
+              "evidence": "documented the persistence of treatment benefits four years after administration in the three patients who received the therapeutic dose at the hospital in Bergamo, Italy."
+            },
+            {
+              "claim": "Deux patients ont pu arrêter la photothérapie, le troisième a une réponse partielle et en a besoin moins.",
+              "evidence": "Two of them were able to discontinue phototherapy, while the third maintained a partial response, requiring lower exposure to phototherapy."
+            },
+            {
+              "claim": "Chez les trois, la bilirubine reste nettement sous le seuil associé au risque neurologique.",
+              "evidence": "In all three patients, bilirubin levels remained significantly below the threshold associated with the risk of neurotoxicity."
+            },
+            {
+              "claim": "Une patiente a mené une grossesse sans complication et a donné naissance à un bébé en bonne santé.",
+              "evidence": "One of the patients also successfully completed a pregnancy without complications following gene therapy and gave birth to a healthy baby."
+            },
+            {
+              "claim": "La partie pivot de l'essai vise à confirmer l'effet sur plus de patients.",
+              "evidence": "The pivotal part of the trial, which began in January 2023, aims to confirm the observed effect in a larger patient population"
+            }
+          ],
+          "scene": "A small hospital building in a northern Italian city seen from a distance, with a few tiny silhouetted figures walking toward it in soft morning light, and a small stroller beside one of them."
+        },
+        "first": {
+          "title_main": "Une thérapie génique agit encore",
+          "title_accent": "quatre ans après, en Italie.",
+          "summary": "Des patients atteints d'une maladie du foie très rare dépendaient d'une photothérapie à la lumière bleue pour contrôler leur bilirubine. Quatre ans après une thérapie génique à Bergame, en Italie, les trois patients traités ont toujours une bilirubine bien sous le seuil de risque neurologique. Deux ont pu arrêter la photothérapie, le troisième en a besoin moins souvent. Une patiente a aussi eu un bébé en bonne santé. L'essai doit encore être confirmé sur plus de patients.",
+          "claims": [
+            {
+              "claim": "Les patients dépendaient de la photothérapie à lumière bleue pour contrôler leur bilirubine.",
+              "evidence": "To date, patients have relied on blue-light phototherapy to control their bilirubin levels."
+            },
+            {
+              "claim": "Quatre ans après le traitement, les bénéfices persistent chez les trois patients traités à Bergame, en Italie.",
+              "evidence": "documented the persistence of treatment benefits four years after administration in the three patients who received the therapeutic dose at the hospital in Bergamo, Italy."
+            },
+            {
+              "claim": "Deux patients ont pu arrêter la photothérapie, le troisième a une réponse partielle et en a besoin moins.",
+              "evidence": "Two of them were able to discontinue phototherapy, while the third maintained a partial response, requiring lower exposure to phototherapy."
+            },
+            {
+              "claim": "Chez les trois, la bilirubine reste nettement sous le seuil associé au risque neurologique.",
+              "evidence": "In all three patients, bilirubin levels remained significantly below the threshold associated with the risk of neurotoxicity."
+            },
+            {
+              "claim": "Une patiente a mené une grossesse sans complication et a donné naissance à un bébé en bonne santé.",
+              "evidence": "One of the patients also successfully completed a pregnancy without complications following gene therapy and gave birth to a healthy baby."
+            },
+            {
+              "claim": "La partie pivot de l'essai vise à confirmer l'effet sur plus de patients.",
+              "evidence": "The pivotal part of the trial, which began in January 2023, aims to confirm the observed effect in a larger patient population"
+            }
+          ],
+          "scene": "A small hospital building in a northern Italian city seen from a distance, with a few tiny silhouetted figures walking toward it in soft morning light, and a small stroller beside one of them."
+        },
+        "problems": []
+      }
+    },
+    {
+      "id": "f26ee6c5-310b-4c0d-aade-b56359424e82",
+      "theme": "sante",
+      "status": "verified",
+      "publish_date": null,
+      "production": {
+        "title_main": "Des analyses de sang mieux interprétées",
+        "title_accent": "pour un trait génétique fréquent.",
+        "summary": "Si tu as ce trait génétique fréquent, une analyse de sang peut te faire croire à un problème de santé : tes globules blancs sont naturellement plus bas. L'American Society of Hematology a établi des valeurs de référence propres à ce trait, pour adultes et enfants. Les médecins peuvent ainsi mieux lire tes résultats et éviter des examens inutiles, comme une biopsie de la moelle osseuse. Il faudra encore étudier les bébés de moins de 6 mois."
+      },
+      "haiku": {
+        "outcome": "verified",
+        "reason": null,
+        "draft": {
+          "title_main": "Des normes de sang adaptées",
+          "title_accent": "qui évitent des examens inutiles.",
+          "summary": "Un trait génétique naturel abaisse les globules blancs de certaines personnes, sans maladie. Ces chiffres peuvent faire craindre à tort une infection ou un cancer. Des chercheurs américains ont établi des valeurs normales propres à ces personnes, adultes et enfants, sur 1 412 échantillons. Ces valeurs peuvent aider à éviter des examens superflus et l'interruption de traitements nécessaires. Il reste à étudier les bébés de moins de 6 mois.",
+          "claims": [
+            {
+              "claim": "Le trait fait naturellement baisser le nombre de globules blancs dans le sang, sans être une maladie.",
+              "evidence": "Duffy-null status is not a disease, but a genetic variant associated with lower levels of white blood cells circulating in the blood"
+            },
+            {
+              "claim": "Ces chiffres peuvent être pris à tort pour le signe d'une infection ou d'un cancer.",
+              "evidence": "This can be mistaken for a signal of an illness like infection or cancer."
+            },
+            {
+              "claim": "L'ASH a établi des valeurs de référence propres aux personnes concernées, pour adultes et enfants.",
+              "evidence": "The American Society of Hematology has developed new reference ranges for children and adults with Duffy-null status"
+            },
+            {
+              "claim": "Ces valeurs reposent sur 1 412 échantillons prélevés dans 23 sites aux États-Unis.",
+              "evidence": "Researchers across 23 sites in the U.S. collected 1,412 samples from Duffy-null individuals"
+            },
+            {
+              "claim": "Ces valeurs peuvent aider à éviter des examens superflus et l'interruption de traitements nécessaires.",
+              "evidence": "can help clinicians more accurately interpret neutrophil counts, reduce unnecessary testing and treatment interruptions"
+            },
+            {
+              "claim": "Les valeurs pour les enfants de moins de 6 mois restent à étudier.",
+              "evidence": "Further research is needed to understand the reference intervals for children under 6 months old."
+            }
+          ],
+          "scene": "A glass laboratory test tube filled with blood standing on a clean white table, soft natural daylight, a few tiny blurred human silhouettes far in the background, no faces, no visible text, labels or logos."
+        },
+        "first": {
+          "title_main": "Des normes de sang adaptées",
+          "title_accent": "qui évitent des examens inutiles.",
+          "summary": "Certaines personnes ont un trait génétique naturel qui abaisse leurs globules blancs, sans maladie à la clé. Ces chiffres peuvent faire croire à une infection ou à un cancer, avec des examens inutiles à la clé. Des chercheurs américains ont établi des valeurs normales propres à ces personnes, pour adultes et enfants, à partir de 1 412 échantillons. Moins d'examens superflus, et moins de traitements nécessaires interrompus. Il reste à étudier les bébés de moins de 6 mois.",
+          "claims": [
+            {
+              "claim": "Le trait fait naturellement baisser le nombre de globules blancs dans le sang, sans être une maladie.",
+              "evidence": "Duffy-null status is not a disease, but a genetic variant associated with lower levels of white blood cells circulating in the blood"
+            },
+            {
+              "claim": "Ces chiffres peuvent être pris pour le signe d'une infection ou d'un cancer.",
+              "evidence": "This can be mistaken for a signal of an illness like infection or cancer."
+            },
+            {
+              "claim": "Des examens inutiles peuvent en résulter.",
+              "evidence": "which is associated with infection or underlying illness and can lead to unnecessary testing like bone marrow biopsies"
+            },
+            {
+              "claim": "L'ASH a établi des valeurs de référence propres aux personnes concernées, pour adultes et enfants.",
+              "evidence": "The American Society of Hematology has developed new reference ranges for children and adults with Duffy-null status"
+            },
+            {
+              "claim": "Ces valeurs reposent sur 1 412 échantillons prélevés dans 23 sites aux États-Unis.",
+              "evidence": "Researchers across 23 sites in the U.S. collected 1,412 samples from Duffy-null individuals"
+            },
+            {
+              "claim": "Les valeurs peuvent réduire les examens inutiles et les traitements nécessaires interrompus.",
+              "evidence": "reduce unnecessary testing and treatment interruptions"
+            },
+            {
+              "claim": "Les valeurs pour les enfants de moins de 6 mois restent à étudier.",
+              "evidence": "Further research is needed to understand the reference intervals for children under 6 months old."
+            }
+          ],
+          "scene": "A glass laboratory test tube filled with blood standing on a clean white table, soft natural daylight, a few tiny blurred human silhouettes far in the background, no faces, no visible text, labels or logos."
+        },
+        "problems": [
+          {
+            "type": "overstatement",
+            "passage": "Des normes de sang adaptées qui évitent des examens inutiles.",
+            "correction": "Des normes de sang adaptées qui peuvent éviter des examens inutiles."
+          }
+        ]
+      },
+      "sonnet": {
+        "outcome": "rejected",
+        "reason": "verify_failed après 2 passe(s), non corrigé : overstatement: Résultat : on les croyait parfois malades, avec examens inutiles ou chimiothérapie interrompue. (La formulation a été réécrite, mais « d'où » affirme la conséquence comme certaine. La correction demandée (« ce qui peut mener à ») n'a pas été appliquée.)",
+        "draft": {
+          "title_main": "Des repères sanguins inédits",
+          "title_accent": "pour éviter des examens inutiles.",
+          "summary": "Chez les personnes « Duffy-null », un trait génétique courant, les globules blancs sont naturellement moins nombreux dans le sang. Elles peuvent être prises à tort pour malades, d'où des examens inutiles ou l'arrêt de traitements comme la chimiothérapie. L'American Society of Hematology a établi les premières valeurs normales adaptées, pour adultes et enfants dès 6 mois, à partir de 1 412 échantillons. Les médecins peuvent mieux repérer ce qui est normal.",
+          "claims": [
+            {
+              "claim": "Le trait Duffy-null est associé à des globules blancs naturellement moins nombreux en circulation.",
+              "evidence": "a common genetic trait associated with naturally lower circulating white blood cell counts"
+            },
+            {
+              "claim": "Avec les repères standards, ces personnes peuvent être signalées à tort, ce qui peut mener à des examens inutiles ou à l'arrêt de traitements comme la chimiothérapie.",
+              "evidence": "people with Duffy-null status may be inaccurately flagged as having neutropenia, a type of abnormally low white blood cell count, which is associated with infection or underlying illness and can lead to unnecessary testing like bone marrow biopsies, exclusion from clinical trials, or discontinuation of necessary therapies like chemotherapy."
+            },
+            {
+              "claim": "L'American Society of Hematology a établi les premières valeurs de référence personnalisées pour enfants et adultes.",
+              "evidence": "The American Society of Hematology has developed new reference ranges for children and adults with Duffy-null status"
+            },
+            {
+              "claim": "Elles reposent sur 1 412 échantillons de personnes Duffy-null.",
+              "evidence": "Researchers across 23 sites in the U.S. collected 1,412 samples from Duffy-null individuals to validate adult reference ranges and collect the first data for pediatric ranges."
+            },
+            {
+              "claim": "Les valeurs couvrent les enfants de 6 mois à 17 ans et les adultes.",
+              "evidence": "Children 6 months to 2 years: ANC between 0.53 and 4.50×10⁹/L and WBC between 4.4 and 12.6 ×10⁹/L"
+            },
+            {
+              "claim": "Elles aident les médecins à déterminer ce qui est normal et à éviter des examens inutiles.",
+              "evidence": "These personalized reference ranges are the first of their kind and will help clinicians accurately determine normal and abnormal white blood cell counts, preventing unnecessary testing."
+            }
+          ],
+          "scene": "A single glass tube of blood resting on a light table beside a simple paper chart with a gently curved line and a shaded band, soft morning light from a window, a small distant silhouette of a doctor and a patient in the background, no text, no faces."
+        },
+        "first": {
+          "title_main": "Des repères sanguins inédits",
+          "title_accent": "pour éviter des examens inutiles.",
+          "summary": "Chez les personnes « Duffy-null », un trait génétique courant, les globules blancs sont naturellement moins nombreux dans le sang. Résultat : on les croyait parfois malades, avec examens inutiles ou chimiothérapie interrompue. Une société de spécialistes du sang, l'American Society of Hematology, a établi les premières valeurs normales adaptées, pour adultes et enfants dès 6 mois, à partir de 1 412 échantillons. Les médecins peuvent ainsi mieux repérer ce qui est normal.",
+          "claims": [
+            {
+              "claim": "Le trait Duffy-null est associé à des globules blancs naturellement moins nombreux en circulation.",
+              "evidence": "a common genetic trait associated with naturally lower circulating white blood cell counts"
+            },
+            {
+              "claim": "Avec les repères standards, ces personnes peuvent être signalées à tort, ce qui peut mener à des examens inutiles ou à l'arrêt de traitements comme la chimiothérapie.",
+              "evidence": "people with Duffy-null status may be inaccurately flagged as having neutropenia, a type of abnormally low white blood cell count, which is associated with infection or underlying illness and can lead to unnecessary testing like bone marrow biopsies, exclusion from clinical trials, or discontinuation of necessary therapies like chemotherapy."
+            },
+            {
+              "claim": "L'American Society of Hematology a établi les premières valeurs de référence personnalisées pour enfants et adultes.",
+              "evidence": "The American Society of Hematology has developed new reference ranges for children and adults with Duffy-null status"
+            },
+            {
+              "claim": "Elles reposent sur 1 412 échantillons de personnes Duffy-null.",
+              "evidence": "Researchers across 23 sites in the U.S. collected 1,412 samples from Duffy-null individuals to validate adult reference ranges and collect the first data for pediatric ranges."
+            },
+            {
+              "claim": "Les valeurs couvrent les enfants de 6 mois à 17 ans et les adultes.",
+              "evidence": "Children 6 months to 2 years: ANC between 0.53 and 4.50×10⁹/L and WBC between 4.4 and 12.6 ×10⁹/L"
+            },
+            {
+              "claim": "Elles aident les médecins à déterminer ce qui est normal et à éviter des examens inutiles.",
+              "evidence": "These personalized reference ranges are the first of their kind and will help clinicians accurately determine normal and abnormal white blood cell counts, preventing unnecessary testing."
+            }
+          ],
+          "scene": "A single glass tube of blood resting on a light table beside a simple paper chart with a gently curved line and a shaded band, soft morning light from a window, a small distant silhouette of a doctor and a patient in the background, no text, no faces."
+        },
+        "problems": [
+          {
+            "type": "overstatement",
+            "passage": "Elles peuvent être prises à tort pour malades, d'où des examens inutiles ou l'arrêt de traitements comme la chimiothérapie.",
+            "correction": "Elles peuvent être prises à tort pour malades, ce qui peut mener à des examens inutiles ou à l'arrêt de traitements comme la chimiothérapie. « d'où » présente la conséquence comme certaine, alors que l'article dit « can lead to »."
+          }
+        ]
+      }
+    },
+    {
+      "id": "62983671-fda0-4b07-ad44-eb13b688976e",
+      "theme": "culture",
+      "status": "verified",
+      "publish_date": null,
+      "production": {
+        "title_main": "Six gravures de Picasso volées",
+        "title_accent": "ont été retrouvées en parfait état.",
+        "summary": "Des gravures de Pablo Picasso avaient disparu début octobre d'un restaurant de Mougins, dans les Alpes-Maritimes, et on ne savait plus où elles étaient. Bonne nouvelle : les enquêteurs les ont retrouvées, en parfait état. Après des perquisitions dans deux immeubles de la région niçoise, sept personnes ont été interpellées. Les œuvres sont rendues et seront désormais gardées dans un lieu tenu secret."
+      },
+      "haiku": {
+        "outcome": "verified",
+        "reason": null,
+        "draft": {
+          "title_main": "Six gravures de Picasso volées,",
+          "title_accent": "retrouvées en parfait état.",
+          "summary": "Début octobre, six gravures de Pablo Picasso ont été volées dans un restaurant gastronomique de Mougins, dans les Alpes-Maritimes. Elles étaient introuvables depuis. Mais les enquêteurs ont perquisitionné deux immeubles de la région niçoise, et sept personnes ont été placées en garde à vue. Les six gravures ont été retrouvées en parfait état, cachées dans une planque. Elles ont été restituées, et la directrice du musée FAMM, à Mougins, est ravie de pouvoir les récupérer.",
+          "claims": [
+            {
+              "claim": "Six gravures de Pablo Picasso ont été volées début octobre dans un restaurant gastronomique de Mougins, dans les Alpes-Maritimes.",
+              "evidence": "Dérobées début octobre dans un restaurant de Mougins dans les Alpes-Maritimes, elles étaient depuis introuvables."
+            },
+            {
+              "claim": "Les enquêteurs ont perquisitionné deux immeubles de la région niçoise.",
+              "evidence": "Deux immeubles de la région niçoise ont été perquisitionnés, et sept personnes interpellées."
+            },
+            {
+              "claim": "Sept personnes ont été placées en garde à vue.",
+              "evidence": "Sept personnes ont été placées en garde à vue."
+            },
+            {
+              "claim": "Les six gravures ont été retrouvées en parfait état, cachées dans une planque.",
+              "evidence": "Dissimulées dans une planque, six gravures de Pablo Picasso ont été retrouvées en parfait état."
+            },
+            {
+              "claim": "Les gravures ont été restituées.",
+              "evidence": "Les gravures ont été restituées, mais seront désormais conservées dans un lieu tenu secret."
+            },
+            {
+              "claim": "La directrice du musée FAMM, à Mougins, est ravie de pouvoir les récupérer.",
+              "evidence": "Nous sommes ravis de pouvoir les récupérer"
+            }
+          ],
+          "scene": "Six small framed prints of Pablo Picasso's engravings resting side by side on a pale wooden table in a quiet, sunlit room, with soft daylight from a tall window. In the far background, a few tiny faceless silhouettes of people. No text, letters, logos or readable signs anywhere in the scene."
+        },
+        "first": {
+          "title_main": "Six gravures de Picasso volées,",
+          "title_accent": "retrouvées en parfait état.",
+          "summary": "Début octobre, six gravures de Pablo Picasso ont été volées dans un restaurant gastronomique de Mougins, dans les Alpes-Maritimes. Elles étaient introuvables depuis. Mais les enquêteurs ont perquisitionné deux immeubles de la région niçoise, et sept personnes ont été placées en garde à vue. Les six gravures ont été retrouvées en parfait état, cachées dans une planque. Elles ont été restituées, et la directrice du musée FAMM, à Mougins, est ravie de pouvoir les récupérer.",
+          "claims": [
+            {
+              "claim": "Six gravures de Pablo Picasso ont été volées début octobre dans un restaurant gastronomique de Mougins, dans les Alpes-Maritimes.",
+              "evidence": "Dérobées début octobre dans un restaurant de Mougins dans les Alpes-Maritimes, elles étaient depuis introuvables."
+            },
+            {
+              "claim": "Les enquêteurs ont perquisitionné deux immeubles de la région niçoise.",
+              "evidence": "Deux immeubles de la région niçoise ont été perquisitionnés, et sept personnes interpellées."
+            },
+            {
+              "claim": "Sept personnes ont été placées en garde à vue.",
+              "evidence": "Sept personnes ont été placées en garde à vue."
+            },
+            {
+              "claim": "Les six gravures ont été retrouvées en parfait état, cachées dans une planque.",
+              "evidence": "Dissimulées dans une planque, six gravures de Pablo Picasso ont été retrouvées en parfait état."
+            },
+            {
+              "claim": "Les gravures ont été restituées.",
+              "evidence": "Les gravures ont été restituées, mais seront désormais conservées dans un lieu tenu secret."
+            },
+            {
+              "claim": "La directrice du musée FAMM, à Mougins, est ravie de pouvoir les récupérer.",
+              "evidence": "Nous sommes ravis de pouvoir les récupérer"
+            }
+          ],
+          "scene": "Six small framed prints of Pablo Picasso's engravings resting side by side on a pale wooden table in a quiet, sunlit room, with soft daylight from a tall window. In the far background, a few tiny faceless silhouettes of people. No text, letters, logos or readable signs anywhere in the scene."
+        },
+        "problems": []
+      },
+      "sonnet": {
+        "outcome": "verified",
+        "reason": null,
+        "draft": {
+          "title_main": "Six gravures de Picasso volées",
+          "title_accent": "ont été retrouvées intactes.",
+          "summary": "Début octobre, six gravures de Pablo Picasso ont disparu d'un restaurant de Mougins, dérobées en moins d'une minute. Un mois plus tard, les enquêteurs ont perquisitionné deux immeubles près de Nice et interpellé sept personnes. Les six œuvres, cachées dans une planque, étaient en parfait état. Elles ont été restituées et seront gardées dans un lieu tenu secret.",
+          "claims": [
+            {
+              "claim": "Six gravures de Picasso ont été volées début octobre dans un restaurant de Mougins.",
+              "evidence": "Dérobées début octobre dans un restaurant de Mougins dans les Alpes-Maritimes, elles étaient depuis introuvables."
+            },
+            {
+              "claim": "Le vol a pris moins d'une minute.",
+              "evidence": "Ils ont réussi à pénétrer par une porte-fenêtre, et ils ont dérobé les six gravures en moins d'une minute."
+            },
+            {
+              "claim": "Deux immeubles de la région niçoise ont été perquisitionnés et sept personnes interpellées.",
+              "evidence": "Deux immeubles de la région niçoise ont été perquisitionnés, et sept personnes interpellées."
+            },
+            {
+              "claim": "Les six gravures, dissimulées dans une planque, ont été retrouvées en parfait état.",
+              "evidence": "Dissimulées dans une planque, six gravures de Pablo Picasso ont été retrouvées en parfait état."
+            },
+            {
+              "claim": "Les gravures ont été restituées et seront conservées dans un lieu secret.",
+              "evidence": "Les gravures ont été restituées, mais seront désormais conservées dans un lieu tenu secret."
+            }
+          ],
+          "scene": "A small framed print resting on a wooden table in a quiet, softly lit room, with five similar framed prints stacked neatly beside it. Large window with a view of a Mediterranean hillside village. Tiny distant silhouettes of two people standing by the door, no faces, no text."
+        },
+        "first": {
+          "title_main": "Six gravures de Picasso volées",
+          "title_accent": "ont été retrouvées intactes.",
+          "summary": "Début octobre, six gravures de Pablo Picasso ont disparu d'un restaurant de Mougins, dérobées en moins d'une minute. Un mois plus tard, les enquêteurs ont perquisitionné deux immeubles près de Nice et interpellé sept personnes. Les six œuvres, cachées dans une planque, étaient en parfait état. Elles ont été restituées et seront gardées dans un lieu tenu secret.",
+          "claims": [
+            {
+              "claim": "Six gravures de Picasso ont été volées début octobre dans un restaurant de Mougins.",
+              "evidence": "Dérobées début octobre dans un restaurant de Mougins dans les Alpes-Maritimes, elles étaient depuis introuvables."
+            },
+            {
+              "claim": "Le vol a pris moins d'une minute.",
+              "evidence": "Ils ont réussi à pénétrer par une porte-fenêtre, et ils ont dérobé les six gravures en moins d'une minute."
+            },
+            {
+              "claim": "Deux immeubles de la région niçoise ont été perquisitionnés et sept personnes interpellées.",
+              "evidence": "Deux immeubles de la région niçoise ont été perquisitionnés, et sept personnes interpellées."
+            },
+            {
+              "claim": "Les six gravures, dissimulées dans une planque, ont été retrouvées en parfait état.",
+              "evidence": "Dissimulées dans une planque, six gravures de Pablo Picasso ont été retrouvées en parfait état."
+            },
+            {
+              "claim": "Les gravures ont été restituées et seront conservées dans un lieu secret.",
+              "evidence": "Les gravures ont été restituées, mais seront désormais conservées dans un lieu tenu secret."
+            }
+          ],
+          "scene": "A small framed print resting on a wooden table in a quiet, softly lit room, with five similar framed prints stacked neatly beside it. Large window with a view of a Mediterranean hillside village. Tiny distant silhouettes of two people standing by the door, no faces, no text."
+        },
+        "problems": []
+      }
+    }
+  ],
+  "usage": {
+    "claude-sonnet-5-5:draft": {
+      "calls": 6,
+      "input": 13916,
+      "cacheWrite": 2461,
+      "cacheRead": 12305,
+      "output": 5524,
+      "cost": 0.0916855
+    },
+    "claude-haiku-5-5:draft": {
+      "calls": 6,
+      "input": 13622,
+      "cacheWrite": 2461,
+      "cacheRead": 12305,
+      "output": 23498,
+      "cost": 0.013541875
+    },
+    "claude-sonnet-5-5:verify": {
+      "calls": 5,
+      "input": 16098,
+      "cacheWrite": 1978,
+      "cacheRead": 8052,
+      "output": 10414,
+      "cost": 0.007144569999999999
+    },
+    "claude-haiku-5-5:verify": {
+      "calls": 7,
+      "input": 21833,
+      "cacheWrite": 2118,
+      "cacheRead": 12148,
+      "output": 12022,
+      "cost": 0.008580530000000001
+    },
+    "claude-haiku-5-5:revise": {
+      "calls": 4,
+      "input": 13357,
+      "cacheWrite": 2519,
+      "cacheRead": 7557,
+      "output": 9551,
+      "cost": 0.006501645
+    },
+    "claude-sonnet-5-5:revise": {
+      "calls": 2,
+      "input": 7460,
+      "cacheWrite": 2519,
+      "cacheRead": 2519,
+      "output": 2104,
+      "cost": 0.0427613
+    }
+  }
+}
